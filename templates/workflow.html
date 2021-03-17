@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="row">
+    <div >
+    <h3> 
+           workflow
+            
+    </h3>   
+    Hoş Geldiniz, {{ request.user.username}}
+    <hr>
+
+    workflow id : {{ wf.id}} <br>
+    department : {{ wf.department}} <br>
+    status : {{ wf.status}} <br>
+    <a href="/order/workflowCompleted/{{wf.id}}"><button class="btn btn-outline-dark btn-sm">Tamamla</button></a>
+    
+</div>
+{% endblock body %}

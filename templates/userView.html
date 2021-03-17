@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div >
+    <h3> 
+            Kullanıcı Bilgileri
+            
+    </h3>   
+    
+
+    Kullanıcı Adı = {{user.username}}  <br>
+    First Name = {{user.first_name}} <br>
+
+
+    <a href="#"><button class="btn btn-info">Şifre değiştir</button></a>
+</div>
+{% endblock body %}

@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div >
+    <h3> 
+            Sipariş Girişi
+            
+    </h3>   
+    Hoş Geldiniz, {{ request.user.username}}
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.media }}
+        {{form|crispy}}
+        <br>
+
+        <button type="submit" class="btn btn-warning">Giriş</button>
+    </form>
+</div>
+{% endblock body %}

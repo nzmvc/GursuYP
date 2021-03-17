@@ -1,0 +1,277 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+
+<div class="row mb-1">
+  <div class="col-md-3 ">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="col p-4 d-flex flex-column position-static bg-info bg-gradient" align="center">
+        <strong class="d-inline-block mb-2 text-white fs-1">{{order.count}}</strong>
+        <strong class="d-inline-block mb-2 text-white">Sipariş sayısı </strong>
+        
+      </div>
+      
+    </div>
+  </div>
+  <div class="col-md-3 ">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="col p-4 d-flex flex-column position-static bg-info bg-gradient" align="center">
+        <strong class="d-inline-block mb-2 text-white fs-1">{{customer.count}}</strong>
+        <strong class="d-inline-block mb-2 text-white">Müşteri sayısı </strong>
+        
+      </div>
+      
+    </div>
+  </div>
+  <div class="col-md-3 ">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="col p-4 d-flex flex-column position-static bg-info bg-gradient" align="center">
+        <strong class="d-inline-block mb-2 text-white fs-1">{{product.count}} </strong>
+        <strong class="d-inline-block mb-2 text-white">Ürün sayısı </strong>
+        
+      </div>
+      
+    </div>
+  </div>
+  <div class="col-md-3 ">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="col p-4 d-flex flex-column position-static bg-info bg-gradient" align="center">
+        <strong class="d-inline-block mb-2 text-white fs-1">{{workflow.count}} </strong>
+        <strong class="d-inline-block mb-2 text-white">İş sayısı </strong>
+        
+      </div>
+      
+    </div>
+  </div>
+
+</div>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header bg-light ">
+      <h4 class="card-title">OPERASYON  
+        <button type="button" class="btn btn-primary btn-sm">
+          iş adedi: <span class="badge badge-light">{{operasyon_jobs.count }}</span>
+        </button>
+      </h4>
+      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+    </div>
+    <div class="table-full-width table-responsive px-0 card-body">
+
+
+      {% if operasyon_jobs %}
+      <table class="table-hover table-striped table">
+        <thead>
+          <tr>
+            <th class="border-0" scope="col">Workflow id</th>
+            <th class="border-0" scope="col">Statu</th>
+            <th class="border-0" scope="col">Tarih</th>
+            <th class="border-0" scope="col">Order ID</th>
+            <th class="border-0" scope="col">Açıklama</th>
+            <th class="border-0" scope="col">Müşteri</th>
+            <th class="border-0" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for job in operasyon_jobs %}
+              <tr>
+                <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
+                <td>{{job.status}}</td>
+                <td>{{job.created_date}}</td>
+                <td>{{job.order.id}}</td>
+                <td>{{job.order.content|safe}}</td>
+                <td>{{job.order.customer.customer_name}}</td>
+                
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                      Aksiyon
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                      <li><a class="dropdown-item" href="/order/workflowCompleted/{{job.id}}">Tamamla</a></li>
+                      <li><a class="dropdown-item" href="#">B aksiyonu</a></li>
+                      <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
+                    </ul>
+                  </div>
+                  
+              </tr>
+            {% endfor %}
+          
+      
+        </tbody>
+      </table>
+    {%else%}
+      <div class="alert alert-danger">
+          Bekleyen iş yok
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</div>
+<br><br>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">PLANLAMA  
+        <button type="button" class="btn btn-primary btn-sm">
+          iş adedi: <span class="badge badge-light">{{planlama_jobs.count }}</span>
+        </button>
+      </h4>
+      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+  </div>
+  <div class="table-full-width table-responsive px-0 card-body">
+
+
+      {% if planlama_jobs %}
+      <table class="table-hover table-striped table">
+        <thead>
+          <tr>
+            <th class="border-0" scope="col">Workflow id</th>
+            <th class="border-0" scope="col">Statu</th>
+            <th class="border-0" scope="col">Tarih</th>
+            <th class="border-0" scope="col">Order ID</th>
+            <th class="border-0" scope="col">Açıklama</th>
+            <th class="border-0" scope="col">Müşteri</th>
+            <th class="border-0" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for job in planlama_jobs %}
+              <tr>
+                <td scope="row">{{job.id}}</td>
+                <td>{{job.status}}</td>
+                <td>{{job.created_date}}</td>
+                <td>{{job.order.id}}</td>
+                <td>{{job.order.content|safe}}</td>
+                <td>{{job.order.customer.customer_name}}</td>
+                
+                <td><a href="/order/workflowCompleted/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Tamamla</button></a></td>
+                
+              </tr>
+            {% endfor %}
+          
+      
+        </tbody>
+      </table>
+    {%else%}
+      <div class="alert alert-danger">
+          Bekleyen iş yok
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</div>
+<br><br>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">ÜRETİM  
+        <button type="button" class="btn btn-primary btn-sm">
+          iş adedi: <span class="badge badge-light">{{uretim_jobs.count }}</span>
+        </button>
+      </h4>
+      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+    </div>
+  <div class="table-full-width table-responsive px-0 card-body">
+
+
+      {% if uretim_jobs %}
+      <table class="table-hover table-striped table">
+        <thead>
+          <tr>
+            <th class="border-0" scope="col">Workflow id</th>
+            <th class="border-0" scope="col">Statu</th>
+            <th class="border-0" scope="col">Tarih</th>
+            <th class="border-0" scope="col">Order ID</th>
+            <th class="border-0" scope="col">Açıklama</th>
+            <th class="border-0" scope="col">Müşteri</th>
+            <th class="border-0" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for job in uretim_jobs %}
+              <tr>
+                <td scope="row">{{job.id}}</td>
+                <td>{{job.status}}</td>
+                <td>{{job.created_date}}</td>
+                <td>{{job.order.id}}</td>
+                <td>{{job.order.content|safe}}</td>
+                <td>{{job.order.customer.customer_name}}</td>
+                
+                <td><a href="/order/workflowCompleted/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Tamamla</button></a></td>
+                
+              </tr>
+            {% endfor %}
+          
+      
+        </tbody>
+      </table>
+    {%else%}
+      <div class="alert alert-danger">
+          Bekleyen iş yok
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</div>
+<br><br>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">DEPO  
+        <button type="button" class="btn btn-primary btn-sm">
+          iş adedi: <span class="badge badge-light">{{depo_jobs.count }}</span>
+        </button>
+      </h4>
+      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+    </div>
+    <div class="table-full-width table-responsive px-0 card-body">
+
+
+      {% if depo_jobs %}
+      <table class="table-hover table-striped table">
+        <thead>
+          <tr>
+            <th class="border-0" scope="col">Workflow id</th>
+            <th scope="col">Statu</th>
+            <th scope="col">Tarih</th>
+            <th scope="col">Order ID</th>
+            <th scope="col">Açıklama</th>
+            <th scope="col">Müşteri</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for job in depo_jobs %}
+              <tr>
+                <td scope="row">{{job.id}}</td>
+                <td>{{job.status}}</td>
+                <td>{{job.created_date}}</td>
+                <td>{{job.order.id}}</td>
+                <td>{{job.order.content|safe}}</td>
+                <td>{{job.order.customer.customer_name}}</td>
+                
+                <td><a href="/order/workflowCompleted/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Tamamla</button></a></td>
+                
+              </tr>
+            {% endfor %}
+          
+      
+        </tbody>
+      </table>
+    {%else%}
+      <div class="alert alert-danger">
+          Bekleyen iş yok
+      </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+
+
+<br><br>
+{% endblock body %}
