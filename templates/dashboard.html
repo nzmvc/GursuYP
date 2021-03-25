@@ -17,8 +17,8 @@
   <div class="col-md-3 ">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
       <div class="col p-4 d-flex flex-column position-static bg-info bg-gradient" align="center">
-        <strong class="d-inline-block mb-2 text-white fs-1">{{customer.count}}</strong>
-        <strong class="d-inline-block mb-2 text-white">Müşteri sayısı </strong>
+        <strong class="d-inline-block mb-2 text-white fs-1">{{problems.count}}</strong>
+        <strong class="d-inline-block mb-2 text-white">Müşteri şikayet sayısı </strong>
         
       </div>
       
@@ -147,7 +147,7 @@
                 <td>{{job.order.content|safe}}</td>
                 <td>{{job.order.customer.customer_name}}</td>
                 
-                <td><a href="/order/workflowCompleted/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Tamamla</button></a></td>
+                <td><a href="/order/workflowPlanla/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Planla</button></a></td>
                 
               </tr>
             {% endfor %}

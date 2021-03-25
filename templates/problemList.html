@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div >
+        <h3> 
+            Müşteri Şikayet Listesi
+                
+        </h3>   
+        Hoş Geldiniz, {{ request.user.username}}
+        <hr>
+
+        
+        
+    </div>
+
+    <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-light ">
+            <h4 class="card-title">Müşteri Şikayetleri  
+              <button type="button" class="btn btn-primary btn-sm">
+                iş adedi: <span class="badge badge-light">{{problems.count }}</span>
+              </button>
+            </h4>
+            <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+          </div>
+          <div class="table-full-width table-responsive px-0 card-body">
+      
+      
+            {% if problems %}
+            <table class="table-hover table-striped table">
+              <thead>
+                <tr>
+                  <th class="border-0" scope="col">ID</th>
+                  <th class="border-0" scope="col">Oluşturulma Tarihi</th>
+                  <th class="border-0" scope="col">Kullanıcı</th>
+                  <th class="border-0" scope="col">Order ID</th>
+                  <th class="border-0" scope="col">Açıklama</th>
+                  <th class="border-0" scope="col">Durum</th>
+                  <th class="border-0" scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for problem in problems %}
+                    <tr>
+                      <td scope="row"><a href="/order/problemView/{{problem.id}}">{{problem.id}}</a></td>
+                      <td>{{problem.created_date}}</td>
+                      <td>{{problem.created_user}}</td>
+                      <td><a href="/order/orderView/{{problem.order.id}}">{{problem.order}}</a></td>
+                      <td>{{problem.description|safe}}</td>
+                      <td>{{problem.statu}}</td>
+                      
+                      <td>
+                        <div class="dropdown">
+                          <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Aksiyon
+                          </button>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="/order/problemView/{{problem.id}}">Göster</a></li>
+                            <li><a class="dropdown-item" href="#">B aksiyonu</a></li>
+                            <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
+                          </ul>
+                        </div>
+                        
+                    </tr>
+                  {% endfor %}
+                
+            
+              </tbody>
+            </table>
+          {%else%}
+            <div class="alert alert-danger">
+                Problem kaydı yok
+            </div>
+          {% endif %}
+        </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock body %}

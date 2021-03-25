@@ -1,3 +1,4 @@
+
 {% extends "layout.html" %}
 
 {% block body %}
@@ -71,13 +72,12 @@
         </h3>  
         <div class="row mb-1">
             <div class="col-md-6 ">
-        
             <form method="POST">
             {% csrf_token %}
             <table>
                 <tr>
                     <td>Montaj Tarihi</td>
-                    <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih"></td>
+                    <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih" value="{{tarih}}"></td>
                 </tr>
                 <tr>
                     <td>Zaman</td>
@@ -93,11 +93,43 @@
             <button type="submit" class="btn btn-info btn-sm"> Plan yap</button>
             </form>
             </div>
+            
             <div class="col-md-6 ">
-                <h1> Planla butonuna basınız</h1>
+            
+            <form method="POST">
+                {% csrf_token %}
+                Tarih : {{ tarih}}   Zaman : {{ zaman}} <br>
+                <input type="hidden" name="tarih"  id="tarih" value="{{ tarih}}"/>
+                <input type="hidden" name="zaman"  id="zaman" value="{{ zaman}}"/>
+                <table>
+                    <tr>
+                        <td>Personel seçiniz:</td>
+                        <td>
+                            <select name="ustalar" multiple>
+                                {% for usta in ustalar%}
+                                    <option value="{{usta.user.id }}">{{usta.user.username}}</option>
+                                {% endfor %}
+                            </select>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Araç seçiniz:</td>
+                        <td>
+                            <select name="arabalar" multiple>
+                            {% for arac in araclar%}
+                                <option value="{{arac.id}}">{{arac.type_id}}</option>
+                            {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </table> 
+                <button type="submit" class="btn btn-info btn-sm"> Seçimi kaydet </button>   
+            </form>
             </div>
         </div>
     </div>
+
     <br><BR>
 
     <div class="jumbotron border rounded overflow-hidden ">

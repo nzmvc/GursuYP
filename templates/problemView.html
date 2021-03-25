@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+{% if problem %}
+<div class="row mb-1">
+    <div class="col-md-6">
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+          <strong class="d-inline-block mb-2 text-primary">
+              Şikayet ID: {{problem.id}} 
+              
+            </strong>
+          
+          <h3 class="mb-0">{{problem.order.customer.customer_name}}</h3>
+          <div class="mb-1 text-muted">{{problem.created_date}}</div>
+          
+          <a href="/order/orderView/{{problem.order.id}}" class="stretched-link">Sipariş Detay</a>
+        </div>
+        
+      </div>
+    </div>
+	
+    <div class="col-md-3">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <h5 class="mb-0">İletişim</h5>
+                <div >email : {{problem.order.customer.email}}</div> 
+                <div class="mb-1 text-muted">Telefon:{{problem.order.customer.telephone}}</div> 
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                
+                <h1>DURUM <br> {{problem.statu}}</h1>
+
+            </div>
+    </div>
+
+</div>
+
+<div >
+
+    <div class="jumbotron border rounded overflow-hidden ">
+        <h3>Açıklama</h3>
+        {{problem.description|safe}}
+      
+       <br><br>
+    </div>
+
+</div>
+<br><br>
+
+<div >
+
+    {% if problem.statu_id != 4 %}
+        <h3>Problemi Kapat </h3>
+
+        <div class="jumbotron border rounded overflow-hidden ">
+            <form method="post">
+                {% csrf_token %}
+                {{solution_form|crispy }}
+                <br>
+                <button type="submit" class="btn btn-warning">Çözüldü</button>
+            </form>
+        </div>
+    {%else%}
+        <div >
+            <div class="jumbotron border rounded overflow-hidden ">
+                <h3>Çözüm</h3>
+                {{problem.solution|safe}}
+            
+            <br><br>
+            <h3>Kök sebep</h3>
+                {{problem.root_cause}}
+            
+            <br><br>
+            </div>
+        
+        </div>
+    {% endif%}
+</div>
+
+
+
+
+
+{%else%}
+    <div class="alert alert-danger">
+        Sipariş bulunamadı
+    </div>
+{% endif %}
+    
+
+ 
+
+{% endblock body %}

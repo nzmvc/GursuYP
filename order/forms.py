@@ -1,5 +1,5 @@
 from django import forms
-from .models import Customer,Order,Product,Workflow,Address,OrderProducts
+from .models import Customer,Order,Product,Workflow,Address,OrderProducts,Problems
 
 
 class CustomerForm(forms.ModelForm):
@@ -32,3 +32,12 @@ class AddressForm(forms.ModelForm):
         model = Address
         fields = ['customer','ulke','il','ilce','adres','map_link']
 
+class ProblemForm(forms.ModelForm):
+    class Meta:
+        model = Problems
+        fields = ['order','description','statu','created_user',]
+
+class ProblemSolutionForm(forms.ModelForm):
+    class Meta:
+        model = Problems
+        fields = ['solution','root_cause']

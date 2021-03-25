@@ -30,6 +30,9 @@ urlpatterns = [
     
     path('workflowCompleted/<int:id>',views.workflowCompleted,name='workflowCompleted'),
     path('workflowView/<int:id>',views.workflowView,name='workflowView'),
+    path('workflowPlanla/<int:id>',views.workflowPlanla,name='workflowPlanla'),
     
-    
+    path('problemAdd/<int:id>',views.problemAdd,name='problemAdd'),
+    path('problemList/',views.problemList,name='problemList'),
+    path('problemView/<int:id>',views.problemView,name='problemView'),
 ]

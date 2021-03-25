@@ -1,8 +1,15 @@
 from django.db import migrations,models
-
+from user.models import User,Employee
 from ckeditor.fields import RichTextField
 # Create your models here.
 
+
+class OrderStatu(models.Model):
+    number = models.IntegerField(verbose_name="Durum Numarası")
+    title =  models.CharField(verbose_name="Order Statu",max_length=50)
+    aciklama =  models.CharField(verbose_name="Açıklama",max_length=50,null=True)
+    def __str__(self):
+        return self.title
 
 class Order (models.Model):
     orderTypeChoise = (
@@ -23,9 +30,9 @@ class Order (models.Model):
         ("26","Sevk edildi"),
         ("28","Sevk teslim edildi"),
         ("30","Montaj planı bekleniyor"),
-        ("31","Takvimlendirildi"),
-        ("32","Montaj Müşteriden haber bekleniyor"),
-        ("34","Montaj planlandı"),
+        ("32","Takvimlendirildi"),
+        ("34","Montaj Müşteriden haber bekleniyor"),
+        ("36","Montaj planlandı"),
         ("40","Montaj operasyonu bekleniyor."),
         ("42","Montaj başlandı"),
         ("44","Montaj durdu "),
@@ -43,7 +50,12 @@ class Order (models.Model):
     order_image = models.FileField(blank =True,null=True,verbose_name="Sipariş Formunu Ekleyiniz")
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
-    statu = models.CharField(max_length=2,choices = status,verbose_name="Sipariş Durumu",default="0")
+    #statu = models.CharField(max_length=2,choices = status,verbose_name="Sipariş Durumu",default="0")
+    statu = models.ForeignKey(OrderStatu,on_delete=models.PROTECT)
+    def __str__(self):
+        #return self.customer.customer_name
+        title= self.customer.customer_name+"_"+str(self.create_date)[:10]
+        return title
 
 class Customer(models.Model):
 
@@ -92,7 +104,8 @@ class Workflow(models.Model):
     revision    = models.IntegerField(verbose_name="Revizyon",default=1)
     approve_user_id = models.IntegerField(verbose_name="İşi onaylayan kullanıcı",blank=True, null=True)
     completed_user_id = models.IntegerField(verbose_name="İşi yapan Kullanıcı",blank=True, null=True)
-    status = models.CharField(max_length=10,choices = workflow_status,verbose_name="Durum",default="10")
+    #status = models.CharField(max_length=10,choices = workflow_status,verbose_name="Durum",default="10")
+    status = models.ForeignKey(OrderStatu,on_delete=models.PROTECT)
     comment = models.CharField(max_length=50,verbose_name="Açıklama",default="test")
     created_date =models.DateTimeField(auto_now=True)
     planed_date =models.DateTimeField(blank=True, null=True)
@@ -102,7 +115,7 @@ class Workflow(models.Model):
 class Product(models.Model):
     product_name = models.CharField(max_length=20,verbose_name="Ürün adı")
     title = models.CharField(max_length=150, unique=True,verbose_name="Kısa ad(kod)")
-    #category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    #category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
     marka = models.CharField(max_length=15,verbose_name="Marka")
     product_type = models.CharField(max_length=15,verbose_name="Cinsi",help_text="xxx gibi bilgiler")
     unit = models.CharField(max_length=10,verbose_name="Birim",default="Adet")
@@ -111,7 +124,15 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     
 
-class Category(models.Model):
+class ProductCategory(models.Model):
+    """
+    id
+title
+type
+desc
+parent_id
+
+    """
     title = models.CharField(max_length=150, unique=True)
 
     class Meta:
@@ -128,4 +149,51 @@ class OrderProducts(models.Model):
     # renk marka vs eklenebilir
     def __str__(self):
         return self.product.product_name
+
+class RootCause(models.Model):
+    title = models.CharField(max_length=30,verbose_name="Durum")
+    def __str__(self):
+        return self.title
+
+class ProblemStatu(models.Model):
+    title = models.CharField(max_length=30,verbose_name="Durum")
+    def __str__(self):
+        return self.title
         
+class Problems(models.Model):
+    order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    created_date = models.DateTimeField(auto_now=True)
+    statu = models.ForeignKey(ProblemStatu,on_delete=models.CASCADE,default=1)
+    closed_date = models.DateTimeField(blank=True,null=True)
+    root_cause = models.ForeignKey(RootCause,on_delete=models.CASCADE,blank=True,null=True)
+    description = RichTextField(null=True)
+    solution = RichTextField(null=True)
+    created_user = models.ForeignKey(Employee,on_delete=models.CASCADE)
+
+class Vehicle(models.Model):
+    vehicle_type = (
+        ("Araba","Araba"),
+        ("Kamyonet","Kamyonet"),
+        ("Kamyon","Kamyon"),
+    )
+    type_name = models.CharField(choices=vehicle_type, max_length=10,verbose_name="Araç Tipi")
+    type_id = models.CharField(verbose_name="Plaka",max_length=10)
+    description = models.CharField(verbose_name="Açıklama",max_length=50,null=True)
+    active = models.BooleanField(default=True)
+    def __str__(self):
+        return self.type_id
+    
+class Reservation(models.Model):
+    order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    start_date = models.DateTimeField(verbose_name="Başlangıç Zamanı")
+    end_date = models.DateTimeField(verbose_name="Bitiş Zamanı")
+    version = models.IntegerField(default=1)
+    description = models.CharField(verbose_name="Açıklama",max_length=100,null=True)
+
+class ReservationPerson(models.Model):
+    reservation = models.ForeignKey(Reservation,on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
+
+class ReservationVehicle(models.Model):
+    reservation = models.ForeignKey(Reservation,on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle,on_delete=models.CASCADE)

@@ -1,12 +1,14 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,OrderProductsForm
-from .models import Customer,Order,Workflow,Product,Address,OrderProducts
+from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,OrderProductsForm,ProblemForm,ProblemSolutionForm
+from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle
+from .models import Reservation,ReservationPerson,ReservationVehicle
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from django.contrib import messages
 from user.views import Logla
-from user.models import Logging
+from user.models import Logging,Employee,Departments
+from django.db.models import Q
 import datetime
 # Create your views here.
 #TODO tum işlemler loglanmalı. hatta silem yapılmamalı yada sadece superuser yapabilsin. diğerlerinin yaptıkları inaktif edebilir.
@@ -21,7 +23,8 @@ def dashboard(request):
     order = Order.objects.all()
     customer = Customer.objects.all()
     product = Product.objects.all()
-    workflow = Workflow.objects.all()
+    workflow = Workflow.objects.exclude(status=90)
+    problems = Problems.objects.exclude(statu=4)
     
     planlama_jobs = Workflow.objects.filter(department=41000)
     operasyon_jobs = Workflow.objects.filter(department=44000)
@@ -36,7 +39,8 @@ def dashboard(request):
         'order':order,
         'customer' :customer,
         'product':product,
-        'workflow':workflow
+        'workflow':workflow,
+        'problems':problems
         }
     return  render(request,'dashboard.html',content)
 
@@ -83,18 +87,30 @@ def orderAdd(request):
 
             
             
-            new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content)
+            new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=1)
             new_order.save()
             Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="10")
 
             # sipariş girişi ile beraber  departmanlara tasklar gonderilir
             #TODO test için hepsine gönderiliyor. fakat ürün ve hizmet seçimine göre task oluşmalı
+            #TODO statuler değiştirilebilir yapıldı. buna bağlı olarak workflow unda parametrik yapılması gerekir. status 10 silinirse program bozulur!!!!!!
+            """
+            0 bekleme id 1
+            10 -- 2
+            20 -- 6
+            30 -- 11
+            40 -- 15
+            50 -- 19
+            80 -- 21
+            90 -- 22
+            """
             if stok == "0": # stokta ürün yoksa üretim birimine iş atanır.
-                workflow_uretim = Workflow(department="42000",status="10",order=new_order)
+
+                workflow_uretim = Workflow(department="42000",status_id=2,order=new_order)
                 workflow_uretim.save()
                 Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10")
             if order_type == "D":
-                workflow_depoTeslim = Workflow(department="43000",status="50",order=new_order)
+                workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order)
                 workflow_depoTeslim.save()
                 Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_depoTeslim",type_id=workflow_depoTeslim.pk,status="50")
 
@@ -130,6 +146,7 @@ def orderAdd(request):
 @login_required(login_url='/user/login/')
 def orderList(request):
     orders= Order.objects.all()
+    
     return  render(request,'orderList.html',{'orders':orders})
 
 
@@ -162,13 +179,14 @@ def orderView(request,id):
     order = get_object_or_404(Order,id=id)
     workflows = Workflow.objects.filter(order_id=id)
     orderProducts = OrderProducts.objects.filter(order =order)
-   
+    problems    = Problems.objects.filter(order = order)
+
     #logs    = Logging.objects.filter(log_type="order",type_id=id)
     logs={}
     print(order.order_image)
     
     if order :
-        return render(request,"orderView.html",{'order':order,'workflows':workflows,'logs':logs,'orderProducts':orderProducts})
+        return render(request,"orderView.html",{'order':order,'workflows':workflows,'logs':logs,'orderProducts':orderProducts,'problems':problems})
         
     else:
         messages.success(request,"Sipariş bulunamadı!!!!!!")
@@ -365,9 +383,10 @@ def productDelete(request,id):
 def workflowCompleted(request,id):
     #print("referer-----",request.META['HTTP_REFERER'])
     wf = Workflow.objects.get(id=id)
+    orderStatus = OrderStatu.objects.get(id=22) ## id:22 Sevk Planlandı anlamına geliyor
     user_id = User.objects.get(username=request.user).id
     if wf :
-        wf.status = 90
+        wf.status = orderStatus
         wf.completed_user_id = user_id
         wf.completed_date = datetime.datetime.now()
         wf.save()
@@ -389,3 +408,161 @@ def workflowView(request,id):
         messages.warning(request,"Görev bulunamadı")
         # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
         return redirect(request.META['HTTP_REFERER'])
+
+"""
+id
+2	10	!!!! değiştirme	Uretim planı bekleni
+6	20	!!!! değiştirme	Sevk planı bekliyor
+11	30	!!!! değiştirme	Montaj planı bekleniyor
+"""
+@login_required(login_url='/user/login')
+def workflowPlanla(request,id):
+    
+    wf = Workflow.objects.get(id=id)
+    order = Order.objects.get(id = wf.order_id)
+    ustalar = request.POST.getlist('ustalar')
+    arabalar = request.POST.getlist('arabalar')
+    print("==========================================")
+    print(ustalar)
+    print(order)
+
+    if ustalar or arabalar:
+        tarih = request.POST["tarih"]
+        zaman = request.POST["zaman"]
+        print("***************************************")
+        print(tarih,zaman)
+        # reservation tablosuna giriş yap
+        res = Reservation()
+        res.order = order
+        res.start_date = tarih
+        res.end_date = tarih
+        res.description = " deneme kayıt"
+        res.save()
+
+        if ustalar:
+            for usta in ustalar:
+                print(usta)
+                employee = Employee.objects.get(user_id = usta)
+                res_person = ReservationPerson()
+                res_person.employee_id = employee.id
+                res_person.reservation_id = res.id
+                res_person.save()
+
+
+        if arabalar:
+            for araba in arabalar:
+                print(araba)
+                res_vehicle = ReservationVehicle()
+                res_vehicle.vehicle_id = araba
+                res_vehicle.reservation_id = res.id
+                res_vehicle.save()
+        
+        #todo WORKFLOW STATUSU PLANLNADI OLMALI.
+        wf.status_id = 14
+        wf.save()
+        return redirect("/order/dashboard/")
+
+    else:
+
+        if request.method == 'POST':
+            
+            tarih = request.POST["planGun"]
+            zaman = request.POST["zaman"]
+            print(tarih,zaman)
+
+            # uygun araç bilgilerini alıp forma gonder
+            # r = ReservationVehicle.objects.filter(reservation__start_date__gt="2021-03-24")
+            # v = Vehicle.objects.filter(reservationvehicle__reservation__start_date__gt="2021-03-24")
+            #Sample.objects.filter(date__range=["2011-01-01", "2011-01-31"])
+            #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=["2021-03-25", "2021-03-26"])
+            
+            if zaman == "oo":
+                requested_start_date = tarih + " 09:00:00"
+                requested_end_date = tarih + " 12:00:00"
+            
+            print(requested_start_date,"------",requested_end_date)
+            #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=["2021-03-28", "2021-03-28"])
+            #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=[start_date, end_date])
+            #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__lt=requested_end_date ,reservationvehicle__reservation__end_date__gt=requested_start_date)
+
+            #Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=[requested_start_date, requested_end_date])
+            # Rezervasyon zaman planında 3 durum kontrol edilir.
+
+            araclar = Vehicle.objects.exclude(
+                Q(reservationvehicle__reservation__start_date__range=[requested_start_date, requested_end_date]) | 
+                Q(reservationvehicle__reservation__end_date__range=[requested_start_date, requested_end_date]) |
+                Q(Q(reservationvehicle__reservation__end_date__gt=requested_end_date),Q(reservationvehicle__reservation__start_date__lt=requested_start_date) )
+            )
+            
+            ustalar = Employee.objects.filter(department__startswith='4').exclude(
+
+                Q(reservationperson__reservation__start_date__range=[requested_start_date, requested_end_date]) | 
+                Q(reservationperson__reservation__end_date__range=[requested_start_date, requested_end_date]) |
+                Q(Q(reservationperson__reservation__end_date__gt=requested_end_date),Q(reservationperson__reservation__start_date__lt=requested_start_date) )
+            
+            )
+
+            content = {
+                'order':order,
+                'araclar':araclar,
+                'ustalar':ustalar,
+                'tarih':tarih,
+                'zaman':zaman,
+                'wf':wf,
+            }
+            return  render(request,'montaj_plan_adim2.html',content)
+            
+            
+        else:   
+            if wf :
+                return  render(request,'workflow.html',{'wf':wf,'order':order})
+            
+            else:
+                messages.warning(request,"Görev bulunamadı")
+                # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
+                return redirect(request.META['HTTP_REFERER'])
+
+
+############################################################################
+#######################  PROBLEM           #################################
+############################################################################
+@login_required(login_url='/user/login')
+def problemAdd(request,id):
+
+    order = Order.objects.get(id=id)
+    form = ProblemForm(request.POST or None, request.FILES or None,initial={'order':order})
+
+    #TODO statu değişikliklerinin logda tutulması süre raporlaması açısından önemli
+    
+    if form.is_valid():
+        form.save()
+        messages.info(request," Müşteri Şikayeti girildi") 
+        #Logla(request.user,"Ürün eklendi","productAdd",product_id,10)
+        return redirect("/order/orderView/"+str(id))
+
+    return  render(request,'problemAdd.html',{'form':form}) 
+
+@login_required(login_url='/user/login')
+def problemList(request):
+    """
+    keyword = request.GET.get("keyword")
+    if keyword:
+        problems = Problems.objects.filter(id__contains = keyword)
+        return render(request,"problemList.html",{'problems':problems})   
+    """
+    problems = Problems.objects.all()
+    return render(request,"problemList.html",{'problems':problems})
+
+@login_required(login_url='/user/login')
+def problemView(request,id):
+    problem = Problems.objects.get(id=id)
+    solution_form = ProblemSolutionForm(request.POST or None, request.FILES or None,instance=problem)
+    
+    if solution_form.is_valid() :
+        problem = solution_form.save(commit= False)
+        problem.closed_date = datetime.datetime.now()
+        problem.statu_id = 4
+        problem.save()
+        return redirect('/order/problemView/'+ str(id) )
+
+    return render(request,"problemView.html",{'problem':problem,'solution_form':solution_form})
