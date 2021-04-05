@@ -41,7 +41,9 @@
         <th scope="col">Ürün tipi/kategori</th>
         <th scope="col">Montaj Sabiti</th>
         <th scope="col">Eklenme Tarihi</th>
+        <th scope="col">Birim Fiyat</th>
         <th scope="col">Durum</th>
+        
         <th scope="col"></th>
         <th scope="col"></th>
       </tr>
@@ -56,6 +58,7 @@
             <td>{{product.product_type}}</td>
             <td>{{product.montaj_sabiti}}</td>
             <td>{{product.created_date}}</td>
+            <td>{{product.birim_fiyat}}</td>
             <td>
                 {% if product.active == True %}
                     Aktif
@@ -63,8 +66,17 @@
                     Pasif
                 {% endif %}
             </td>
+            
             <td><a href="/order/productUpdate/{{product.id}}"><button class="btn btn-warning">Güncelle</button></a></td>
-            <td><a href="/order/productDelete/{{product.id}}"><button class="btn btn-danger">Deaktif</button></a></td>
+            <td>
+              {% if product.active == True %}
+                  <a href="/order/productDeactive/{{product.id}}"><button class="btn btn-danger">Deaktif Et</button></a>
+                {% else%}
+                  <a href="/order/productActive/{{product.id}}"><button class="btn btn-success">Aktif Et</button></a>
+                {% endif %}
+              
+            
+            </td>
           </tr>
         {% endfor %}
       

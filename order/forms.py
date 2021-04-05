@@ -7,14 +7,14 @@ class CustomerForm(forms.ModelForm):
     class Meta:
 
         model = Customer
-        fields = ['customer_name','telephone','email']
+        fields = ['customer_name','telephone','email','customer_type','vergi_no','vergi_dairesi']
 
 class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
         #stok = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('1', 'Var'), ('0', 'Yok')])
-        fields = ['customer','content','order_image','order_type','stok' ]
+        fields = ['customer','content','order_image','order_type','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max' ]
 
 class OrderProductsForm(forms.ModelForm):
     class Meta:
@@ -24,10 +24,15 @@ class OrderProductsForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['product_name','title','montaj_sabiti','marka','product_type','unit']
+        fields = ['product_name','title','montaj_sabiti','marka','product_type','unit','birim_fiyat']
 
 
 class AddressForm(forms.ModelForm):
+    class  Meta:
+        model = Address
+        fields = ['ulke','il','ilce','adres','map_link']
+
+class CustomerAddressForm(forms.ModelForm):
     class  Meta:
         model = Address
         fields = ['customer','ulke','il','ilce','adres','map_link']

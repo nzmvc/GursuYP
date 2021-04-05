@@ -74,6 +74,10 @@ class Logging(models.Model):
     aciklama = models.CharField(max_length=100,verbose_name="Açıklama")
     status = models.CharField(max_length=3, verbose_name="Status",default="10",blank=True,null=True)
 
+class Permission(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    permission = models.CharField(max_length=30,verbose_name="Yetki",default="admin")
+
 class Departments(models.Model):
     department_number = models.CharField(max_length=150, unique=True)
     title = models.CharField(max_length=150, unique=True)

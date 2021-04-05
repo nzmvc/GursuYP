@@ -8,9 +8,7 @@
             Siparişe ürün Ekleme
             
     </h3>   
-    Hoş Geldiniz, {{ request.user.username}}
-    <hr>
-    
+   <br><br>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}

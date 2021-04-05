@@ -18,6 +18,8 @@ class Order (models.Model):
         ("M","Montaj"),
         ("D","Depo Teslim"),
     )
+ 
+    """
     status = (
         ("00","Beklemede"),
         ("10","Uretim planı bekleniyor"),
@@ -42,7 +44,7 @@ class Order (models.Model):
         ("80","Sorun var"),
         ("90","Tamamlandı"),
     )
-
+    """
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri ID")
     #TODO user bilgisi eklenecek
     create_date = models.DateTimeField(auto_now=True)
@@ -51,20 +53,27 @@ class Order (models.Model):
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
     #statu = models.CharField(max_length=2,choices = status,verbose_name="Sipariş Durumu",default="0")
-    statu = models.ForeignKey(OrderStatu,on_delete=models.PROTECT)
+    statu = models.ForeignKey(OrderStatu,on_delete=models.PROTECT,default=23)
+    iskonto = models.IntegerField(default=0,verbose_name="İskonto Oranı(%)")
+    tahmini_tarih_min = models.DateField(null=True,verbose_name="En erken teslim (yyyy-mm-dd)")
+    tahmini_tarih_max = models.DateField(null=True,verbose_name="En geç teslim (yyyy-mm-dd)")
+
     def __str__(self):
         #return self.customer.customer_name
         title= self.customer.customer_name+"_"+str(self.create_date)[:10]
         return title
 
 class Customer(models.Model):
-
+    # customer type vergi yada tc no için gerekli
+    customer_type=(("Şahıs","Şahıs"),("Kurumsal","Kurumsal")    )
     customer_name = models.CharField(max_length=50,verbose_name="MÜŞTERİ ADI")
     telephone = models.CharField(max_length=50,verbose_name="TELEFON")
     email = models.CharField( max_length=254,verbose_name="EMAIL")
     created_date = models.DateTimeField(auto_now=True)
     active = models.CharField(max_length=1,default="1",verbose_name="Aktif")
-
+    vergi_no = models.IntegerField(verbose_name="Vergi/TC no",default=0,null=True)
+    customer_type = models.CharField(max_length=10,choices = customer_type,verbose_name="Şahıs/Kurumsal",default=customer_type[0][1])
+    vergi_dairesi = models.CharField(max_length=70,verbose_name="Vergi Dairesi",default="Fethiye VD.")
     def __str__(self):  # müşterileri listelerken gözükmesini istediğimiz isim
         return self.customer_name
 
@@ -111,6 +120,7 @@ class Workflow(models.Model):
     planed_date =models.DateTimeField(blank=True, null=True)
     completed_date =models.DateTimeField(blank=True, null=True)
     started_date =models.DateTimeField(blank=True, null=True)
+    fisNo = models.IntegerField(verbose_name="Fiş NO",default=1,null=True)
 
 class Product(models.Model):
     product_name = models.CharField(max_length=20,verbose_name="Ürün adı")
@@ -120,19 +130,14 @@ class Product(models.Model):
     product_type = models.CharField(max_length=15,verbose_name="Cinsi",help_text="xxx gibi bilgiler")
     unit = models.CharField(max_length=10,verbose_name="Birim",default="Adet")
     montaj_sabiti = models.IntegerField(verbose_name="Montaj Sabiti")
+    birim_fiyat = models.IntegerField(verbose_name="Birim Fiyat" ,default=0)
     created_date = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    def __str__(self):
+        return self.title
     
 
 class ProductCategory(models.Model):
-    """
-    id
-title
-type
-desc
-parent_id
-
-    """
     title = models.CharField(max_length=150, unique=True)
 
     class Meta:
@@ -146,6 +151,8 @@ class OrderProducts(models.Model):
     product = models.ForeignKey(Product,on_delete=models.PROTECT)
     colour = models.CharField(max_length=20,verbose_name="Renk",blank=True)
     amount  = models.IntegerField(default=1)
+    birim_fiyat = models.IntegerField(default=0)
+    toplam_tutar = models.IntegerField(default=0)
     # renk marka vs eklenebilir
     def __str__(self):
         return self.product.product_name

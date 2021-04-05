@@ -79,7 +79,7 @@
                 <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
                 <td>{{job.status}}</td>
                 <td>{{job.created_date}}</td>
-                <td>{{job.order.id}}</td>
+                <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
                 <td>{{job.order.content|safe}}</td>
                 <td>{{job.order.customer.customer_name}}</td>
                 
@@ -89,9 +89,11 @@
                       Aksiyon
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                      <li><a class="dropdown-item" href="/order/workflowCompleted/{{job.id}}">Tamamla</a></li>
-                      <li><a class="dropdown-item" href="#">B aksiyonu</a></li>
-                      <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
+                      
+                      <li><a class="dropdown-item" href="/order/workflowStatuUpdate/{{job.id}}/16">Montaj başladı</a></li>
+                      <li><a class="dropdown-item" href="/order/workflowStatuUpdate/{{job.id}}/17">Montaj durdu</a></li>
+                      <li><a class="dropdown-item" href="/order/workflowStatuUpdate/{{job.id}}/18">Montaj tamamlandı</a></li>
+                      
                     </ul>
                   </div>
                   
@@ -140,14 +142,26 @@
         <tbody>
             {% for job in planlama_jobs %}
               <tr>
-                <td scope="row">{{job.id}}</td>
+                <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
                 <td>{{job.status}}</td>
                 <td>{{job.created_date}}</td>
-                <td>{{job.order.id}}</td>
+                <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
                 <td>{{job.order.content|safe}}</td>
                 <td>{{job.order.customer.customer_name}}</td>
                 
-                <td><a href="/order/workflowPlanla/{{job.id}}"><button class="btn btn-outline-dark btn-sm">Planla</button></a></td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                      Aksiyon
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                      <li><a class="dropdown-item" href="/order/workflowPlanla/{{job.id}}">Planla</a></li>
+                      <li><a class="dropdown-item" href="/order/workflowStatuUpdate/{{job.id}}/13">Müşt. Hab. Bekleniyor</a></li>
+                      <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
+                    </ul>
+                  </div>
+
+                 </td>
                 
               </tr>
             {% endfor %}
@@ -194,10 +208,10 @@
         <tbody>
             {% for job in uretim_jobs %}
               <tr>
-                <td scope="row">{{job.id}}</td>
+                <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
                 <td>{{job.status}}</td>
                 <td>{{job.created_date}}</td>
-                <td>{{job.order.id}}</td>
+                <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
                 <td>{{job.order.content|safe}}</td>
                 <td>{{job.order.customer.customer_name}}</td>
                 
@@ -248,10 +262,10 @@
         <tbody>
             {% for job in depo_jobs %}
               <tr>
-                <td scope="row">{{job.id}}</td>
+                <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
                 <td>{{job.status}}</td>
                 <td>{{job.created_date}}</td>
-                <td>{{job.order.id}}</td>
+                <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
                 <td>{{job.order.content|safe}}</td>
                 <td>{{job.order.customer.customer_name}}</td>
                 
