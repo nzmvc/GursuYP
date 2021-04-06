@@ -18,7 +18,7 @@ import datetime
 #######################  DASHBOARD         #################################
 ############################################################################
 @login_required(login_url='/user/login/')
-def dashboard(request):
+def dashboard(request,departman="ope",list_filter="all"):
     
     order = Order.objects.all()
     customer = Customer.objects.all()
@@ -27,7 +27,15 @@ def dashboard(request):
     problems = Problems.objects.exclude(statu=4)
     
     planlama_jobs = Workflow.objects.filter(department=41000)
-    operasyon_jobs = Workflow.objects.filter(department=44000)
+    if departman =="ope":
+        if list_filter == "all":
+            operasyon_jobs = Workflow.objects.filter(department=44000)
+        elif list_filter == "tamamlandi":
+            operasyon_jobs = Workflow.objects.filter(department=44000).filter(status_id=18)
+        else: 
+            operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
+    else:
+        operasyon_jobs = Workflow.objects.filter(department=44000)
     uretim_jobs = Workflow.objects.filter(department=42000)
     depo_jobs = Workflow.objects.filter(department=43000)
     
@@ -145,9 +153,20 @@ def orderAdd(request):
 
 
 @login_required(login_url='/user/login/')
-def orderList(request):
-    orders= Order.objects.all()
-    
+def orderList(request,list_filter):
+    #orders= Order.objects.all()
+    #list_filter = request.GET.get("filter")
+
+    print(list_filter)
+    if list_filter == "active":
+        orders= Order.objects.all().exclude(statu=22).order_by('create_date')
+    elif list_filter == "all":
+        orders= Order.objects.all().order_by('-create_date')
+    elif list_filter == "musteride":
+        orders= Order.objects.filter(statu=13)
+    elif list_filter == "tamamlandi":
+        orders= Order.objects.filter(statu=22)
+
     return  render(request,'orderList.html',{'orders':orders})
 
 

@@ -55,10 +55,21 @@
           iş adedi: <span class="badge badge-light">{{operasyon_jobs.count }}</span>
         </button>
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+      <div class="row">
+        <div class="col-sm-8">
+            <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        </div>
+        <div class="col-sm-4" align="right">
+          <div class="btn-group">
+            <a href="/order/dashboard/ope/active" class="btn btn-outline-dark btn-sm active" aria-current="page">Active </a>
+            <a href="/order/dashboard/ope/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+            <a href="/order/dashboard/ope/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+          </div>
+        </div>
+      </div>
+      
     </div>
     <div class="table-full-width table-responsive px-0 card-body">
-
 
       {% if operasyon_jobs %}
       <table class="table-hover table-striped table">

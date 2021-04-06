@@ -92,9 +92,12 @@
                   <td>{{orderProduct.amount}}</td>
                   <td>{{orderProduct.birim_fiyat}}</td>
                   <td>{{orderProduct.toplam_tutar}}</td>
-                  <td><a href="/order/orderDeleteProduct/{{orderProduct.id}}">
-                    <button class="btn btn-danger btn-sm">Sil</button>
-                  </a></td>
+                  <td>
+                    {% if order.statu_id == 23 %}
+                      <a href="/order/orderDeleteProduct/{{orderProduct.id}}">
+                      <button class="btn btn-danger btn-sm">Sil</button></a>
+                    {% endif%}
+                  </td>
                   
                   </tr>
                  

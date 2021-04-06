@@ -25,7 +25,7 @@ def loginPage(request):
             return render(request,"login.html",context)
         messages.success(request,"başarıyla giriş yaptınız")
         login(request, user)
-        return redirect("/order/dashboard")
+        return redirect("/order/dashboard/ope/all")
 
 
     return  render(request,'login.html',context)
@@ -137,8 +137,8 @@ def userDelete(request,id):
 def logView(request):
     keyword = request.GET.get("keyword")
     if keyword:
-        loglar = Logging.objects.filter(aciklama__contains = keyword) | Logging.objects.filter(log_type__contains=keyword)
+        loglar = Logging.objects.filter(aciklama__contains = keyword).order_by('date') | Logging.objects.filter(log_type__contains=keyword).order_by('date')
     else:
-        loglar = Logging.objects.all()
+        loglar = Logging.objects.all().order_by('-date')
 
     return  render(request,"loglar.html",{'loglar':loglar})

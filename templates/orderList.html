@@ -6,10 +6,12 @@
 
 
 <div class="table-title">
+  
   <div class="row">
-      <div class="col-sm-4"><h3><b>Sipariş</b> Listesi
-        
-          <a href="/order/orderAdd">
+      
+      <div class="col-sm-4">
+          <h3><b>Sipariş</b> Listesi
+          <a href="http://localhost:8000/order/orderAdd">
             <button class="btn btn-success btn-rounded btn-sm">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
@@ -19,31 +21,27 @@
           </a>
         </h3>
       </div>
-      <div class="col-sm-3">
-        <form>
-          {% csrf_token %}
-          <input type="text" name="keyword" class="input-sm" placeholder="Ara...">
-          <button type="submit" class="btn btn-outline-secondary btn-sm"> search</button>
-      </form>
-
-      </div>
-      <div class="col-sm-5" align="right">
-          <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-outline-info active">
-                  <input type="radio" name="status" value="all" checked="checked"> All
-              </label>
-              <label class="btn btn-outline-success">
-                  <input type="radio" name="status" value="active"> Active
-              </label>
-              <label class="btn btn-outline-warning">
-                  <input type="radio" name="status" value="inactive"> Inactive
-              </label>
-              <label class="btn btn-outline-danger">
-                  <input type="radio" name="status" value="expired"> Expired
-              </label>							
+      <div class="col-sm-8 row " align="right">
+      <form>
+        <div class="col-sm-4" align="right">
+            {% csrf_token %}
+            <input type="text" name="keyword" class="input-sm" placeholder="Ara...">
+            <button type="submit" class="btn btn-outline-secondary btn-sm"> search</button>
+        </div>
+        <div class="col-sm-8" align="right">
+          <div class="btn-group">
+            <a href="/order/orderList/active" class="btn btn-outline-light btn-sm active" aria-current="page">Active </a>
+            <a href="/order/orderList/all" class="btn btn-outline-light btn-sm">Hepsi</a>
+            <a href="/order/orderList/musteride" class="btn btn-outline-light btn-sm">M.bekleniyor</a>
+            <a href="/order/orderList/tamamlandi" class="btn btn-outline-light btn-sm">Tamamlandi</a>
           </div>
+        </div>
+      </form>
       </div>
+      
+
   </div>
+  
 </div>
 
 

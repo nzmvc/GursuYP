@@ -5,11 +5,11 @@ from . import views
 app_name="order"
 
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/<str:departman>/<str:list_filter>', views.dashboard, name='dashboard'),
     path('dashboard2/', views.dashboard2, name='dashboard2'),
     
     path('orderAdd/', views.orderAdd, name='orderAdd'),
-    path('orderList/', views.orderList, name='orderList'),
+    path('orderList/<str:list_filter>', views.orderList, name='orderList'),
     path('orderView/<int:id>', views.orderView, name='orderView'),
     path('orderUpdate/<int:id>', views.orderUpdate, name='orderUpdate'),
     path('orderDelete/<int:id>', views.orderDelete, name='orderDelete'),
