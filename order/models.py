@@ -18,37 +18,15 @@ class Order (models.Model):
         ("M","Montaj"),
         ("D","Depo Teslim"),
     )
- 
-    """
-    status = (
-        ("00","Beklemede"),
-        ("10","Uretim planı bekleniyor"),
-        ("12","Uretim planlandı"),
-        ("14","Uretimde"),
-        ("16","Uretim tamamlandı"),
-        ("20","Sevk planı bekleniyor"),
-        ("22","Sevk planlandı"),
-        ("24","Sevk alanında"),
-        ("26","Sevk edildi"),
-        ("28","Sevk teslim edildi"),
-        ("30","Montaj planı bekleniyor"),
-        ("32","Takvimlendirildi"),
-        ("34","Montaj Müşteriden haber bekleniyor"),
-        ("36","Montaj planlandı"),
-        ("40","Montaj operasyonu bekleniyor."),
-        ("42","Montaj başlandı"),
-        ("44","Montaj durdu "),
-        ("46","Montaj tamamlandı "),
-        ("50","Depo teslim alma için müşteriyi bekliyor "),
-        ("52","Depo müşteriye teslim etti "),
-        ("80","Sorun var"),
-        ("90","Tamamlandı"),
+    satisKanalSecenek = (
+        ("Perakende","Perakende"),
+        ("Toptan","Toptan"),
+        ("Proje","Proje")
     )
-    """
-    customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri ID")
+    customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri")
     #TODO user bilgisi eklenecek
     create_date = models.DateTimeField(auto_now=True)
-    content = RichTextField()
+    content = RichTextField(verbose_name="Açıklama")
     order_image = models.FileField(blank =True,null=True,verbose_name="Sipariş Formunu Ekleyiniz")
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
@@ -57,11 +35,16 @@ class Order (models.Model):
     iskonto = models.IntegerField(default=0,verbose_name="İskonto Oranı(%)")
     tahmini_tarih_min = models.DateField(null=True,verbose_name="En erken teslim (yyyy-mm-dd)")
     tahmini_tarih_max = models.DateField(null=True,verbose_name="En geç teslim (yyyy-mm-dd)")
+    sevk_adres = models.ForeignKey("Address",on_delete=models.PROTECT,verbose_name="Sevk Adresi",null=True)
+    satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı")
+    #
+    # fatura_adres = models.ManyToManyField("Address",verbose_name="Fatura Adresi")
 
     def __str__(self):
         #return self.customer.customer_name
         title= self.customer.customer_name+"_"+str(self.create_date)[:10]
         return title
+
 
 class Customer(models.Model):
     # customer type vergi yada tc no için gerekli
@@ -84,7 +67,10 @@ class Address (models.Model):
     ilce = models.CharField( max_length=30,verbose_name="İLÇE")
     adres = models.CharField( max_length=100,verbose_name="ADRES")
     map_link = models.CharField( max_length=100,verbose_name="GOOGLE MAP")
+    aciklama = models.CharField( max_length=10,verbose_name="Açıklama(kısa/kod)")
     active = models.BooleanField(default=True)
+    def __str__(self):  # listelerken gözükmesini istediğimiz isim
+        return self.aciklama
 
 class Workflow(models.Model):
     departments = (

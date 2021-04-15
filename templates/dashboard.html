@@ -2,7 +2,6 @@
 
 {% block body %}
 
-
 <div class="row mb-1">
   <div class="col-md-3 ">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
@@ -47,6 +46,7 @@
 
 </div>
 
+{% if perms.user.workflow_operasyon %}
 <div class="col-md-12">
   <div class="card">
     <div class="card-header bg-light ">
@@ -61,7 +61,7 @@
         </div>
         <div class="col-sm-4" align="right">
           <div class="btn-group">
-            <a href="/order/dashboard/ope/active" class="btn btn-outline-dark btn-sm active" aria-current="page">Active </a>
+            <a href="/order/dashboard/ope/active" class="btn btn-outline-dark btn-sm active" >Active </a>
             <a href="/order/dashboard/ope/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
             <a href="/order/dashboard/ope/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
           </div>
@@ -69,6 +69,8 @@
       </div>
       
     </div>
+
+ 
     <div class="table-full-width table-responsive px-0 card-body">
 
       {% if operasyon_jobs %}
@@ -122,8 +124,10 @@
   </div>
   </div>
 </div>
+{% endif%}
 <br><br>
 
+{% if perms.user.workflow_planlama %}
 <div class="col-md-12">
   <div class="card">
     <div class="card-header">
@@ -132,7 +136,18 @@
           iş adedi: <span class="badge badge-light">{{planlama_jobs.count }}</span>
         </button>
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+      <div class="row">
+        <div class="col-sm-8">
+            <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        </div>
+        <div class="col-sm-4" align="right">
+          <div class="btn-group">
+            <a href="/order/dashboard/plan/active" class="btn btn-outline-dark btn-sm active" >Active </a>
+            <a href="/order/dashboard/plan/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+            <a href="/order/dashboard/plan/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+          </div>
+        </div>
+      </div>
   </div>
   <div class="table-full-width table-responsive px-0 card-body">
 
@@ -188,8 +203,10 @@
   </div>
   </div>
 </div>
+{%endif%}
 <br><br>
 
+{% if perms.user.workflow_uretim %}
 <div class="col-md-12">
   <div class="card">
     <div class="card-header">
@@ -198,7 +215,20 @@
           iş adedi: <span class="badge badge-light">{{uretim_jobs.count }}</span>
         </button>
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+
+      <div class="row">
+        <div class="col-sm-8">
+            <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        </div>
+        <div class="col-sm-4" align="right">
+          <div class="btn-group">
+            <a href="/order/dashboard/uretim/active" class="btn btn-outline-dark btn-sm active" >Active </a>
+            <a href="/order/dashboard/uretim/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+            <a href="/order/dashboard/uretim/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+          </div>
+        </div>
+      </div>
+
     </div>
   <div class="table-full-width table-responsive px-0 card-body">
 
@@ -242,8 +272,10 @@
   </div>
   </div>
 </div>
+{%endif%}
 <br><br>
 
+{% if perms.user.workflow_depo %}
 <div class="col-md-12">
   <div class="card">
     <div class="card-header">
@@ -252,7 +284,20 @@
           iş adedi: <span class="badge badge-light">{{depo_jobs.count }}</span>
         </button>
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+      
+      <div class="row">
+        <div class="col-sm-8">
+            <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        </div>
+        <div class="col-sm-4" align="right">
+          <div class="btn-group">
+            <a href="/order/dashboard/depo/active" class="btn btn-outline-dark btn-sm active" >Active </a>
+            <a href="/order/dashboard/depo/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+            <a href="/order/dashboard/depo/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="table-full-width table-responsive px-0 card-body">
 
@@ -296,7 +341,7 @@
   </div>
 </div>
 </div>
-
+{%endif%}
 
 <br><br>
 {% endblock body %}

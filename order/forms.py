@@ -14,7 +14,12 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         #stok = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('1', 'Var'), ('0', 'Yok')])
-        fields = ['customer','content','order_image','order_type','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max' ]
+        fields = ['customer','content','order_image','order_type','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max','satis_kanali' ]
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        self.fields['tahmini_tarih_min'].widget.attrs['class'] = 'datepicker'
+        self.fields['content'].widget.attrs['class'] = 'content_css'
+        self.fields['content'].widget.attrs['rows'] = 5
 
 class OrderProductsForm(forms.ModelForm):
     class Meta:
@@ -30,12 +35,12 @@ class ProductForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
     class  Meta:
         model = Address
-        fields = ['ulke','il','ilce','adres','map_link']
+        fields = ['ulke','il','ilce','adres','map_link','aciklama']
 
 class CustomerAddressForm(forms.ModelForm):
     class  Meta:
         model = Address
-        fields = ['customer','ulke','il','ilce','adres','map_link']
+        fields = ['customer','ulke','il','ilce','adres','map_link','aciklama']
 
 class ProblemForm(forms.ModelForm):
     class Meta:

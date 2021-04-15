@@ -6,9 +6,10 @@ app_name="order"
 
 urlpatterns = [
     path('dashboard/<str:departman>/<str:list_filter>', views.dashboard, name='dashboard'),
-    path('dashboard2/', views.dashboard2, name='dashboard2'),
+ #   path('dashboard2/', views.dashboard2, name='dashboard2'),
     
     path('orderAdd/', views.orderAdd, name='orderAdd'),
+    path('orderAdd2/', views.orderAdd2, name='orderAdd2'),
     path('orderList/<str:list_filter>', views.orderList, name='orderList'),
     path('orderView/<int:id>', views.orderView, name='orderView'),
     path('orderUpdate/<int:id>', views.orderUpdate, name='orderUpdate'),
@@ -16,11 +17,13 @@ urlpatterns = [
     path('orderAddProduct/<int:id>', views.orderAddProduct, name='orderAddProduct'),
     path('orderDeleteProduct/<int:id>', views.orderDeleteProduct, name='orderDeleteProduct'),
     path('orderApproved/<int:id>', views.orderApproved, name='orderApproved'),
-    
+    path('orderAddressSec/<int:order_id>/<int:address_id>', views.orderAddressSec, name='orderAddressSec'),
+    path('orderAddressSil/<int:order_id>', views.orderAddressSil, name='orderAddressSil'),
+    path('orderSiparisFisi/<int:id>', views.orderSiparisFisi, name='orderSiparisFisi'),
     
     path('customerAdd/',views.customerAdd,name='customerAdd'),
     path('customerAddressAdd/<int:id>',views.customerAddressAdd,name='customerAddressAdd'),
-    path('customerAdd2/',views.customerAdd2,name='customerAdd2'),
+   # path('customerAdd2/',views.customerAdd2,name='customerAdd2'),
     path('customerList/',views.customerList,name='customerList'),
     path('customerView/<int:id>',views.customerView,name='customerView'),
     path('customerUpdate/<int:id>',views.customerUpdate,name='customerUpdate'),
@@ -34,6 +37,7 @@ urlpatterns = [
     
     path('reservationList/',views.reservationList,name='reservationList'),
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
+    path('reservationDelete/<int:id>',views.reservationDelete,name='reservationDelete'),
 
     path('workflowCompleted/<int:id>',views.workflowCompleted,name='workflowCompleted'),
     path('workflowView/<int:id>',views.workflowView,name='workflowView'),

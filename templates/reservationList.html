@@ -7,9 +7,7 @@
   <div class="row mb-2">
     
     <div class="col-md-6">
-        <h3>Rezervasyon Listesi
-            
-        </h3> 
+        <h3>Bugünün rezervasyon listesi</h3> 
           
     </div>      
      
@@ -34,13 +32,11 @@
         <th scope="col">Order</th>
         <th scope="col">Açıklama</th>
         <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
+
       </tr>
     </thead>
     <tbody>
-        {% for res in reservation %}
+        {% for res in res_today %}
           <tr>
             <th scope="row">{{res.id}}</th>
             <td>{{res.order.customer.customer_name}}</a></td>
@@ -48,11 +44,10 @@
             <td>{{res.end_date}}</td>
             <td>{{res.order_id}}</td>
             <td>{{res.description}}</td>
-            <td><a href="/order/reservationView/{{res.id}}"><button class="btn btn-warning">Göster</button></a></td>
-            
-            
-            <td><a href="#"><button class="btn btn-warning">Güncelle</button></a></td>
-            <td><a href="#"><button class="btn btn-danger">Sil</button></a></td>
+            <td>
+              <a href="/order/reservationView/{{res.id}}"><button class="btn btn-warning">Göster</button></a>
+              <a href="/order/reservationDelete/{{res.id}}"><button class="btn btn-danger">Sil</button></a>
+            </td>
           </tr>
         {% endfor %}
       
@@ -62,5 +57,42 @@
 
 </div>
 
+
+<div class="row">
+  <h3> Yarınki rezervasyonlar</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Müşteri</th>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">Order</th>
+        <th scope="col">Açıklama</th>
+        <th scope="col"></th>
+
+      </tr>
+    </thead>
+    <tbody>
+        {% for res in res_tomorrow %}
+          <tr>
+            <th scope="row">{{res.id}}</th>
+            <td>{{res.order.customer.customer_name}}</a></td>
+            <td>{{res.start_date}}</a></td>
+            <td>{{res.end_date}}</td>
+            <td>{{res.order_id}}</td>
+            <td>{{res.description}}</td>
+            <td>
+              <a href="/order/reservationView/{{res.id}}"><button class="btn btn-warning">Göster</button></a>
+              <a href="/order/reservationDelete/{{res.id}}"><button class="btn btn-danger">Sil</button></a>
+            </td>
+          </tr>
+        {% endfor %}
+      
   
+    </tbody>
+  </table>
+
+</div>
+
 {% endblock body %}

@@ -6,7 +6,7 @@
 <div class="row mb-1">
     <div class="col-md-6">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-        <div class="col p-4 d-flex flex-column position-static">
+        <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
           <h3>Müşteri Detayları
             <a href="/order/createOrder/{{customer.id}}">
               <button class="btn btn-success btn-sm">
@@ -25,7 +25,7 @@
     </div>
     <div class="col-md-3">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-        <div class="col p-4 d-flex flex-column position-static">
+        <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
           <h5>{{customer.telephone}}</h5>
           <h5>{{customer.email}}</h5>
         </div>
@@ -33,7 +33,7 @@
     </div>
     <div class="col-md-3">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-        <div class="col p-4 d-flex flex-column position-static">
+        <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
           <h6>Vergi D: {{customer.vergi_dairesi}}</h6>
           <h6>Vergi No: {{customer.vergi_no}}</h6>
           <h6>Muşteri tipi: {{customer.customer_type}}</h6>
@@ -66,6 +66,8 @@
                             <th scope="col">İlçe</th>
                             <th scope="col">Adres</th>
                             <th scope="col">Map Link</th>
+                            <th scope="col">Aciklama</th>
+                            <th scope="col"></th>
                             
                         </tr>
                     </thead>
@@ -77,7 +79,13 @@
                     <td>{{ads.ilce}}</td>
                     <td>{{ads.adres}}</td>
                     <td>{{ads.map_link}}</td>
-                    
+                    <td>{{ads.aciklama}}</td>
+                    <td>
+                      <a href="/order/adressUpdate/{{ads.id}}">
+                        <button class="btn btn-warning btn-sm">Güncelle</button></a>
+                      <a href="/order/adressActivation/{{ads.id}}">
+                          <button class="btn btn-danger btn-sm">Deaktif</button></a>
+                    </td>
                     </tr>
                 {% endfor%}
 

@@ -14,11 +14,64 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}
-        {{form|crispy}}
-        {{form_address|crispy}}
+
+        <div class="row" >
+            <div class="form-group col-md-4 mb-0">
+                {{ form.customer_name|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.telephone|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.email|as_crispy_field }}
+            </div>
+        </div>
+
+        <div class="row" >
+            <div class="form-group col-md-4 mb-0">
+                {{ form.customer_type|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.vergi_no|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.vergi_dairesi|as_crispy_field }}
+            </div>
+        </div>
+        <br><br>
+        <div class="row" >
+            <h3>Adres</h3>
+        </div>
+ 
+        
+        <div class="row" >
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.ulke|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.il|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.ilce|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row" >
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.adres|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.map_link|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form_address.aciklama|as_crispy_field }}
+            </div>
+        </div>
+
+   
         <br>
 
         <button type="submit" class="btn btn-warning">Giriş</button>
     </form>
 </div>
 {% endblock body %}
+

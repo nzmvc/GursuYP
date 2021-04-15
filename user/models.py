@@ -5,47 +5,42 @@ from django.dispatch import receiver
 
 # Create your models here.
 
-class Employee(models.Model):
-    beceri_choice = (
-        ('ADOKAPI','ADOKAPI'),
-        ('PARKE','PARKE'),
-        ('ÇELİKKAPI','ÇELİKKAPI'),
-        ('YANGIN KAPISI','YANGIN KAPISI'),
-        ('MONTAJCI','MONTAJCI'),
-        ('MARANGOZ','MARANGOZ'),
-    )
-    subeChoice = ( 
-    ("Fethiye", "Fethiye"), 
-    ("Muğla", "Muğla"), 
-    ("Bodrum", "Bodrum"), 
-    ("Marmaris", "Marmaris"), 
-    ("Antalya", "Antalya"), 
-    ) 
+class Departments(models.Model):
+    department_number = models.CharField(max_length=150, unique=True)
+    title = models.CharField(max_length=150, unique=True)
 
-    userType =( 
-    ("1", "Yönetici"), 
-    ("2", "Satış"), 
-    ("3", "Taşeron"), 
+    def __str__(self):
+        return self.title
+
+class Sube(models.Model):
     
-    )
+    title = models.CharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class Yetenek(models.Model):
     
-    departments = (
-        
-        ("10000","Finans"),
-        ("20000","Mali ve İdari işler"),
-        ("30000","Satış"),
-        ("31000","Saha Görevlisi"),
-        ("40000","Operasyon"),
-        ("41000","Planlama"),
-        
-    )
+    title = models.CharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class Yetki(models.Model):
+    
+    title = models.CharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class Employee(models.Model):
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department = models.CharField(max_length=100,choices = departments,blank=True)
+    department = models.ForeignKey(Departments,on_delete=models.PROTECT,null=True,verbose_name="Departman")
     role = models.CharField(max_length=20,blank=True)
     telephone = models.CharField(max_length=30,verbose_name="Telefon",default="0",blank=True)
-    user_type = models.CharField(max_length=30,choices = userType,verbose_name="Kullanıcı Tipi",default="0",blank=True)
-    sube = models.CharField(max_length=30,choices = subeChoice,verbose_name="Şube",default="0",blank=True)
-    beceri = models.CharField(max_length=30,choices = beceri_choice,verbose_name="Beceri",default="0",blank=True)
+    sube = models.ForeignKey(Sube,on_delete=models.PROTECT)
+    yetenek = models.ManyToManyField(Yetenek)
 
     def __str__(self):
         return self.user.username
@@ -74,28 +69,29 @@ class Logging(models.Model):
     aciklama = models.CharField(max_length=100,verbose_name="Açıklama")
     status = models.CharField(max_length=3, verbose_name="Status",default="10",blank=True,null=True)
 
-class Permission(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    permission = models.CharField(max_length=30,verbose_name="Yetki",default="admin")
+class Yetkilendirme(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    class Meta:
+        permissions = (
+                        ("satis_gir", "Satış girişi için gerekli yetki"),
+                        ("siparis_listele","Satışları listeleme"),
+                        ("urun_listele","Ürün Listeleme"),
+                        ("urun_yonetim","Ürün ekleme,güncelleme,deaktif etme"),
+                        ("musteri_listele","Müşteri listeleme"),
+                        ("musteri_yonetim","Müşteri ekleme,güncelleme,silme"),
+                        ("kullanici_listeleme", "Kullanıcı listeleme"),
+                        ("kullanici_yonetim", "Kullanıcı yönetimi"),
+                        ("rezervasyon_listele","Rezervasyonları listeleme görüntüleme"),
+                        ("rezervasyon_yonetim","Rezervasyon yönetim işlemleri"),
+                        ("rapor_listele","Rapor listeleme"),
+                        ("log_listeleme","Logları görme"),
+                        ("musterisikayet_listeleme","Müşteri şikayetleri listele gör"),
+                        ("musterisikayet_yonetim","Müşteri şikayetleri yönetimi"),
+                        ("workflow_operasyon","Workflow Operasyon "),
+                        ("workflow_planlama","Workflow Planlama  "),
+                        ("workflow_depo","Workflow Depo "),
+                        ("workflow_uretim","Workflow Uretim "),
+                       
+                      )
 
-class Departments(models.Model):
-    department_number = models.CharField(max_length=150, unique=True)
-    title = models.CharField(max_length=150, unique=True)
-
-    def __str__(self):
-        return self.title
-
-    """    departments = (
-        
-        
-        ("10000","Finans"),
-        ("20000","Mali ve İdari işler"),
-        ("30000","Satış"),
-        ("31000","Saha Görevlisi"),
-        ("40000","Operasyon"),
-        ("41000","Planlama"),
-        ("42000","Üretim"),
-        ("43000","Depo"),
-        ("44000","Montaj"),
-        
-    )"""
+    

@@ -12,8 +12,11 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}
-        {{form|crispy}}
-        {{form_address|crispy}}
+
+        <div class="form-group col-md-3 mb-0">
+            {{form|crispy}}
+        </div>
+        
         <br>
 
         <button type="submit" class="btn btn-warning">Giriş</button>

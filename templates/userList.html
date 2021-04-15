@@ -40,6 +40,7 @@
             <th scope="col">Email</th>
             <th scope="col">Telefon</th>
             <th scope="col">Şube</th>
+            <th scope="col">Departman</th>
             <th scope="col"></th>
             <th scope="col"></th>
           </tr>
@@ -50,8 +51,9 @@
                 <th scope="row">{{user.id}}</th>
                 <td><a href="/user/userView/{{user.id}}">{{user.username}}</a></td>
                 <td>{{user.email}}</td>
-                <td>{{user.telephone}}</td>
-                <td>{{user.sube}}</td>
+                <td>{{user.employee.telephone}}</td>
+                <td>{{user.employee.sube.title}}</td>
+                <td>{{user.employee.department.title}}</td>
                 <td><a href="/user/userUpdate/{{user.id}}"><button class="btn btn-warning btn-sm">Güncelle</button></a></td>
                 <td><a href="/user/userDelete/{{user.id}}"><button class="btn btn-danger btn-sm">Sil</button></a></td>
               </tr>

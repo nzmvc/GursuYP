@@ -25,7 +25,7 @@ SECRET_KEY = '%wr5fxxdthjj!5l%2sdasta%b#$*o=qptw3@j#%g6=ahjxw#b_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://nazimavci.pythonanywhere.com/','localhost']
 
 
 # Application definition
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'ckeditor',
     'django_cleanup.apps.CleanupConfig',
-    'mathfilters',
+    #'mathfilters',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +118,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
