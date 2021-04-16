@@ -36,10 +36,10 @@ class Yetki(models.Model):
 class Employee(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department = models.ForeignKey(Departments,on_delete=models.PROTECT,null=True,verbose_name="Departman")
-    role = models.CharField(max_length=20,blank=True)
+    department = models.ForeignKey(Departments,on_delete=models.PROTECT,verbose_name="Departman",default="1")
+    role = models.CharField(max_length=20,blank=True,default="Kullanıcı")
     telephone = models.CharField(max_length=30,verbose_name="Telefon",default="0",blank=True)
-    sube = models.ForeignKey(Sube,on_delete=models.PROTECT)
+    sube = models.ForeignKey(Sube,on_delete=models.PROTECT,verbose_name="Şube",default="1")
     yetenek = models.ManyToManyField(Yetenek)
 
     def __str__(self):
