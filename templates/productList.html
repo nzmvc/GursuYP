@@ -36,6 +36,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Ürün Adı</th>
+        <th scope="col">Kategori</th>
         <th scope="col">Kısa Ad</th>
         <th scope="col">Marka</th>
         <th scope="col">Ürün tipi/kategori</th>
@@ -52,7 +53,8 @@
         {% for product in products %}
           <tr>
             <th scope="row">{{product.id}}</th>
-            <td>{{product.product_name}}</a></td>
+            <td>{{product.product_name}}</td>
+            <td>{{product.product_category}}</a></td>
             <td>{{product.title}}</td>
             <td>{{product.marka}}</td>
             <td>{{product.product_type}}</td>

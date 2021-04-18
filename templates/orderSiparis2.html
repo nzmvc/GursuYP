@@ -98,7 +98,7 @@
                 </td>
                 <td colspan="2" valign="top" align="right"> 
                     <table>
-                        <tr> <td>TARİH</td> <td> {{order.created_date}}</td></tr>
+                        <tr> <td>TARİH</td> <td> {{order.create_date}}</td></tr>
                         <tr> <td>FİŞ NO</td> <td> {{order.id}} </td></tr>
                     </table>
                 </td>
@@ -107,10 +107,10 @@
             <tr><td colspan=12 align="LEFT" bgcolor="blue">FATURA BİLGİLERİ</td></tr>
             <tr><td>İsim:</td><td colspan="11"> </td></tr>
             <tr><td >Şirket:</td><td colspan="11"> {{order.customer.customer_name}}</td></tr>
-            <tr><td >Adress:</td><td colspan="11"> {{order.sevk_adres.adres}} {{order.sevk_adres.ilce}}{{order.sevk_adres.il}}</td></tr>
+            <tr><td >Adress:</td><td colspan="11"> {{order.sevk_adres.adres}} {{order.sevk_adres.ilce}} {{order.sevk_adres.il}}</td></tr>
             <tr><td >Telefon:</td><td colspan="11">{{order.customer.telephone}} </td></tr>
             <tr><td >Email:</td><td colspan="11">{{order.customer.email}} </td></tr>
-            <tr><td >TC/VergiNO:</td><td colspan="11"> </td></tr>
+            <tr><td >TC/VergiNO:</td><td colspan="11"> {{order.customer.vergi_no}} </td></tr>
             <tr><td colspan="12"> <br><br></td></tr>
             
             <tr><td colspan="6">ÜRÜN CİNSİ</td>

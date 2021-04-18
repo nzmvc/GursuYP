@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from .models import Logging,Departments,Sube,Yetenek,Yetki,Yetkilendirme
 from user.models import Employee
-
+from order.models import ProductCategory
 # Define an inline admin descriptor for Employee model
 # which acts a bit like a singleton
 class EmployeeInline(admin.StackedInline):
@@ -25,3 +25,4 @@ admin.site.register(Sube)
 admin.site.register(Yetenek)
 admin.site.register(Yetki)
 admin.site.register(Yetkilendirme)
+admin.site.register(ProductCategory)

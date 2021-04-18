@@ -10,6 +10,7 @@ urlpatterns = [
     
     path('orderAdd/', views.orderAdd, name='orderAdd'),
     path('orderAdd2/', views.orderAdd2, name='orderAdd2'),
+    path('orderAdd3/', views.orderAdd3, name='orderAdd3'),
     path('orderList/<str:list_filter>', views.orderList, name='orderList'),
     path('orderView/<int:id>', views.orderView, name='orderView'),
     path('orderUpdate/<int:id>', views.orderUpdate, name='orderUpdate'),

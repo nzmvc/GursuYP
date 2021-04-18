@@ -108,8 +108,19 @@ class Workflow(models.Model):
     started_date =models.DateTimeField(blank=True, null=True)
     fisNo = models.IntegerField(verbose_name="Fiş NO",default=1,null=True)
 
+class ProductCategory(models.Model):
+    title = models.CharField(max_length=150, unique=True)
+    main_category = models.CharField(max_length=2,default=1)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.title
+
 class Product(models.Model):
     product_name = models.CharField(max_length=20,verbose_name="Ürün adı")
+    product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
     title = models.CharField(max_length=150, unique=True,verbose_name="Kısa ad(kod)")
     #category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
     marka = models.CharField(max_length=15,verbose_name="Marka")
@@ -119,24 +130,15 @@ class Product(models.Model):
     birim_fiyat = models.IntegerField(verbose_name="Birim Fiyat" ,default=0)
     created_date = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-    def __str__(self):
-        return self.title
+    def __str__(self):    
+        return self.product_category.title +"-"+ self.product_name
     
-
-class ProductCategory(models.Model):
-    title = models.CharField(max_length=150, unique=True)
-
-    class Meta:
-        verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return self.title
 
 class OrderProducts(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
     product = models.ForeignKey(Product,on_delete=models.PROTECT)
     colour = models.CharField(max_length=20,verbose_name="Renk",blank=True)
-    amount  = models.IntegerField(default=1)
+    amount  = models.IntegerField(default=0)
     birim_fiyat = models.IntegerField(default=0)
     toplam_tutar = models.IntegerField(default=0)
     # renk marka vs eklenebilir

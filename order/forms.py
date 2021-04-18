@@ -24,12 +24,13 @@ class OrderForm(forms.ModelForm):
 class OrderProductsForm(forms.ModelForm):
     class Meta:
         model = OrderProducts
-        fields = ['order','product','amount','colour']
+        #fields = ['order','product','amount','colour']
+        fields = ['product','amount','colour']
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['product_name','title','montaj_sabiti','marka','product_type','unit','birim_fiyat']
+        fields = ['product_name','product_category','title','montaj_sabiti','marka','product_type','unit','birim_fiyat']
 
 
 class AddressForm(forms.ModelForm):

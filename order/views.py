@@ -4,6 +4,7 @@ from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddres
 from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle
 from .models import Reservation,ReservationPerson,ReservationVehicle
 from django.forms import inlineformset_factory
+from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
 from django.contrib import messages
 from user.views import Logla
@@ -187,6 +188,55 @@ def orderAdd2(request):
     return  render(request,'orderAdd2.html',{'form':form})
 
 @login_required(login_url='/user/login/')
+@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+def orderAdd3(request):
+    form = OrderForm(request.POST or None,request.FILES or None)
+    product_formset = formset_factory(OrderProductsForm,extra=10)
+
+    if request.method == "POST":
+        formset = product_formset(request.POST)
+
+        if form.is_valid() and formset.is_valid():
+
+                
+                customer = form.cleaned_data.get("customer")
+                order_type = form.cleaned_data.get("order_type")
+                order_image = form.cleaned_data.get("order_image")
+                order_content = form.cleaned_data.get("content")
+                stok = form.cleaned_data.get("stok")
+                iskonto = form.cleaned_data.get("iskonto")
+                tahmini_tarih_min = form.cleaned_data.get("tahmini_tarih_min")
+                tahmini_tarih_max = form.cleaned_data.get("tahmini_tarih_max")
+                satis_kanali = form.cleaned_data.get("satis_kanali")
+                
+
+                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali)
+                new_order.save()
+                
+                Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
+
+                for pro_form in formset:
+                    
+                    if pro_form.cleaned_data.get("amount"):
+                        print(pro_form.cleaned_data.get("amount") )
+                        amount = pro_form.cleaned_data.get("amount")
+                        product = pro_form.cleaned_data.get("product")
+                        colour = pro_form.cleaned_data.get("colour")
+                        birim_fiyat = product.birim_fiyat
+                        toplam_tutar = birim_fiyat * amount
+
+                        new_product = OrderProducts(order=new_order,product=product,amount=amount,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar)
+                        new_product.save()
+             
+                return  redirect('/order/orderView/'+str(new_order.pk))
+
+        else:
+            print("form valid değil")
+
+    return  render(request,'orderAdd3.html',{'form':form,'product_formset':product_formset})
+
+
+@login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.siparis_listele',login_url='/user/yetkiYok/')
 def orderList(request,list_filter):
     #orders= Order.objects.all()
@@ -230,7 +280,7 @@ def orderDelete(request,id):
         messages.success(request,"Sipariş silindi")
     else:
         messages.success(request,"Sipariş bulunamadı!!!!!!")
-    return  redirect("/order/orderList")
+    return  redirect("/order/orderList/active")
 
 @login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
