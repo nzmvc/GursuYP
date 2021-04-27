@@ -36,7 +36,7 @@ urlpatterns = [
     path('productDeactive/<int:id>',views.productDeactive,name='productDeactive'),
     path('productActive/<int:id>',views.productActive,name='productActive'),
     #path('findProduct/<int:qs>',views.findProduct,name='findProduct'),
-    path('findProduct/', views.findProduct, name='findProduct'),
+    #path('findProduct/', views.findProduct, name='findProduct'),
     #path('productDropList/', views.productDropList, name='productDropList'),
     path('ajax/productDropList/', views.productDropList, name='ajax_productDropList'),
 

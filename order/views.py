@@ -11,7 +11,7 @@ from user.views import Logla
 from user.models import Logging,Employee,Departments
 from django.db.models import Q
 import datetime
-import simplejson
+#import simplejson
 
 
 from django import template
@@ -212,7 +212,7 @@ def orderAdd2(request):
 
     return  render(request,'orderAdd2.html',{'form':form})
 
-
+"""
 #   find_cities (ajax processor)   
 def findProduct(request, qs=None):
     if qs is None:
@@ -235,6 +235,7 @@ def findProduct(request, qs=None):
         results.append(_("ürün bulunamadı")) 
     # return JSON object
     return HttpResponse(simplejson.dumps(results))
+"""
 
 def productDropList(request):
     ug = request.GET.get('urun_grubu')
