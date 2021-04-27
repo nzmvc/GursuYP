@@ -74,7 +74,10 @@
     
     </script>
     <br>
-    <form method="post" enctype="multipart/form-data">
+    
+ 
+
+    <form method="post" enctype="multipart/form-data" id="orderProductForm" data-product-url="{% url 'order:ajax_productDropList' %}">
         {% csrf_token %}
         {{ product_formset.management_form}}
         {{ form.media }}
@@ -96,12 +99,16 @@
         </div>
         
         <div class="row" >
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
                 {{ form.stok|as_crispy_field }}
 
             </div>
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
                 {{ form.iskonto|as_crispy_field }}
+
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                {{ form.planlama_sekli|as_crispy_field }}
 
             </div>
             <div  class="form-group col-md-3 mb-0">
@@ -138,14 +145,19 @@
         <!----------------  product  list start ----------------->
         {%  for  pro_form in product_formset %}
         <div class="row">
-            
-            <div  class="col-md-3 mb-0">
+            <div  class="col-md-2 mb-0">
+                {{ pro_form.urun_grubu|as_crispy_field }}
+            </div>
+            <div  class="col-md-2 mb-0">
+                {{ pro_form.marka|as_crispy_field }}
+            </div>
+            <div  class="col-md-2 mb-0">
                 {{ pro_form.product|as_crispy_field }}
             </div>
-            <div  class="col-md-3 mb-0">
+            <div  class="col-md-2 mb-0">
                 {{ pro_form.amount|as_crispy_field }}
             </div>
-            <div  class="col-md-3 mb-0">
+            <div  class="col-md-2 mb-0">
                 {{ pro_form.colour|as_crispy_field }}
             </div>
         </div>  
@@ -162,7 +174,7 @@
         <br><br>
         <div class="row">
             <div class="d-grid gap-2 col-md-9">
-                <button class="btn btn-primary" type="button">Giriş</button>
+                <button class="btn btn-primary" >Giriş</button>
             </div>
 
         </div>
@@ -171,4 +183,33 @@
         
     </form>
 </div>
+
+<script>
+    function myFunction(val,t) {
+        alert("The input value has changed. The new value is: " + val + t[8]);
+    
+        document.getElementById("id_form-"+t[8]+"-colour").value = val;
+
+        var url = $("#orderProductForm").attr("data-product-url");  // get the url of the `load_cities` view
+        //var url = "/order/ajax/productDropList/";
+        
+            //var urun_grubu_id = $(this).val();  // get the selected country ID from the HTML input
+            var urun_grubu_id = val;  // get the selected country ID from the HTML input
+      
+            $.ajax({                       // initialize an AJAX request
+              url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+              data: {
+                'urun_grubu': urun_grubu_id       // add the country id to the GET parameters
+              },
+              success: function (data) {   // `data` is the return of the `load_cities` view function
+                //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
+                $("#id_form-"+t[8]+"-product").html(data);  // replace the contents of the city input with the data that came from the server
+                
+
+              }
+            });
+
+      }
+</script>
+
 {% endblock body %}

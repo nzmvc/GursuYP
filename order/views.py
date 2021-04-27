@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
-from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,ProblemForm,ProblemSolutionForm
-from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle
+from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm
+from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle,ProductCategory
 from .models import Reservation,ReservationPerson,ReservationVehicle
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
@@ -11,9 +11,17 @@ from user.views import Logla
 from user.models import Logging,Employee,Departments
 from django.db.models import Q
 import datetime
+import simplejson
 
-# Create your views here.
-#TODO tum işlemler loglanmalı. hatta silem yapılmamalı yada sadece superuser yapabilsin. diğerlerinin yaptıkları inaktif edebilir.
+
+from django import template
+
+register = template.Library()
+
+@register.filter
+def days_until(date):
+    delta = datetime.date(date) - datetime.now().date()
+    return delta.days
 
 
 ############################################################################
@@ -22,12 +30,27 @@ import datetime
 @login_required(login_url='/user/login/')
 def dashboard(request,departman="ope",list_filter="all"):
     
-    order = Order.objects.all()
+    order = Order.objects.all().exclude(statu_id=22)
     customer = Customer.objects.all()
     product = Product.objects.all()
-    workflow = Workflow.objects.exclude(status=90)
-    problems = Problems.objects.exclude(statu=4)
+    workflow = Workflow.objects.exclude(status_id=22)
+    problems = Problems.objects.exclude(statu_id=4).exclude(statu_id=5)
     
+
+    ##############################################
+    today = datetime.date.today()
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+   
+    print("today",today)
+    print("tomorrow",tomorrow)
+    #res_today = Reservation.objects.filter(start_date__startswith=datetime.date.today())
+    res_today = Reservation.objects.filter(start_date__year=today.year, start_date__month=today.month, start_date__day=today.day)
+    print(res_today)
+    res_tomorrow = Reservation.objects.filter(start_date__year=tomorrow.year, start_date__month=tomorrow.month, start_date__day=tomorrow.day)
+    #res_nextweek = 
+    #return render(request,'reservationList.html',{"res_today":res_today,"res_tomorrow":res_tomorrow})
+    ###############################################
+
     #planlama_jobs = Workflow.objects.filter(department=41000)
     if departman =="ope":
         if list_filter == "all":
@@ -82,7 +105,9 @@ def dashboard(request,departman="ope",list_filter="all"):
         'customer' :customer,
         'product':product,
         'workflow':workflow,
-        'problems':problems
+        'problems':problems,
+        "res_today":res_today,
+        "res_tomorrow":res_tomorrow
         }
     return  render(request,'dashboard.html',content)
 
@@ -187,12 +212,60 @@ def orderAdd2(request):
 
     return  render(request,'orderAdd2.html',{'form':form})
 
+
+#   find_cities (ajax processor)   
+def findProduct(request, qs=None):
+    if qs is None:
+        qs = Product.objects.values_list('product_name', flat=True).all()
+    if request.GET.get('urun_grubu'):
+        urun_grubu=request.GET.get('urun_grubu')
+        print("!!!!!!!",urun_grubu)
+        qs = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=urun_grubu).order_by('product_name')
+    else:
+        print("urun grubu bilgisi yok")
+    # create an empty list to hold the results
+    results = []
+    
+    # iterate over each city and append to results list 
+    for product_name in qs:
+        results.append(product_name)
+    # if no results found then append a relevant message to results list
+    if not results:
+        # if no results then dispay empty message
+        results.append(_("ürün bulunamadı")) 
+    # return JSON object
+    return HttpResponse(simplejson.dumps(results))
+
+def productDropList(request):
+    ug = request.GET.get('urun_grubu')
+    print(ug)
+    #products = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=ug).order_by('product_name')
+    products = Product.objects.all().filter(urun_grubu=ug).order_by('product_name')
+    return render(request, 'productDropList.html', {'products': products})
+
+@login_required(login_url='/user/login/')
+def test(request):
+    products = Product.objects.all()
+    category = ProductCategory.objects.all()
+    
+    form = OrderProductsForm(request.POST or None,request.FILES or None)
+
+    if request.method == "POST":
+        print("post sonrası")
+
+        if form.cleaned_data.get("amount"):
+            print(form.cleaned_data.get("amount") )
+    
+    return  render(request,'test.html',{'products':products,'category':category,'form':form} )
+
+
 @login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderAdd3(request):
     form = OrderForm(request.POST or None,request.FILES or None)
     product_formset = formset_factory(OrderProductsForm,extra=10)
-
+    
+    
     if request.method == "POST":
         formset = product_formset(request.POST)
 
@@ -208,9 +281,9 @@ def orderAdd3(request):
                 tahmini_tarih_min = form.cleaned_data.get("tahmini_tarih_min")
                 tahmini_tarih_max = form.cleaned_data.get("tahmini_tarih_max")
                 satis_kanali = form.cleaned_data.get("satis_kanali")
-                
+                planlama_sekli = form.cleaned_data.get("planlama_sekli")
 
-                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali)
+                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali,planlama_sekli=planlama_sekli)
                 new_order.save()
                 
                 Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
@@ -220,6 +293,8 @@ def orderAdd3(request):
                     if pro_form.cleaned_data.get("amount"):
                         print(pro_form.cleaned_data.get("amount") )
                         amount = pro_form.cleaned_data.get("amount")
+                        urun_grubu = pro_form.cleaned_data.get("urun_grubu")
+                        marka = pro_form.cleaned_data.get("marka")
                         product = pro_form.cleaned_data.get("product")
                         colour = pro_form.cleaned_data.get("colour")
                         birim_fiyat = product.birim_fiyat
@@ -232,6 +307,8 @@ def orderAdd3(request):
 
         else:
             print("form valid değil")
+            for er in formset.errors:
+                print(er)
 
     return  render(request,'orderAdd3.html',{'form':form,'product_formset':product_formset})
 
@@ -324,11 +401,11 @@ def orderSiparisFisi(request,id):
 def orderAddProduct(request,id):
     #OrderFormSet = inlineformset_factory(Customer,Order, fields('product','amount'),extra=5 )
     order = Order.objects.get(id=id)
-    form = OrderProductsForm(initial={'order':order})
+    form = OrderProductsForm2(initial={'order':order})
 
     if request.method == 'POST':
             
-        form = OrderProductsForm(request.POST)
+        form = OrderProductsForm2(request.POST)
         if form.is_valid():
 
             product = form.cleaned_data.get("product")
@@ -737,7 +814,8 @@ def workflowPlanla(request,id):
         res.order = order
         res.start_date = tarih
         res.end_date = tarih
-        res.description = " deneme kayıt"
+        res.description = " deneme kayıt"    #TODO: descriptpon güncellenmeli
+        res.urun_grubu_id = 1               #TODO: ürün grubu neye göre girlecek ??????
         res.save()
 
         if ustalar:

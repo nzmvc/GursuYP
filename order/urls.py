@@ -35,7 +35,11 @@ urlpatterns = [
     path('productUpdate/<int:id>',views.productUpdate,name='productUpdate'),
     path('productDeactive/<int:id>',views.productDeactive,name='productDeactive'),
     path('productActive/<int:id>',views.productActive,name='productActive'),
-    
+    #path('findProduct/<int:qs>',views.findProduct,name='findProduct'),
+    path('findProduct/', views.findProduct, name='findProduct'),
+    #path('productDropList/', views.productDropList, name='productDropList'),
+    path('ajax/productDropList/', views.productDropList, name='ajax_productDropList'),
+
     path('reservationList/',views.reservationList,name='reservationList'),
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
     path('reservationDelete/<int:id>',views.reservationDelete,name='reservationDelete'),
@@ -48,4 +52,6 @@ urlpatterns = [
     path('problemAdd/<int:id>',views.problemAdd,name='problemAdd'),
     path('problemList/',views.problemList,name='problemList'),
     path('problemView/<int:id>',views.problemView,name='problemView'),
+
+    path('test/',views.test,name='test'),
 ]

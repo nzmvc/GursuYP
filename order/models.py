@@ -23,6 +23,11 @@ class Order (models.Model):
         ("Toptan","Toptan"),
         ("Proje","Proje")
     )
+    planlamaSecenek = (
+        ("En Hızlı","En Hızlı"),
+        ("Müş.den Haber Bekle","Müş.den Haber Bekle"),
+        ("Müsaitliğimize Göre","Müsaitliğimize Göre")
+    )
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri")
     #TODO user bilgisi eklenecek
     create_date = models.DateTimeField(auto_now=True)
@@ -37,6 +42,7 @@ class Order (models.Model):
     tahmini_tarih_max = models.DateField(null=True,verbose_name="En geç teslim (yyyy-mm-dd)")
     sevk_adres = models.ForeignKey("Address",on_delete=models.PROTECT,verbose_name="Sevk Adresi",null=True)
     satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı")
+    planlama_sekli = models.CharField(max_length=20,choices = planlamaSecenek,verbose_name="Planlama Şekli",default="En Hızlı")
     #
     # fatura_adres = models.ManyToManyField("Address",verbose_name="Fatura Adresi")
 
@@ -118,20 +124,55 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.title
 
+class UrunGrubu(models.Model):
+    title = models.CharField(max_length=40, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class ProductType(models.Model):
+    title = models.CharField(max_length=40, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class Marka(models.Model):
+    title = models.CharField(max_length=30, unique=True)
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.title
+
 class Product(models.Model):
-    product_name = models.CharField(max_length=20,verbose_name="Ürün adı")
-    product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
-    title = models.CharField(max_length=150, unique=True,verbose_name="Kısa ad(kod)")
-    #category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
-    marka = models.CharField(max_length=15,verbose_name="Marka")
-    product_type = models.CharField(max_length=15,verbose_name="Cinsi",help_text="xxx gibi bilgiler")
-    unit = models.CharField(max_length=10,verbose_name="Birim",default="Adet")
-    montaj_sabiti = models.IntegerField(verbose_name="Montaj Sabiti")
+    unit_type = (
+            ("AD","AD"),
+            ("TN","TN"),
+            ("M2","M2"),
+            ("PK","PK"),
+            ("TK","TK"),
+            ("MT","MT"),
+            ("BY","BY"),
+            ("M3","M3"),
+            ("KG","KG"),
+       )
+    
+    urun_kodu = models.CharField(max_length=100,verbose_name="Ürün Kodu",blank=True, null=True)
+    product_name = models.CharField(max_length=200,verbose_name="Ürün adı")
+    marka = models.ForeignKey(Marka,on_delete=models.CASCADE,verbose_name="Urun Grubu",default=1)
+    unit = models.CharField(max_length=10,choices=unit_type,verbose_name="Birim",default="AD")
+    urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE,verbose_name="Urun Grubu",default=1)
+    product_type =models.ForeignKey(ProductType,on_delete=models.CASCADE,verbose_name="Product Type",default=1)
+    montaj_sabiti = models.IntegerField(verbose_name="Montaj Sabiti",default=0)
     birim_fiyat = models.IntegerField(verbose_name="Birim Fiyat" ,default=0)
+    product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
+    
+    #title = models.CharField(max_length=150, unique=True,verbose_name="Kısa ad(kod)")
+    #category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
+    
     created_date = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-    def __str__(self):    
-        return self.product_category.title +"-"+ self.product_name
+    #def __str__(self):    
+    #    return self.product_category.title +"-"+ self.product_name
     
 
 class OrderProducts(models.Model):
@@ -157,6 +198,7 @@ class ProblemStatu(models.Model):
         
 class Problems(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now=True)
     statu = models.ForeignKey(ProblemStatu,on_delete=models.CASCADE,default=1)
     closed_date = models.DateTimeField(blank=True,null=True)
@@ -180,6 +222,7 @@ class Vehicle(models.Model):
     
 class Reservation(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE,default=1)
     start_date = models.DateTimeField(verbose_name="Başlangıç Zamanı")
     end_date = models.DateTimeField(verbose_name="Bitiş Zamanı")
     version = models.IntegerField(default=1)

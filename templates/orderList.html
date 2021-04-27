@@ -62,7 +62,13 @@
               <td><a href="/order/orderView/{{order.id}}">{{order.customer}}</a></td>
               <td>{{order.create_date}}</td>
               <td>{{order.statu.title}}</td>
-              <td>{{order.order_type}}</td>
+              <td>
+
+              {% if order.order_type == "U" %} Üretim {% endif %}
+              {% if order.order_type == "S" %} Sevk {% endif %}
+              {% if order.order_type == "M" %} Montaj {% endif %}
+              {% if order.order_type == "D" %} Depo teslim {% endif %}
+              </td>
               
               <td>
                 <a href="/order/orderSiparisFisi/{{order.id}}" target="popup" onclick="window.open('/order/orderSiparisFisi/{{order.id}}','popup','width=600,height=600'); return false;">

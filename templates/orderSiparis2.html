@@ -155,7 +155,13 @@
             <tr><td >Sevk Adresi</td><td colspan="11"> {{order.sevk_adres.adres}} {{order.sevk_adres.ilce}}{{order.sevk_adres.il}} </td></tr>
 
             <tr><TD colspan="4">TESLİM ŞEKLİ</TD><td colspan="6">PLANLAMA ŞEKLİ</td><td colspan="2">TAHMİNİ TARİH ARALIĞI</td></tr>
-            <tr><TD colspan="4">{{order.sevk_adres.aciklama}}</TD><td colspan="6">......</td><td>EN ERKEN</td><TD>{{order.tahmini_tarih_min}}</TD></tr>
+            <tr><TD colspan="4">
+              {% if order.order_type == "U" %} Üretim {% endif %}
+              {% if order.order_type == "S" %} Sevk {% endif %}
+              {% if order.order_type == "M" %} Montaj {% endif %}
+              {% if order.order_type == "D" %} Depo teslim {% endif %}
+              
+            </TD><td colspan="6"> {{order.planlama_sekli}} </td><td>EN ERKEN</td><TD>{{order.tahmini_tarih_min}}</TD></tr>
             <TR><TD colspan="10"></TD><td>EN geç</td><TD>{{order.tahmini_tarih_max}}</TD></TR>
           </table>
       </main>

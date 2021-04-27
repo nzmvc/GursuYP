@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 
+
 {% block body %}
 
 <div class="row mb-1">
@@ -46,6 +47,54 @@
 
 </div>
 
+<div class="row">
+  <div class="col-md-4">
+    <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
+      <p> Planlanmış işler <span class="badge bg-danger">{{res_today.count}}</span> / <span class="badge bg-warning">{{res_tomorrow.count}}</span></p>
+      <table class="table">
+        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th></tr></thead>
+        <tbody>
+        {% for res in res_today%}
+          <tr> <td><a href="/order/reservationView/{{res.id}}">Bugun</a></td><td>{{res.order.customer.customer_name}}</td><td>{{res.urun_grubu.title}}</td></tr>
+        {% endfor%}
+        {% for res in res_tomorrow%}
+          <tr> <td><a href="/order/reservationView/{{res.id}}">Yarın</a></td><td>{{res.order.customer.customer_name}}</td><td>{{res.urun_grubu.title}}</td></tr>
+        {% endfor%}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
+      <p> Şikayetler <span class="badge bg-danger">{{problems.count}}</span></p>
+      <table class="table">
+        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th></tr></thead>
+        <tbody>
+        {% for problem in problems%}
+          <tr> <td><a href="/order/problemView/{{problem.id}}" >{{ problem.created_date |timesince }}</a></td><td>{{problem.order.customer.customer_name}}</td><td>{{problem.urun_grubu.title}}</td></tr>
+        {% endfor%}
+        
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card-header bg-light "style="height: 200px; overflow-y: scroll;">
+    <p> Bekleyen Siparişler<span class="badge bg-danger">{{order.count}}</span></p>
+    <table class="table">
+      <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">Sip Tipi</th></tr></thead>
+      <tbody>
+      {% for ord in order%}
+        <tr> <td><a href="/order/orderView/{{ord.id}}" >{{ ord.create_date |timesince }}</a></td><td>{{ord.customer.customer_name}}</td><td>{{ord.order_type}}</td></tr>
+      {% endfor%}
+      
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<br><br>
 {% if perms.user.workflow_operasyon %}
 <div class="col-md-12">
   <div class="card">

@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="form-group col-md-2 mb-0">
+    <h4> Sipariş Girişi</h4>   
+    </div>
+
+
+<!--- 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+-->    
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+    /*
+    $(document).ready(function(){
+        var $categoryVar =$("#category_id");
+            $productVar = $("#product_id");
+
+            $options =  $productVar.find('option');
+            $categoryVar.on('change',function(){
+                $productVar.html($options.filter('[value="'+this.value+'"]'));
+
+            }).trigger('change');
+
+    })
+    */
+    $(document).ready(function(){
+        getElementById("p1").innerHTML = "sayfa açıldı";
+    }).trigger('change');
+    </script>
+    <br>
+   <!-- <form method="post" enctype="multipart/form-data"> -->
+    <form method="post" id="orderProductForm" data-cities-url="{% url 'order:ajax_productDropList' %}" novalidate>
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+          </table>
+          Enter some text: <input type="text" name="txt" id="form1" value="Hello" onchange="myFunction(this.value,this.id)">
+          
+          <button type="submit">Save</button>
+        </form>
+      
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            function myFunction(val,t) {
+                alert("The input value has changed. The new value is: " + val + t[4]);
+              }
+
+          $("#id_urun_grubu").change(function () {
+            var url = $("#orderProductForm").attr("data-cities-url");  // get the url of the `load_cities` view
+            var urun_grubu_id = $(this).val();  // get the selected country ID from the HTML input
+      
+            $.ajax({                       // initialize an AJAX request
+              url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+              data: {
+                'urun_grubu': urun_grubu_id       // add the country id to the GET parameters
+              },
+              success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
+              }
+            });
+      
+          });
+        </script>
+
+</div>
+
+<hr>
+<div>
+
+
+</div>
+{% endblock body %}
