@@ -212,15 +212,15 @@ def orderAdd2(request):
 
     return  render(request,'orderAdd2.html',{'form':form})
 
-"""
-#   find_cities (ajax processor)   
+ 
 def findProduct(request, qs=None):
     if qs is None:
         qs = Product.objects.values_list('product_name', flat=True).all()
     if request.GET.get('urun_grubu'):
         urun_grubu=request.GET.get('urun_grubu')
+        marka=request.GET.get('marka')
         print("!!!!!!!",urun_grubu)
-        qs = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=urun_grubu).order_by('product_name')
+        qs = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=urun_grubu).filter(marka = marka).order_by('product_name')
     else:
         print("urun grubu bilgisi yok")
     # create an empty list to hold the results
@@ -235,13 +235,14 @@ def findProduct(request, qs=None):
         results.append(_("ürün bulunamadı")) 
     # return JSON object
     return HttpResponse(simplejson.dumps(results))
-"""
+
 
 def productDropList(request):
     ug = request.GET.get('urun_grubu')
-    print(ug)
+    marka = request.GET.get('marka')
+    print("dddd",ug,marka)
     #products = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=ug).order_by('product_name')
-    products = Product.objects.all().filter(urun_grubu=ug).order_by('product_name')
+    products = Product.objects.all().filter(urun_grubu=ug).filter(marka=marka).order_by('product_name')
     return render(request, 'productDropList.html', {'products': products})
 
 @login_required(login_url='/user/login/')
@@ -497,6 +498,7 @@ def orderApproved(request,id):
 @login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerAdd(request):
+    print(request.META['HTTP_REFERER'])
     form = CustomerForm(request.POST or None,request.FILES or None)
     form_adress = AddressForm(request.POST or None,request.FILES or None)
     if form.is_valid() and form_adress.is_valid() :
@@ -526,6 +528,7 @@ def customerAdd(request):
         ###################################################
         Logla(request.user,"Müşteri Eklendi","customerAdd",customer.pk,10)
         return redirect(request.META['HTTP_REFERER'])
+        
 
     return  render(request,'customerAdd.html',{'form':form,'form_address':form_adress})
 

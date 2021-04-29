@@ -185,7 +185,7 @@
 </div>
 
 <script>
-    function myFunction(val,t) {
+    function myFunction(val,t) { //   t = objenin idsi
         //alert("The input value has changed. The new value is: " + val + t[8]);
     
         //document.getElementById("id_form-"+t[8]+"-colour").value = val;
@@ -194,12 +194,36 @@
         //var url = "/order/ajax/productDropList/";
         
             //var urun_grubu_id = $(this).val();  // get the selected country ID from the HTML input
-            var urun_grubu_id = val;  // get the selected country ID from the HTML input
-      
+           
+            
+            
+            
+            //id_form-0-marka
+            //id_form-0-urun_grubu
+            if ( t[10] == "u" ){    //urun grubu change olmuş
+
+                var urun_grubu = val;  // urun grubu değeri alınır
+                var marka = document.getElementById("id_form-"+t[8]+"-marka").value;
+                alert("u");
+
+            }else {                 //marka change olmuş
+                alert("m");
+                //var urun_grubu = $("#id_form-"+t[8]+"-urun_grubu").val(); ;
+                //var urun_grubu = $("id_form-0-urun_grubu").value;
+                var urun_grubu = document.getElementById("id_form-"+t[8]+"-urun_grubu").value;
+                alert("urun_grubu:"+urun_grubu)
+                var marka = val ;
+
+            }
+            
+            alert(urun_grubu +" --"+marka);
+
+
             $.ajax({                       // initialize an AJAX request
               url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
               data: {
-                'urun_grubu': urun_grubu_id       // add the country id to the GET parameters
+                'urun_grubu': urun_grubu ,      // add the country id to the GET parameters
+                'marka': marka 
               },
               success: function (data) {   // `data` is the return of the `load_cities` view function
                 //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server

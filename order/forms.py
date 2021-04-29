@@ -31,7 +31,8 @@ class OrderProductsForm(forms.ModelForm):
         super(OrderProductsForm, self).__init__(*args, **kwargs)
         self.fields['urun_grubu'] =  ModelChoiceField(queryset=UrunGrubu.objects.all(),empty_label="Ürün Grubunu sec",
                                     widget=forms.Select(attrs={"onChange":'myFunction(this.value,this.id)'}))
-        self.fields['marka'] =  ModelChoiceField(queryset=Marka.objects.all(),empty_label="Marka sec")
+        self.fields['marka'] =  ModelChoiceField(queryset=Marka.objects.all(),empty_label="Marka sec",
+                                    widget=forms.Select(attrs={"onChange":'myFunction(this.value,this.id)'}))
         
         #TODO aşağıdaki satırı aktif edince form girişinde hata veriyor. Çözmek gerekiyor. 
         #self.fields['product'].queryset = Product.objects.none()
