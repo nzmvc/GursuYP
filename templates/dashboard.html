@@ -69,10 +69,10 @@
     <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
       <p> Şikayetler <span class="badge bg-danger">{{problems.count}}</span></p>
       <table class="table">
-        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th></tr></thead>
+        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th><th scope="col">Mahalle</th></tr></thead>
         <tbody>
         {% for problem in problems%}
-          <tr> <td><a href="/order/problemView/{{problem.id}}" >{{ problem.created_date |timesince }}</a></td><td>{{problem.order.customer.customer_name}}</td><td>{{problem.urun_grubu.title}}</td></tr>
+          <tr> <td><a href="/order/problemView/{{problem.id}}" >{{ problem.created_date |timesince }}</a></td><td>{{problem.order.customer.customer_name}}</td><td>{{problem.urun_grubu.title}}</td><td>{{ord.sevk_adres.mahalle}}</td></tr>
         {% endfor%}
         
         </tbody>
@@ -83,10 +83,14 @@
     <div class="card-header bg-light "style="height: 200px; overflow-y: scroll;">
     <p> Bekleyen Siparişler<span class="badge bg-danger">{{order.count}}</span></p>
     <table class="table">
-      <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">Sip Tipi</th></tr></thead>
+      <thead class="thead-dark"><tr> 
+          <th scope="col">Gun</th>
+          <th scope="col">Müşteri</th>
+          <th scope="col">Sip.Tipi</th>
+          <th scope="col">Mahalle</th></tr></thead>
       <tbody>
       {% for ord in order%}
-        <tr> <td><a href="/order/orderView/{{ord.id}}" >{{ ord.create_date |timesince }}</a></td><td>{{ord.customer.customer_name}}</td><td>{{ord.order_type}}</td></tr>
+        <tr> <td><a href="/order/orderView/{{ord.id}}" >{{ ord.create_date |timesince }}</a></td><td>{{ord.customer.customer_name}}</td><td>{{ord.order_type}}</td><td>{{ord.sevk_adres.mahalle}}</td></tr>
       {% endfor%}
       
       </tbody>

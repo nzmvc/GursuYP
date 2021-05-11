@@ -64,13 +64,17 @@
                 </tr>
                 <tr>
                     <td>Zaman</td>
-                    <td><input type="radio" name="zaman" value="oo" checked>
-                        <label >Öğleden Önce</label><br>
-                        <input type="radio" name="zaman" value="os">
-                        <label >Öğleden Sonra</label><br>
-                        <input type="radio" name="zaman" value="tg">
-                        <label>Tam gün</label><br>
-                    </td>
+                    <td>Başlangıç-Bitiş Saati</td>
+                        <td><input type="time"  name="stime"> -- <input type="time"  name="etime">
+                            <!--
+                            <input type="radio" name="zaman" value="oo" checked>
+                            <label >Öğleden Önce</label><br>
+                            <input type="radio" name="zaman" value="os">
+                            <label >Öğleden Sonra</label><br>
+                            <input type="radio" name="zaman" value="tg">
+                            <label>Tam gün</label><br>
+                            -->
+                        </td>
                 </tr>
             </table>
             <button type="submit" class="btn btn-info btn-sm"> Plan yap</button>
@@ -81,9 +85,10 @@
             
             <form method="POST">
                 {% csrf_token %}
-                Tarih : {{ tarih}}   Zaman : {{ zaman}} <br>
-                <input type="hidden" name="tarih"  id="tarih" value="{{ tarih}}"/>
-                <input type="hidden" name="zaman"  id="zaman" value="{{ zaman}}"/>
+                Tarih : {{ tarih}}   Başlangıç  : {{ stime}}  Bitiş: {{etime}} <br>
+                <input type="hidden" name="tarih"  id="tarih" value="{{tarih}}"/>
+                <input type="hidden" name="stime"  id="stime" value="{{stime}}"/>
+                <input type="hidden" name="etime"  id="etime" value="{{etime}}"/>
                 <br><br>
                 <table>
                     <tr>

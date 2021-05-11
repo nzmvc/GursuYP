@@ -1,0 +1,5 @@
+
+<option value="">---------</option>
+{% for order in orders %} 
+<option value="{{ order.id }}">{{ order.create_date }} - {{ order.id }}</option>
+{% endfor %}

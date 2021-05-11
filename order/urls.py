@@ -39,8 +39,14 @@ urlpatterns = [
     #path('findProduct/', views.findProduct, name='findProduct'),
     #path('productDropList/', views.productDropList, name='productDropList'),
     path('ajax/productDropList/', views.productDropList, name='ajax_productDropList'),
+    path('ajax/orderDropList/', views.orderDropList, name='ajax_orderDropList'),
+    path('planlama/<str:list_filter>',views.planlama,name='planlama'),
+    
 
     path('reservationList/',views.reservationList,name='reservationList'),
+    path('takvim/<int:day>',views.takvim,name='takvim'),
+    path('events/',views.events,name='events'),
+    path('events_data/',views.events_data,name='events_data'),
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
     path('reservationDelete/<int:id>',views.reservationDelete,name='reservationDelete'),
 
@@ -50,6 +56,7 @@ urlpatterns = [
     path('workflowStatuUpdate/<int:id>/<int:statu>',views.workflowStatuUpdate,name='workflowStatuUpdate'),
     
     path('problemAdd/<int:id>',views.problemAdd,name='problemAdd'),
+    path('problemAddFull/',views.problemAddFull,name='problemAddFull'),
     path('problemList/',views.problemList,name='problemList'),
     path('problemView/<int:id>',views.problemView,name='problemView'),
 

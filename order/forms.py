@@ -18,6 +18,9 @@ class OrderForm(forms.ModelForm):
         fields = ['customer','content','planlama_sekli','order_image','order_type','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max','satis_kanali' ]
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+
+        #self.fields['dosyaVarYok'] = forms.ChoiceField(label='Ölçüm Dosyası',choices=[('VAR','VAR'),('YOK','YOK')], widget=forms.RadioSelect)
+
         self.fields['tahmini_tarih_min'].widget.attrs['class'] = 'datepicker'
         self.fields['content'].widget.attrs['class'] = 'content_css'
         self.fields['content'].widget.attrs['rows'] = 5
@@ -65,7 +68,7 @@ class AddressForm(forms.ModelForm):
 class CustomerAddressForm(forms.ModelForm):
     class  Meta:
         model = Address
-        fields = ['customer','ulke','il','ilce','adres','map_link','aciklama']
+        fields = ['customer','ulke','il','ilce','adres','mahalle','map_link','aciklama']
 
 class ProblemForm(forms.ModelForm):
     class Meta:
@@ -76,3 +79,13 @@ class ProblemSolutionForm(forms.ModelForm):
     class Meta:
         model = Problems
         fields = ['solution','root_cause']
+
+class ProblemAddForm(forms.ModelForm):
+    class Meta:
+        model = Problems
+        fields=['order','description','statu','created_user','urun_grubu']
+    
+    def __init__(self, *args, **kwargs):
+        super(ProblemAddForm,self).__init__(*args, **kwargs)
+        self.fields['customer'] = ModelChoiceField(queryset=Customer.objects.all(),empty_label="Müşteri sec",
+                                    widget=forms.Select(attrs={"onChange":'myProblemFunction(this.value,this.id)'}))

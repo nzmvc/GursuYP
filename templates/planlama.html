@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
+      <p> Planlanmış işler <span class="badge bg-danger">{{res_today.count}}</span> / <span class="badge bg-warning">{{res_tomorrow.count}}</span></p>
+      <table class="table">
+        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th></tr></thead>
+        <tbody>
+        {% for res in res_today%}
+          <tr> <td><a href="/order/reservationView/{{res.id}}">Bugun</a></td><td>{{res.order.customer.customer_name}}</td><td>{{res.urun_grubu.title}}</td></tr>
+        {% endfor%}
+        {% for res in res_tomorrow%}
+          <tr> <td><a href="/order/reservationView/{{res.id}}">Yarın</a></td><td>{{res.order.customer.customer_name}}</td><td>{{res.urun_grubu.title}}</td></tr>
+        {% endfor%}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
+      <p> Şikayetler <span class="badge bg-danger">{{problems.count}}</span></p>
+      <table class="table">
+        <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th><th scope="col">Mahalle</th></tr></thead>
+        <tbody>
+        {% for problem in problems%}
+          <tr> <td><a href="/order/problemView/{{problem.id}}" >{{ problem.created_date |timesince }}</a></td><td>{{problem.order.customer.customer_name}}</td><td>{{problem.urun_grubu.title}}</td><td>{{ord.sevk_adres.mahalle}}</td></tr>
+        {% endfor%}
+        
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card-header bg-light "style="height: 200px; overflow-y: scroll;">
+    <p> Bekleyen Siparişler<span class="badge bg-danger">{{order.count}}</span></p>
+    <table class="table">
+      <thead class="thead-dark"><tr> 
+          <th scope="col">Gun</th>
+          <th scope="col">Müşteri</th>
+          <th scope="col">Sip.Tipi</th>
+          <th scope="col">Mahalle</th></tr></thead>
+      <tbody>
+      {% for ord in order%}
+        <tr> <td><a href="/order/orderView/{{ord.id}}" >{{ ord.create_date |timesince }}</a></td><td>{{ord.customer.customer_name}}</td><td>{{ord.order_type}}</td><td>{{ord.sevk_adres.mahalle}}</td></tr>
+      {% endfor%}
+      
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+<br><br>
+
+
+
+
+<div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">PLANLAMA  
+          <button type="button" class="btn btn-primary btn-sm">
+            iş adedi: <span class="badge badge-light">{{planlama_jobs.count }}</span>
+          </button>
+        </h4>
+        <div class="row">
+          <div class="col-sm-8">
+              <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+          </div>
+          <div class="col-sm-4" align="right">
+            <div class="btn-group">
+              <a href="/order/planlama/active" class="btn btn-outline-dark btn-sm active" >Active </a>
+              <a href="/order/planlama/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+              <a href="/order/planlama/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="table-full-width table-responsive px-0 card-body">
+  
+  
+        {% if planlama_jobs %}
+        <table class="table-hover table-striped table">
+          <thead>
+            <tr>
+              <th class="border-0" scope="col">Workflow id</th>
+              <th class="border-0" scope="col">Statu</th>
+              <th class="border-0" scope="col">Tarih</th>
+              <th class="border-0" scope="col">Order ID</th>
+              <th class="border-0" scope="col">Açıklama</th>
+              <th class="border-0" scope="col">Müşteri</th>
+              <th class="border-0" scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for job in planlama_jobs %}
+                <tr>
+                  <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
+                  <td>{{job.status}}</td>
+                  <td>{{job.created_date}}</td>
+                  <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
+                  <td>{{job.order.content|safe}}</td>
+                  <td>{{job.order.customer.customer_name}}</td>
+                  
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Aksiyon
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="/order/workflowPlanla/{{job.id}}">Planla</a></li>
+                        <li><a class="dropdown-item" href="/order/workflowStatuUpdate/{{job.id}}/13">Müşt. Hab. Bekleniyor</a></li>
+                        <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
+                      </ul>
+                    </div>
+  
+                   </td>
+                  
+                </tr>
+              {% endfor %}
+            
+        
+          </tbody>
+        </table>
+      {%else%}
+        <div class="alert alert-danger">
+            Bekleyen iş yok
+        </div>
+      {% endif %}
+    </div>
+    </div>
+  </div>
+
+
+  {% endblock body %}

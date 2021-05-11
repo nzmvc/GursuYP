@@ -83,21 +83,32 @@
         {{ form.media }}
 
         <div class="row">
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
               {{ form.customer|as_crispy_field }}
             </div>
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
               {{ form.order_type|as_crispy_field }}
             </div>
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
                 {{ form.satis_kanali|as_crispy_field }}
 
             </div>
-            <div class="form-group col-md-3 mb-0">
+            <div class="form-group col-md-2 mb-0">
+              
+               <!--
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">VAR/YOK</label>
+                  </div>
+                  -->
+                Ölçüm dosyası girilmezse sipariş onayı sonrası Planlama ekibine iş ataması yapılacakdır !!!
+                  
+            </div>
+            <div class="form-group col-md-2 mb-0">
                 {{ form.order_image|as_crispy_field }}
             </div>
         </div>
-        
+        <br>
         <div class="row" >
             <div class="form-group col-md-2 mb-0">
                 {{ form.stok|as_crispy_field }}
@@ -111,11 +122,11 @@
                 {{ form.planlama_sekli|as_crispy_field }}
 
             </div>
-            <div  class="form-group col-md-3 mb-0">
+            <div  class="form-group col-md-2 mb-0">
                 Tahmini en erken tarih  <br>
                 <input type="date" name="tahmini_tarih_min" class="input-sm" placeholder="Tarih">
             </div>
-            <div  class="form-group col-md-3 mb-0">
+            <div  class="form-group col-md-2 mb-0">
             
                 Tahmini en geç tarih  <br>
                 <input type="date" name="tahmini_tarih_max" class="input-sm" placeholder="Tarih">
@@ -193,31 +204,16 @@
         var url = $("#orderProductForm").attr("data-product-url");  // get the url of the `load_cities` view
         //var url = "/order/ajax/productDropList/";
         
-            //var urun_grubu_id = $(this).val();  // get the selected country ID from the HTML input
-           
-            
-            
-            
-            //id_form-0-marka
-            //id_form-0-urun_grubu
             if ( t[10] == "u" ){    //urun grubu change olmuş
-
                 var urun_grubu = val;  // urun grubu değeri alınır
                 var marka = document.getElementById("id_form-"+t[8]+"-marka").value;
-                alert("u");
-
+              
             }else {                 //marka change olmuş
-                alert("m");
-                //var urun_grubu = $("#id_form-"+t[8]+"-urun_grubu").val(); ;
-                //var urun_grubu = $("id_form-0-urun_grubu").value;
                 var urun_grubu = document.getElementById("id_form-"+t[8]+"-urun_grubu").value;
-                alert("urun_grubu:"+urun_grubu)
                 var marka = val ;
 
             }
             
-            alert(urun_grubu +" --"+marka);
-
 
             $.ajax({                       // initialize an AJAX request
               url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
@@ -228,8 +224,6 @@
               success: function (data) {   // `data` is the return of the `load_cities` view function
                 //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
                 $("#id_form-"+t[8]+"-product").html(data);  // replace the contents of the city input with the data that came from the server
-                
-
               }
             });
 

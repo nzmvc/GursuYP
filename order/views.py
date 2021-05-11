@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
-from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm
+from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm,ProblemAddForm
 from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle,ProductCategory
 from .models import Reservation,ReservationPerson,ReservationVehicle
 from django.forms import inlineformset_factory
@@ -11,6 +11,8 @@ from user.views import Logla
 from user.models import Logging,Employee,Departments
 from django.db.models import Q
 import datetime
+from django.http import JsonResponse
+import json
 #import simplejson
 
 
@@ -97,19 +99,59 @@ def dashboard(request,departman="ope",list_filter="all"):
     #depo_jobs = Workflow.objects.filter(department=43000)
     
     content = {
-        'planlama_jobs':planlama_jobs,
+        'planlama_jobs':planlama_jobs,      ####
         'operasyon_jobs' : operasyon_jobs,
         'uretim_jobs':uretim_jobs,
         'depo_jobs' : depo_jobs,
-        'order':order,
+        'order':order,                      ####
         'customer' :customer,
         'product':product,
         'workflow':workflow,
         'problems':problems,
-        "res_today":res_today,
-        "res_tomorrow":res_tomorrow
+        "res_today":res_today,              ####
+        "res_tomorrow":res_tomorrow         ####
         }
     return  render(request,'dashboard.html',content)
+
+
+@login_required(login_url='/user/login/')
+def planlama(request,departman="ope",list_filter="all"):   
+
+    workflow = Workflow.objects.exclude(status_id=22)
+    order = Order.objects.all().exclude(statu_id=22)
+    problems = Problems.objects.exclude(statu_id=4).exclude(statu_id=5)
+
+
+    ##############################################
+    today = datetime.date.today()
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+   
+    print("today",today)
+    print("tomorrow",tomorrow)
+    #res_today = Reservation.objects.filter(start_date__startswith=datetime.date.today())
+    res_today = Reservation.objects.filter(start_date__year=today.year, start_date__month=today.month, start_date__day=today.day)
+    print(res_today)
+    res_tomorrow = Reservation.objects.filter(start_date__year=tomorrow.year, start_date__month=tomorrow.month, start_date__day=tomorrow.day)
+    #res_nextweek = 
+    #return render(request,'reservationList.html',{"res_today":res_today,"res_tomorrow":res_tomorrow})
+    ###############################################
+
+    if list_filter == "all":
+        planlama_jobs = Workflow.objects.filter(department=41000)
+    elif list_filter == "tamamlandi":
+        planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id=22)
+    else: 
+        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22)
+
+    content = {
+        'planlama_jobs':planlama_jobs,      ####
+        'order':order,                      ####
+        "res_today":res_today,              ####
+        "res_tomorrow":res_tomorrow         ####
+        }
+
+    return  render(request,'planlama.html',content)
+
 
 '''
 def dashboard2(request):
@@ -244,6 +286,17 @@ def productDropList(request):
     #products = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=ug).order_by('product_name')
     products = Product.objects.all().filter(urun_grubu=ug).filter(marka=marka).order_by('product_name')
     return render(request, 'productDropList.html', {'products': products})
+    
+
+def orderDropList(request):
+    """
+    http://localhost:8000/order/ajax/orderDropList/?customer=26
+    şeklinde liste test edilebilir.
+    """
+    customer = request.GET.get('customer')
+    print("dddd",customer)
+    orders = Order.objects.all().filter(customer_id=customer).order_by('create_date')
+    return render(request, 'orderDropList.html', {'orders': orders})
 
 @login_required(login_url='/user/login/')
 def test(request):
@@ -344,7 +397,7 @@ def orderUpdate(request,id):
         order.save()
         messages.success(request,"sipariş bilgileri güncellendi")
         Logla(request.user,"sipariş güncellendi","orderUpdate",order.id,10)
-        return redirect("/order/orderList")
+        return redirect("/order/orderList/active")
     return  render(request,'orderUpdate.html',{'form':form})
 
 
@@ -381,7 +434,7 @@ def orderView(request,id):
         
     else:
         messages.success(request,"Sipariş bulunamadı!!!!!!")
-    return  redirect("/order/orderList")
+    #return  redirect("/order/orderList")
 
 @login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
@@ -459,25 +512,29 @@ def orderApproved(request,id):
         stok = new_order.stok
         order_type = new_order.order_type
 
+        if not new_order.order_image:
+            workflow_planlama_olcumDosyasi = Workflow(department="41000",status_id=24,order=new_order,comment="Ölçüm dosyası işlemi")
+            workflow_planlama_olcumDosyasi.save()
+
         if stok == "0": # stokta ürün yoksa üretim birimine iş atanır.
 
-            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order)
+            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order,comment="Üretim yapılacak")
             workflow_uretim.save()
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10")
         if order_type == "D":
-            workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order)
+            workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order,comment="Depo teslimi")
             workflow_depoTeslim.save()
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_depoTeslim",type_id=workflow_depoTeslim.pk,status="50")
 
         if order_type == "S":
-            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order)
+            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama")
             workflow_planlama_sevk.save()
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_depoTeslim",type_id=workflow_planlama_sevk.pk,status="20")
 
         if order_type == "M":
-            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order)
-            workflow_planlama_montaj = Workflow(department="41000",status_id=11,order=new_order)
-            workflow_montaj = Workflow(department="44000",status_id=15,order=new_order)
+            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama")
+            workflow_planlama_montaj = Workflow(department="41000",status_id=11,order=new_order,comment="Montaj Planlama")
+            workflow_montaj = Workflow(department="44000",status_id=15,order=new_order,comment="Montaj işlemi")
             workflow_planlama_sevk.save()
             workflow_planlama_montaj.save()
             workflow_montaj.save()
@@ -521,8 +578,9 @@ def customerAdd(request):
         il = form_adress.cleaned_data.get("il")
         ilce = form_adress.cleaned_data.get("ilce")
         adres = form_adress.cleaned_data.get("adres")
+        mahalle = form_adress.cleaned_data.get("mahalle")
         map_link = form_adress.cleaned_data.get("map_link")
-        customer_adres = Address(customer=customer,ulke=ulke,il=il,ilce=ilce,adres=adres,map_link=map_link)
+        customer_adres = Address(customer=customer,ulke=ulke,il=il,ilce=ilce,adres=adres,map_link=map_link,mahalle=mahalle)
         customer_adres.save()
         #form_adress.save()
         ###################################################
@@ -810,14 +868,15 @@ def workflowPlanla(request,id):
 
     if ustalar or arabalar:
         tarih = request.POST["tarih"]
-        zaman = request.POST["zaman"]
+        stime = request.POST["stime"]
+        etime = request.POST["etime"]
         print("***************************************")
-        print(tarih,zaman)
+        print(tarih,stime,etime)
         # reservation tablosuna giriş yap
         res = Reservation()
         res.order = order
-        res.start_date = tarih
-        res.end_date = tarih
+        res.start_date = tarih + " " + stime
+        res.end_date = tarih+ " " + etime
         res.description = " deneme kayıt"    #TODO: descriptpon güncellenmeli
         res.urun_grubu_id = 1               #TODO: ürün grubu neye göre girlecek ??????
         res.save()
@@ -854,8 +913,9 @@ def workflowPlanla(request,id):
         if request.method == 'POST':    ############  ikinci girişte tarih seçilip planla butonuna basılınca burası çalışır
             
             tarih = request.POST["planGun"]
-            zaman = request.POST["zaman"]
-            print(tarih,zaman)
+            stime = request.POST["stime"]
+            etime = request.POST["etime"]
+            print(tarih,stime,etime)
 
             # uygun araç bilgilerini alıp forma gonder
             # r = ReservationVehicle.objects.filter(reservation__start_date__gt="2021-03-24")
@@ -863,10 +923,14 @@ def workflowPlanla(request,id):
             #Sample.objects.filter(date__range=["2011-01-01", "2011-01-31"])
             #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=["2021-03-25", "2021-03-26"])
             
+            '''
             if zaman == "oo":
                 requested_start_date = tarih + " 09:00:00"
                 requested_end_date = tarih + " 12:00:00"
-            
+            '''
+            requested_start_date = tarih +" "+ stime
+            requested_end_date = tarih +" "+ etime
+
             print(requested_start_date,"------",requested_end_date)
             #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=["2021-03-28", "2021-03-28"])
             #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=[start_date, end_date])
@@ -894,7 +958,8 @@ def workflowPlanla(request,id):
                 'araclar':araclar,
                 'ustalar':ustalar,
                 'tarih':tarih,
-                'zaman':zaman,
+                'stime':stime,
+                'etime':etime,
                 'wf':wf,
             }
             return  render(request,'montaj_plan_adim2.html',content)
@@ -908,6 +973,72 @@ def workflowPlanla(request,id):
                 messages.warning(request,"Görev bulunamadı")
                 # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
                 return redirect(request.META['HTTP_REFERER'])
+
+
+@login_required(login_url='/user/login')
+def takvim(request,day):
+    #today = datetime.date.today()
+    #tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    gunler=[]
+    reservations=[]
+    gunler.append(datetime.date.today())
+    
+    for i in range(1,day):
+        gunler.append( datetime.date.today() + datetime.timedelta(days=i))
+
+    for i in range(day):
+        print( gunler[i])
+        reservations.append ( Reservation.objects.filter(start_date__year=gunler[i].year, start_date__month=gunler[i].month, start_date__day=gunler[i].day) )
+
+    #res_today = Reservation.objects.filter(start_date__startswith=datetime.date.today())
+    #res_today = Reservation.objects.filter(start_date__year=today.year, start_date__month=today.month, start_date__day=today.day)
+    #print(res_today)
+    #res_tomorrow = Reservation.objects.filter(start_date__year=tomorrow.year, start_date__month=tomorrow.month, start_date__day=tomorrow.day)
+    #res_nextweek = 
+    return render(request,'takvim.html',{"gunler":gunler,"reservations":reservations})
+
+@login_required(login_url='/user/login')
+def events(request):
+   
+    return render(request,'events.html')
+
+def default(o):
+    if isinstance(o, (datetime.date, datetime.datetime)):
+        return o.isoformat()
+
+@login_required(login_url='/user/login')
+def events_data(request):
+    
+    events_arr =[]
+    res = Reservation.objects.all()
+    
+    
+    for d in res:
+        #print(d.order.customer.customer_name)
+        
+        start_date = datetime.datetime.strftime(d.start_date, '%Y-%m-%d %H:%M')
+        end_date = datetime.datetime.strftime(d.end_date, '%Y-%m-%d %H:%M')
+        events_arr.append( { 'id':d.order_id,'title': d.order.customer.customer_name , 'start': start_date,'end': end_date })
+    
+    print(events_arr)
+
+    #events_arr = [ {'title': 'All Day Event','start': '2020-09-01'},{'title': 'kurulum','start': '2020-09-01 10:00:00','end':'2020-09-01 12:00:00'}, {'title': 'Long Event','start': '2020-09-07','end': '2020-09-10'} ]
+    
+    #y = json.dumps(events_arr ,indent=4)    # array i json formatına donusturduk
+    y = json.dumps(events_arr ,sort_keys=True,  indent=1,  default=default)    # array i json formatına donusturduk
+
+    serialized= json.dumps(events_arr, sort_keys=True, indent=3)   # array i json formatına donusturduk
+
+
+    """
+    json to array
+    jsonStr = '[{"a":1, "b":2}, {"c":3, "d":4}]'
+    aList = json.loads(jsonStr)
+    print(aList[0]['b'])
+
+    """
+    return HttpResponse(serialized)
+    #return HttpResponse(events_arr)
 
 
 @login_required(login_url='/user/login')
@@ -957,6 +1088,18 @@ def problemAdd(request,id):
         return redirect("/order/orderView/"+str(id))
 
     return  render(request,'problemAdd.html',{'form':form}) 
+
+@login_required(login_url="/user/login")
+def problemAddFull(request):
+    customers = Customer.objects.all()
+    form = ProblemAddForm(request.POST or None, request.FILES or None)
+
+    if form.is_valid():
+        form.save()
+        messages.info(request," Müşteri Şikayeti girildi") 
+        #Logla(request.user,"Ürün eklendi","productAdd",product_id,10)
+        return redirect("/order/problemList")
+    return render(request,"problemAddFull.html",{'customers':customers,'form':form})
 
 @login_required(login_url='/user/login')
 def problemList(request):

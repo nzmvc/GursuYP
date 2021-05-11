@@ -32,7 +32,7 @@ class Order (models.Model):
     #TODO user bilgisi eklenecek
     create_date = models.DateTimeField(auto_now=True)
     content = RichTextField(verbose_name="Açıklama")
-    order_image = models.FileField(blank =True,null=True,verbose_name="Sipariş Formunu Ekleyiniz")
+    order_image = models.FileField(blank =True,null=True,verbose_name="Ölçü/Üretim Dökümanı")
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
     #statu = models.CharField(max_length=2,choices = status,verbose_name="Sipariş Durumu",default="0")
@@ -71,6 +71,7 @@ class Address (models.Model):
     ulke = models.CharField( max_length=30,verbose_name="ULKE",default="Türkiye")
     il = models.CharField( max_length=30,verbose_name="IL")
     ilce = models.CharField( max_length=30,verbose_name="İLÇE")
+    mahalle = models.CharField( max_length=30,verbose_name="MAHALLE")
     adres = models.CharField( max_length=100,verbose_name="ADRES")
     map_link = models.CharField( max_length=100,verbose_name="GOOGLE MAP")
     aciklama = models.CharField( max_length=10,verbose_name="Açıklama(kısa/kod)")
