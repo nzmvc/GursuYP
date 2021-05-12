@@ -456,11 +456,16 @@ def orderSiparisFisi(request,id):
 def orderAddProduct(request,id):
     #OrderFormSet = inlineformset_factory(Customer,Order, fields('product','amount'),extra=5 )
     order = Order.objects.get(id=id)
-    form = OrderProductsForm2(initial={'order':order})
+    #form = OrderProductsForm2(initial={'order':order})
+
+    form = OrderProductsForm(initial={'order':order})
+    
+    # coklu ekleme için bunu kullanacağız
+    #product_formset = formset_factory(OrderProductsForm,extra=10)
 
     if request.method == 'POST':
             
-        form = OrderProductsForm2(request.POST)
+        form = OrderProductsForm(request.POST)
         if form.is_valid():
 
             product = form.cleaned_data.get("product")
@@ -475,7 +480,7 @@ def orderAddProduct(request,id):
             return redirect('/order/orderView/'+ str(id) )
     
     return render( request,'orderAddProduct.html',{'form':form})
-    #return render( request,'orderProductform.html',{'formset':formset})
+    #return render( request,'orderProductform.html',{'formset':formset}
 
 @login_required(login_url='/user/login/')
 @permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
@@ -645,6 +650,37 @@ def customerView(request,id):
         messages.warning(request,"müşteri bulunamadı")
         
         return redirect("/order/customerList")
+
+@login_required(login_url='/user/login/')
+@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+def customerAddressUpdate(request,id):
+    address = get_object_or_404(Address,id=id)
+    form = CustomerAddressForm(request.POST or None, request.FILES or None,instance=address)
+    if form.is_valid() :
+        customerAddress = form.save(commit= False)
+        customerAddress.save()
+        Logla(request.user,"Müşteri adresi güncellendi","customerAddressUpdate",id,10)
+        messages.success(request,"müşteri bilgileri güncellendi")
+        return redirect('/order/customerView/'+ str(address.customer.id) )
+
+    return  render(request,'customerAddressUpdate.html',{'form':form})
+
+@login_required(login_url='/user/login/')
+@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+def customerAddressActivation(request,id):
+    
+    address = get_object_or_404(Address,id=id)
+    address.activate = False
+
+    if address.active:            # adress aktfi ise deaktif edilir
+        address.active = False    
+    else:                           # adress deaktif ise aktif edilir
+        address.active = True
+
+    address.save()
+    Logla(request.user,"Müşteri adresi deaktif edildi","customerAddressUpdate",id,10)
+
+    return redirect(request.META['HTTP_REFERER'])   # geldiği sayfaya önüş yapması için
 
 
 @login_required(login_url='/user/login/')

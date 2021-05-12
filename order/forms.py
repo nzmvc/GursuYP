@@ -63,7 +63,7 @@ class ProductForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
     class  Meta:
         model = Address
-        fields = ['ulke','il','ilce','adres','map_link','aciklama']
+        fields = ['ulke','il','ilce','adres','map_link','aciklama','mahalle']
 
 class CustomerAddressForm(forms.ModelForm):
     class  Meta:

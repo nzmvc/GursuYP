@@ -81,10 +81,14 @@
                     <td>{{ads.map_link}}</td>
                     <td>{{ads.aciklama}}</td>
                     <td>
-                      <a href="/order/adressUpdate/{{ads.id}}">
+                      <a href="/order/customerAddressUpdate/{{ads.id}}">
                         <button class="btn btn-warning btn-sm">Güncelle</button></a>
-                      <a href="/order/adressActivation/{{ads.id}}">
-                          <button class="btn btn-danger btn-sm">Deaktif</button></a>
+                      <a href="/order/customerAddressActivation/{{ads.id}}">
+                          {% if ads.active %}
+                            <button class="btn btn-danger btn-sm">Deaktif Et</button></a>
+                          {% else %}
+                              <button class="btn btn-success btn-sm">Aktif Et</button></a>
+                          {% endif%}
                     </td>
                     </tr>
                 {% endfor%}

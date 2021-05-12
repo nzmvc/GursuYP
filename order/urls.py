@@ -24,6 +24,8 @@ urlpatterns = [
     
     path('customerAdd/',views.customerAdd,name='customerAdd'),
     path('customerAddressAdd/<int:id>',views.customerAddressAdd,name='customerAddressAdd'),
+    path('customerAddressUpdate/<int:id>',views.customerAddressUpdate,name='customerAddressUpdate'),
+    path('customerAddressActivation/<int:id>',views.customerAddressActivation,name='customerAddressActivation'),
    # path('customerAdd2/',views.customerAdd2,name='customerAdd2'),
     path('customerList/',views.customerList,name='customerList'),
     path('customerView/<int:id>',views.customerView,name='customerView'),
