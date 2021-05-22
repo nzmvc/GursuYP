@@ -59,22 +59,20 @@
             {% csrf_token %}
             <table>
                 <tr>
-                    <td>Montaj Tarihi</td>
-                    <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih" value="{{tarih}}"></td>
+                    <td>Montaj başlangıç tarihi</td>
+                    <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih" value="{{tarih}}">  <input type="time"  name="stime" value="{{stime}}"></td>
                 </tr>
                 <tr>
-                    <td>Zaman</td>
-                    <td>Başlangıç-Bitiş Saati</td>
-                        <td><input type="time"  name="stime"> -- <input type="time"  name="etime">
-                            <!--
-                            <input type="radio" name="zaman" value="oo" checked>
-                            <label >Öğleden Önce</label><br>
-                            <input type="radio" name="zaman" value="os">
-                            <label >Öğleden Sonra</label><br>
-                            <input type="radio" name="zaman" value="tg">
-                            <label>Tam gün</label><br>
-                            -->
-                        </td>
+                    <td>Montaj bitiş tarihi</td>
+                    <td> <input type="date" name="planGun_end" class="input-sm" placeholder="Tarih" value="{{tarih_end}}"> <input type="time"  name="etime" value="{{etime}}">
+                       
+                    </td>
+                </tr>
+
+
+
+
+
                 </tr>
             </table>
             <button type="submit" class="btn btn-info btn-sm"> Plan yap</button>
@@ -85,8 +83,10 @@
             
             <form method="POST">
                 {% csrf_token %}
-                Tarih : {{ tarih}}   Başlangıç  : {{ stime}}  Bitiş: {{etime}} <br>
+                Tarih : {{ tarih}}   Başlangıç  : {{ stime}} <br>
+                Tarih : {{ tarih_end}}  Bitiş: {{etime}} <br>
                 <input type="hidden" name="tarih"  id="tarih" value="{{tarih}}"/>
+                <input type="hidden" name="tarih_end"  id="tarih_end" value="{{tarih_end}}"/>
                 <input type="hidden" name="stime"  id="stime" value="{{stime}}"/>
                 <input type="hidden" name="etime"  id="etime" value="{{etime}}"/>
                 <br><br>

@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
-from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm,ProblemAddForm
+from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm,ProblemAddForm,OrderDosya
 from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle,ProductCategory
 from .models import Reservation,ReservationPerson,ReservationVehicle
 from django.forms import inlineformset_factory
@@ -35,7 +35,7 @@ def dashboard(request,departman="ope",list_filter="all"):
     order = Order.objects.all().exclude(statu_id=22)
     customer = Customer.objects.all()
     product = Product.objects.all()
-    workflow = Workflow.objects.exclude(status_id=22)
+    workflow = Workflow.objects.exclude(status_id=22).exclude(status_id=25)
     problems = Problems.objects.exclude(statu_id=4).exclude(statu_id=5)
     
 
@@ -62,7 +62,7 @@ def dashboard(request,departman="ope",list_filter="all"):
         else: 
             operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
     else:
-        operasyon_jobs = Workflow.objects.filter(department=44000)
+        operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
 
     if departman =="plan":
         if list_filter == "all":
@@ -70,9 +70,9 @@ def dashboard(request,departman="ope",list_filter="all"):
         elif list_filter == "tamamlandi":
             planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id=22)
         else: 
-            planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22)
+            planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22).exclude(status_id=25)
     else:
-        planlama_jobs = Workflow.objects.filter(department=41000)
+        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22).exclude(status_id=25)
 
     if departman =="uretim":
         if list_filter == "all":
@@ -82,7 +82,7 @@ def dashboard(request,departman="ope",list_filter="all"):
         else: 
             uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
     else:
-        uretim_jobs = Workflow.objects.filter(department=42000)
+        uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
 
     if departman =="depo":
         if list_filter == "all":
@@ -92,7 +92,7 @@ def dashboard(request,departman="ope",list_filter="all"):
         else: 
             depo_jobs = Workflow.objects.filter(department=43000).exclude(status_id=10)
     else:
-        depo_jobs = Workflow.objects.filter(department=43000)
+        depo_jobs = Workflow.objects.filter(department=43000).exclude(status_id=10)
 
 
     #uretim_jobs = Workflow.objects.filter(department=42000)
@@ -153,23 +153,6 @@ def planlama(request,departman="ope",list_filter="all"):
     return  render(request,'planlama.html',content)
 
 
-'''
-def dashboard2(request):
-    
-    planlama_jobs = Workflow.objects.filter(department=41000)
-    operasyon_jobs = Workflow.objects.filter(department=44000)
-    uretim_jobs = Workflow.objects.filter(department=42000)
-    depo_jobs = Workflow.objects.filter(department=43000)
-    
-    content = {
-        'planlama_jobs':planlama_jobs,
-        'operasyon_jobs' : operasyon_jobs,
-        'uretim_jobs':uretim_jobs,
-        'depo_jobs' : depo_jobs
-        }
-    return  render(request,'dashboard2.html',content)
-'''
-
 
 def about(request):
     #return HttpResponse("Merhaba ana sayfa")
@@ -182,7 +165,7 @@ def about(request):
 ############################################################################
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderAdd(request):
     form = OrderForm(request.POST or None,request.FILES or None)
 
@@ -217,7 +200,7 @@ def orderAdd(request):
     return  render(request,'orderAdd.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderAdd2(request):
     form = OrderForm(request.POST or None,request.FILES or None)
     
@@ -254,7 +237,7 @@ def orderAdd2(request):
 
     return  render(request,'orderAdd2.html',{'form':form})
 
- 
+
 def findProduct(request, qs=None):
     if qs is None:
         qs = Product.objects.values_list('product_name', flat=True).all()
@@ -315,18 +298,19 @@ def test(request):
 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderAdd3(request):
     form = OrderForm(request.POST or None,request.FILES or None)
     product_formset = formset_factory(OrderProductsForm,extra=10)
     
-    
+    user = User.objects.get(username=request.user)
+    #sube=user.employee.sube
+
     if request.method == "POST":
         formset = product_formset(request.POST)
 
         if form.is_valid() and formset.is_valid():
 
-                
                 customer = form.cleaned_data.get("customer")
                 order_type = form.cleaned_data.get("order_type")
                 order_image = form.cleaned_data.get("order_image")
@@ -337,8 +321,8 @@ def orderAdd3(request):
                 tahmini_tarih_max = form.cleaned_data.get("tahmini_tarih_max")
                 satis_kanali = form.cleaned_data.get("satis_kanali")
                 planlama_sekli = form.cleaned_data.get("planlama_sekli")
-
-                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali,planlama_sekli=planlama_sekli)
+    
+                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali,planlama_sekli=planlama_sekli,sube=user.employee.sube)
                 new_order.save()
                 
                 Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
@@ -369,26 +353,40 @@ def orderAdd3(request):
 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_listele',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_listele',login_url='/user/yetkiYok/')
 def orderList(request,list_filter):
     #orders= Order.objects.all()
     #list_filter = request.GET.get("filter")
 
+    user = User.objects.get(username=request.user)
+    sube = user.employee.sube
+    dep  = user.employee.department.id
+
     print(list_filter)
-    if list_filter == "active":
-        orders= Order.objects.all().exclude(statu=22).order_by('create_date')
-    elif list_filter == "all":
-        orders= Order.objects.all().order_by('-create_date')
-    elif list_filter == "musteride":
-        orders= Order.objects.filter(statu=13)
-    elif list_filter == "tamamlandi":
-        orders= Order.objects.filter(statu=22)
+    if dep == 1 :   #  1 finans departmanı anlamına geliyor. tüm siparişleri görebilmeli
+        if list_filter == "active":
+            orders= Order.objects.all().exclude(statu=22).order_by('create_date')
+        elif list_filter == "all":
+            orders= Order.objects.all().order_by('-create_date')
+        elif list_filter == "musteride":
+            orders= Order.objects.filter(statu=13)
+        elif list_filter == "tamamlandi":
+            orders= Order.objects.filter(statu=22)
+    else:
+        if list_filter == "active":
+            orders= Order.objects.all().filter(sube=sube).exclude(statu=22).order_by('create_date')
+        elif list_filter == "all":
+            orders= Order.objects.all().filter(sube=sube).order_by('-create_date')
+        elif list_filter == "musteride":
+            orders= Order.objects.filter(statu=13).filter(sube=sube)
+        elif list_filter == "tamamlandi":
+            orders= Order.objects.filter(statu=22).filter(sube=sube)
 
     return  render(request,'orderList.html',{'orders':orders})
 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderUpdate(request,id):
     order = get_object_or_404(Order,id=id)
     form = OrderForm(request.POST or None, request.FILES or None,instance=order)
@@ -400,9 +398,25 @@ def orderUpdate(request,id):
         return redirect("/order/orderList/active")
     return  render(request,'orderUpdate.html',{'form':form})
 
+@login_required(login_url='/user/login/')
+def dosyaEkle(request,order_id,workflow_id):
+    order = get_object_or_404(Order,id=order_id)
+    form = OrderDosya(request.POST or None, request.FILES or None,instance=order)
+    if form.is_valid() :
+        
+        form.save()
+        messages.success(request,"Dosya Eklendi")
+        Logla(request.user,"sipariş güncellendi","dosyaEkle",order.id,10)
+
+        wf = Workflow.objects.get(id=workflow_id)
+        wf.status_id = 25
+        wf.save()
+
+        return redirect("/order/dashboard/ope/active")
+    return  render(request,'dosyaEkle.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderDelete(request,id):
     order = get_object_or_404(Order,id=id)
     if order :
@@ -415,38 +429,46 @@ def orderDelete(request,id):
     return  redirect("/order/orderList/active")
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderView(request,id):
-    order = get_object_or_404(Order,id=id)
+    form    = OrderProductsForm()
+    order   = get_object_or_404(Order,id=id)
+    
     workflows = Workflow.objects.filter(order_id=id)
     orderProducts = OrderProducts.objects.filter(order =order)
     problems    = Problems.objects.filter(order = order)
-    address = Address.objects.filter(customer = order.customer) 
+    adresler =  Address.objects.filter(customer = order.customer) 
+    fatura_adres = Address.objects.filter(id = order.fatura_adres)
+    sevk_adres = Address.objects.filter(id = order.sevk_adres) 
     price_sum = sum(orderProducts.values_list('toplam_tutar', flat=True))
     t_tutar = price_sum * ((100 - order.iskonto)/100)
     
     #logs    = Logging.objects.filter(log_type="order",type_id=id)
     logs={}
     
+    content ={'form':form, 'order':order,'workflows':workflows,
+                'logs':logs,'orderProducts':orderProducts,'problems':problems,
+                'price_sum':price_sum,'t_tutar':t_tutar,'fatura_adres':fatura_adres,'sevk_adres':sevk_adres,'adresler':adresler}
     
     if order :
-        return render(request,"orderView.html",{'order':order,'workflows':workflows,'logs':logs,'orderProducts':orderProducts,'problems':problems,'price_sum':price_sum,'t_tutar':t_tutar,'address':address})
+        return render(request,"orderView.html",content)
         
     else:
         messages.success(request,"Sipariş bulunamadı!!!!!!")
     #return  redirect("/order/orderList")
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderSiparisFisi(request,id):
     order = get_object_or_404(Order,id=id)
     orderProducts = OrderProducts.objects.filter(order =order)
-    address = Address.objects.filter(customer = order.customer) 
+    fatura_adres = Address.objects.filter(id = order.fatura_adres) 
+    sevk_adres = Address.objects.filter(id = order.sevk_adres)  
     price_sum = sum(orderProducts.values_list('toplam_tutar', flat=True))
     t_tutar = price_sum * ((100 - order.iskonto)/100)
-    print(orderProducts.count())
+    #print(orderProducts.count())
     if order :
-        return render(request,"orderSiparis2.html",{'order':order,'orderProducts':orderProducts,'price_sum':price_sum,'t_tutar':t_tutar,'address':address,'range':range(15-orderProducts.count())})
+        return render(request,"orderSiparis2.html",{'order':order,'orderProducts':orderProducts,'price_sum':price_sum,'t_tutar':t_tutar,'fatura_adres':fatura_adres,'sevk_adres':sevk_adres,'range':range(15-orderProducts.count())})
         
     else:
         messages.success(request,"Sipariş bulunamadı!!!!!!")
@@ -483,7 +505,7 @@ def orderAddProduct(request,id):
     #return render( request,'orderProductform.html',{'formset':formset}
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderDeleteProduct(request,id):
     
     order_product = OrderProducts.objects.get(id=id)
@@ -493,31 +515,43 @@ def orderDeleteProduct(request,id):
     #return redirect('/order/orderView/'+ str(id) )
     
 @login_required(login_url='/user/login/')
-def orderAddressSec(request,order_id,address_id):
-    
+def orderAdresSecim(request,fs,es,order_id,address_id):
+    # fs : fatura / sevk
+    # es : ekle / sil
     order = Order.objects.get(id=order_id)
-    order.sevk_adres_id = address_id
+   
+    if fs == "fatura":
+        if es == "ekle":
+            order.fatura_adres = address_id
+        else:
+            order.fatura_adres = 0
+            #order.fatura_adres.remove()
+    else:                                       # sevk adres işlemleri için buraya gelir
+        if es == "ekle":
+            order.sevk_adres = address_id
+        else:
+            order.sevk_adres = 0
+    
     order.save()
+
     return redirect(request.META['HTTP_REFERER'])     
 
-@login_required(login_url='/user/login/')
-def orderAddressSil(request,order_id):
-    
-    order = Order.objects.get(id=order_id)
-    order.sevk_adres_id = ""
-    order.save()
-    return redirect(request.META['HTTP_REFERER'])     
+
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.siparis_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
 def orderApproved(request,id):
 
     new_order = Order.objects.get(id=id)
-    if new_order.sevk_adres :
+    if new_order.sevk_adres and new_order.fatura_adres:
         stok = new_order.stok
         order_type = new_order.order_type
 
-        if not new_order.order_image:
+        #urungrubu 1 celikkapı , 2 ic kpaı, 3 zemin
+        #eğer ic kapı ise planlama ekibine is akışı oluşturulur.
+        orderProductType = OrderProducts.objects.filter(product__urun_grubu=2).filter(order_id =id)
+
+        if not new_order.order_image and orderProductType.count() > 0 :
             workflow_planlama_olcumDosyasi = Workflow(department="41000",status_id=24,order=new_order,comment="Ölçüm dosyası işlemi")
             workflow_planlama_olcumDosyasi.save()
 
@@ -537,13 +571,14 @@ def orderApproved(request,id):
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_depoTeslim",type_id=workflow_planlama_sevk.pk,status="20")
 
         if order_type == "M":
-            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama")
+            #montajlı işte sevk planına gerek olmadığı için kaldırıldı
+            #workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama")
             workflow_planlama_montaj = Workflow(department="41000",status_id=11,order=new_order,comment="Montaj Planlama")
             workflow_montaj = Workflow(department="44000",status_id=15,order=new_order,comment="Montaj işlemi")
-            workflow_planlama_sevk.save()
+            #workflow_planlama_sevk.save()
             workflow_planlama_montaj.save()
             workflow_montaj.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_sevk",type_id=workflow_planlama_sevk.pk,status="20")
+            #Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_sevk",type_id=workflow_planlama_sevk.pk,status="20")
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_montaj",type_id=workflow_planlama_montaj.pk,status="30")
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_montaj",type_id=workflow_montaj.pk,status="40")
 
@@ -558,7 +593,7 @@ def orderApproved(request,id):
 #######################  CUSTOMER          #################################
 ############################################################################
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetim',login_url='/user/yetkiYok/')
 def customerAdd(request):
     print(request.META['HTTP_REFERER'])
     form = CustomerForm(request.POST or None,request.FILES or None)
@@ -597,7 +632,7 @@ def customerAdd(request):
 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerAddressAdd(request,id):
     customer = Customer.objects.get(id=id)
     form = CustomerAddressForm(initial = {'customer':customer})
@@ -626,7 +661,7 @@ def customerAdd2(request):
 '''
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_listele',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_listele',login_url='/user/yetkiYok/')
 def customerList(request):
     keyword = request.GET.get("keyword")
     if keyword:
@@ -637,7 +672,7 @@ def customerList(request):
     return  render(request,'customerList.html',{'customers':customers}) 
 
 @login_required(login_url='/user/login')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerView(request,id):
     
     customer = Customer.objects.get(id=id)
@@ -652,7 +687,7 @@ def customerView(request,id):
         return redirect("/order/customerList")
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerAddressUpdate(request,id):
     address = get_object_or_404(Address,id=id)
     form = CustomerAddressForm(request.POST or None, request.FILES or None,instance=address)
@@ -666,7 +701,7 @@ def customerAddressUpdate(request,id):
     return  render(request,'customerAddressUpdate.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerAddressActivation(request,id):
     
     address = get_object_or_404(Address,id=id)
@@ -684,7 +719,7 @@ def customerAddressActivation(request,id):
 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerUpdate(request,id):
     customer = get_object_or_404(Customer,id=id)
     form = CustomerForm(request.POST or None, request.FILES or None,instance=customer)
@@ -698,7 +733,7 @@ def customerUpdate(request,id):
     return  render(request,'customerUpdate.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
 def customerDelete(request,id):
     customer = get_object_or_404(Customer,id=id)
     customer.delete()
@@ -710,7 +745,7 @@ def customerDelete(request,id):
 #######################  PRODUCT           #################################
 ############################################################################
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.urun_yonetim',login_url='/user/yetkiYok/')
+@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
 def productAdd(request):
     form = ProductForm(request.POST or None,request.FILES or None)
 
@@ -727,7 +762,7 @@ def productAdd(request):
     return  render(request,'productAdd.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.urun_listele',login_url='/user/yetkiYok/')
+@permission_required('user.urun_listele',login_url='/user/yetkiYok/')
 def productList(request):
     keyword = request.GET.get("keyword")
     if keyword:
@@ -738,7 +773,7 @@ def productList(request):
     return  render(request,'productList.html',{'products':products}) 
 
 @login_required(login_url='/user/login/')
-@permission_required('yetkilendirme.urun_yonetim',login_url='/user/yetkiYok/')
+@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
 def productUpdate(request,id):
     product = get_object_or_404(Product,id=id)
     form = ProductForm(request.POST or None, request.FILES or None,instance=product)
@@ -752,7 +787,7 @@ def productUpdate(request,id):
     return  render(request,'productUpdate.html',{'form':form})
 
 @login_required(login_url='/user/login')
-@permission_required('yetkilendirme.urun_yonetim',login_url='/user/yetkiYok/')
+@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
 def productDeactive(request,id):
         product = get_object_or_404(Product,id=id)
         product.active=0
@@ -762,7 +797,7 @@ def productDeactive(request,id):
         return redirect("/order/productList")
 
 @login_required(login_url='/user/login')
-@permission_required('yetkilendirme.urun_yonetim',login_url='/user/yetkiYok/')
+@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
 def productActive(request,id):
         product = get_object_or_404(Product,id=id)
         product.active=1
@@ -775,22 +810,24 @@ def productActive(request,id):
 #######################  WORKFLOW          #################################
 ############################################################################
 @login_required(login_url='/user/login')
-@permission_required('yetkilendirme.urun_yonetim',login_url='/user/yetkiYok/')
+@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
 def workflowCompleted(request,id):
     #print("referer-----",request.META['HTTP_REFERER'])
     wf = Workflow.objects.get(id=id)
     #orderStatus = OrderStatu.objects.get(id=22) ## id:22 Sevk Planlandı anlamına geliyor
     user_id = User.objects.get(username=request.user).id
     if wf :
-
-        if wf.department == 40000:   #operasyon
+        print(wf.department)
+        if wf.department == "40000":   #operasyon
             wf.status_id = 18
-        elif wf.department == 41000:     #planlama
+        elif wf.department == "41000":     #planlama
             wf.status_id = 22
-        elif wf.department == 42000:     #uretim
+        elif wf.department == "42000":     #uretim
             wf.status_id = 5
-        elif wf.department == 43000:     #depo
+        elif wf.department == "43000":     #depo
             wf.status_id = 10
+            print("status güncelendi")
+
 
         wf.completed_user_id = user_id
         wf.completed_date = datetime.datetime.now()
@@ -898,28 +935,26 @@ def workflowPlanla(request,id):
     order = Order.objects.get(id = wf.order_id)
     ustalar = request.POST.getlist('ustalar')       # ilk ve ikinci girişte  boş döner. 
     arabalar = request.POST.getlist('arabalar')
-    print("==========================================")
-    print(ustalar)
-    print(order)
-
+    
     if ustalar or arabalar:
         tarih = request.POST["tarih"]
+        tarih_end = request.POST["tarih_end"]
         stime = request.POST["stime"]
         etime = request.POST["etime"]
-        print("***************************************")
-        print(tarih,stime,etime)
+        #print("***************************************")
+        #print(tarih,stime,etime)
         # reservation tablosuna giriş yap
         res = Reservation()
         res.order = order
         res.start_date = tarih + " " + stime
-        res.end_date = tarih+ " " + etime
+        res.end_date = tarih_end+ " " + etime
         res.description = " deneme kayıt"    #TODO: descriptpon güncellenmeli
         res.urun_grubu_id = 1               #TODO: ürün grubu neye göre girlecek ??????
         res.save()
 
         if ustalar:
             for usta in ustalar:
-                print(usta)
+                #print(usta)
                 employee = Employee.objects.get(user_id = usta)
                 res_person = ReservationPerson()
                 res_person.employee_id = employee.id
@@ -929,7 +964,7 @@ def workflowPlanla(request,id):
 
         if arabalar:
             for araba in arabalar:
-                print(araba)
+                #print(araba)
                 res_vehicle = ReservationVehicle()
                 res_vehicle.vehicle_id = araba
                 res_vehicle.reservation_id = res.id
@@ -949,6 +984,7 @@ def workflowPlanla(request,id):
         if request.method == 'POST':    ############  ikinci girişte tarih seçilip planla butonuna basılınca burası çalışır
             
             tarih = request.POST["planGun"]
+            tarih_end = request.POST["planGun_end"]
             stime = request.POST["stime"]
             etime = request.POST["etime"]
             print(tarih,stime,etime)
@@ -965,7 +1001,7 @@ def workflowPlanla(request,id):
                 requested_end_date = tarih + " 12:00:00"
             '''
             requested_start_date = tarih +" "+ stime
-            requested_end_date = tarih +" "+ etime
+            requested_end_date = tarih_end +" "+ etime
 
             print(requested_start_date,"------",requested_end_date)
             #araclar = Vehicle.objects.exclude(reservationvehicle__reservation__start_date__range=["2021-03-28", "2021-03-28"])
@@ -994,6 +1030,7 @@ def workflowPlanla(request,id):
                 'araclar':araclar,
                 'ustalar':ustalar,
                 'tarih':tarih,
+                'tarih_end':tarih_end,
                 'stime':stime,
                 'etime':etime,
                 'wf':wf,
@@ -1161,3 +1198,12 @@ def problemView(request,id):
         return redirect('/order/problemView/'+ str(id) )
 
     return render(request,"problemView.html",{'problem':problem,'solution_form':solution_form})
+
+############################################################################
+#######################  PROBLEM           #################################
+############################################################################
+@login_required(login_url='/user/login')
+def rapor(request):
+    
+
+    return render(request,"rapor.html")

@@ -1,5 +1,5 @@
 from django.db import migrations,models
-from user.models import User,Employee
+from user.models import User,Employee,Sube
 from ckeditor.fields import RichTextField
 # Create your models here.
 
@@ -40,9 +40,14 @@ class Order (models.Model):
     iskonto = models.IntegerField(default=0,verbose_name="İskonto Oranı(%)")
     tahmini_tarih_min = models.DateField(null=True,verbose_name="En erken teslim (yyyy-mm-dd)")
     tahmini_tarih_max = models.DateField(null=True,verbose_name="En geç teslim (yyyy-mm-dd)")
-    sevk_adres = models.ForeignKey("Address",on_delete=models.PROTECT,verbose_name="Sevk Adresi",null=True)
+    
+    #TODO foreign key yerine başka bir parametre kullanılabilir 
+    sevk_adres = models.IntegerField(verbose_name="Sevk Adresi",null=True)
+    fatura_adres = models.IntegerField(verbose_name="Fatura Adresi",null=True)
+    
     satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı")
     planlama_sekli = models.CharField(max_length=20,choices = planlamaSecenek,verbose_name="Planlama Şekli",default="En Hızlı")
+    sube = models.ForeignKey(Sube,on_delete=models.PROTECT, verbose_name="Şube")
     #
     # fatura_adres = models.ManyToManyField("Address",verbose_name="Fatura Adresi")
 

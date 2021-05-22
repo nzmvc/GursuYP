@@ -1,11 +1,13 @@
 {% extends "layout.html" %}
 
+
 {% block body %}
+
 {% load crispy_forms_tags %}
-<div class="row">
-    <div >
+
+
     <h3> 
-            Müşteri Güncelle
+            Dosya Ekleme
             
     </h3>   
     <form method="post" enctype="multipart/form-data">
@@ -13,9 +15,10 @@
         {{ form.media }}
         {{form|crispy }}
         <br>
-        <button type="submit" class="btn btn-warning">Güncelle
+        <button type="submit" class="btn btn-warning">Ekle
             
         </button>
     </form>
 </div>
+
 {% endblock body %}

@@ -73,7 +73,7 @@ class Yetkilendirme(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         permissions = (
-                        ("satis_gir", "Satış girişi için gerekli yetki"),
+                        ("siparis_yonetimi", "Satış girişi için gerekli yetki"),
                         ("siparis_listele","Satışları listeleme"),
                         ("urun_listele","Ürün Listeleme"),
                         ("urun_yonetim","Ürün ekleme,güncelleme,deaktif etme"),
@@ -91,6 +91,7 @@ class Yetkilendirme(models.Model):
                         ("workflow_planlama","Workflow Planlama  "),
                         ("workflow_depo","Workflow Depo "),
                         ("workflow_uretim","Workflow Uretim "),
+                        ("test","test yetkisi"),
                        
                       )
 

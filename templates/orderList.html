@@ -2,7 +2,7 @@
 
 {% block body %}
 {% load crispy_forms_tags %}
-<div class="table-title">
+<div >
   
   <div class="row">
       
@@ -19,31 +19,28 @@
           
         </h3>
       </div>
-      <div class="col-sm-8 row " align="right">
-      <form>
-        <div class="col-sm-4" align="right">
-            {% csrf_token %}
-            <input type="text" name="keyword" class="input-sm" placeholder="Ara...">
-            <button type="submit" class="btn btn-outline-secondary btn-sm"> search</button>
-        </div>
-        <div class="col-sm-8" align="right">
-          <div class="btn-group">
-            <a href="/order/orderList/active" class="btn btn-outline-light btn-sm active" aria-current="page">Active </a>
-            <a href="/order/orderList/all" class="btn btn-outline-light btn-sm">Hepsi</a>
-            <a href="/order/orderList/musteride" class="btn btn-outline-light btn-sm">M.bekleniyor</a>
-            <a href="/order/orderList/tamamlandi" class="btn btn-outline-light btn-sm">Tamamlandi</a>
-          </div>
-        </div>
-      </form>
+      <div class="col-sm-3 row " align="right">
+        <form>
+          {% csrf_token %}
+          <input type="text" name="keyword" class="input-sm" placeholder="Ara...">
+          <button type="submit" class="btn btn-outline-secondary btn-sm"> >></button>
+        </form>
       </div>
-      
 
+      <div class="col-sm-5" align="right">
+          <div class="btn-group">
+            <a href="/order/orderList/active" class="btn btn-outline-dark btn-sm active" aria-current="page">Active </a>
+            <a href="/order/orderList/all" class="btn btn-outline-dark btn-sm">Hepsi</a>
+            <a href="/order/orderList/musteride" class="btn btn-outline-dark btn-sm">M.bekleniyor</a>
+            <a href="/order/orderList/tamamlandi" class="btn btn-outline-dark btn-sm">Tamamlandi</a>
+          </div>
+      </div>
   </div>
   
 </div>
 
 
-
+<div>
   <table class="table table-striped table-hover">
       <thead>
         <tr>

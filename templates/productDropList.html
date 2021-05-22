@@ -1,5 +1,5 @@
 
 <option value="">---------</option>
 {% for product in products %} 
-<option value="{{ product.id }}">{{ product.product_name }}</option>
+<option value="{{ product.id }}" title ="{{ product.product_name }}">{{ product.product_name |truncatechars:50}}</option>
 {% endfor %}

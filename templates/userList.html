@@ -54,6 +54,39 @@
                 <td>{{user.employee.telephone}}</td>
                 <td>{{user.employee.sube.title}}</td>
                 <td>{{user.employee.department.title}}</td>
+                <td>
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{user.id}}">
+                        Şifre değiştir
+                      </button>
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="exampleModal{{user.id}}" tabindex="-1" aria-labelledby="exampleModalLabel{{user.id}}" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel{{user.id}}">Username: {{user.username}}</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST">
+                              {% csrf_token %}
+                                <div class="modal-body">
+                                  
+                                  <input type="hidden" name="hidden"  id="hidden" value="{{user.id}}"/>
+                                  <input type="password" class="form-control" name="inputPassword1" placeholder="Password">
+                                  <input type="password" class="form-control" name="inputPassword2" placeholder="Password">
+                                </div>
+                                <div class="modal-footer">
+
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Güncelle</button>
+                                </div>
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+
+                </td>
                 <td><a href="/user/userUpdate/{{user.id}}"><button class="btn btn-warning btn-sm">Güncelle</button></a></td>
                 <td><a href="/user/userDelete/{{user.id}}"><button class="btn btn-danger btn-sm">Sil</button></a></td>
               </tr>

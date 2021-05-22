@@ -84,20 +84,13 @@
                 {% csrf_token %}
                 <table>
                     <tr>
-                        <td>Montaj Tarihi</td>
-                        <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih"></td>
+                        <td>Montaj başlangıç tarihi</td>
+                        <td><input type="date" name="planGun" class="input-sm" placeholder="Tarih">  <input type="time"  name="stime"></td>
                     </tr>
                     <tr>
-                        <td>Başlangıç-Bitiş Saati</td>
-                        <td><input type="time"  name="stime"> -- <input type="time"  name="etime">
-                            <!--
-                            <input type="radio" name="zaman" value="oo" checked>
-                            <label >Öğleden Önce</label><br>
-                            <input type="radio" name="zaman" value="os">
-                            <label >Öğleden Sonra</label><br>
-                            <input type="radio" name="zaman" value="tg">
-                            <label>Tam gün</label><br>
-                            -->
+                        <td>Montaj bitiş tarihi</td>
+                        <td> <input type="date" name="planGun_end" class="input-sm" placeholder="Tarih"> <input type="time"  name="etime">
+                           
                         </td>
                     </tr>
                 </table>

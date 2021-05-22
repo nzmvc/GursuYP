@@ -18,9 +18,10 @@ urlpatterns = [
     path('orderAddProduct/<int:id>', views.orderAddProduct, name='orderAddProduct'),
     path('orderDeleteProduct/<int:id>', views.orderDeleteProduct, name='orderDeleteProduct'),
     path('orderApproved/<int:id>', views.orderApproved, name='orderApproved'),
-    path('orderAddressSec/<int:order_id>/<int:address_id>', views.orderAddressSec, name='orderAddressSec'),
-    path('orderAddressSil/<int:order_id>', views.orderAddressSil, name='orderAddressSil'),
+    path('orderAdresSecim/<str:fs>/<str:es>/<int:order_id>/<int:address_id>', views.orderAdresSecim, name='orderAdresSecim'),
     path('orderSiparisFisi/<int:id>', views.orderSiparisFisi, name='orderSiparisFisi'),
+    path('dosyaEkle/<int:order_id>/<int:workflow_id>', views.dosyaEkle, name='dosyaEkle'),
+    path('rapor', views.rapor, name='rapor'),
     
     path('customerAdd/',views.customerAdd,name='customerAdd'),
     path('customerAddressAdd/<int:id>',views.customerAddressAdd,name='customerAddressAdd'),

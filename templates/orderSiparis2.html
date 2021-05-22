@@ -98,7 +98,7 @@
                 </td>
                 <td colspan="2" valign="top" align="right"> 
                     <table>
-                        <tr> <td>TARİH</td> <td> {{order.create_date}}</td></tr>
+                        <tr> <td>TARİH</td> <td> {{order.create_date|date:'d-m-Y'}}</td></tr>
                         <tr> <td>FİŞ NO</td> <td> {{order.id}} </td></tr>
                     </table>
                 </td>
@@ -151,8 +151,17 @@
                 </td>
             </tr>
 
-            <tr><td >Sipariş Veren:</td><td colspan="11"> METE GURSU </td></tr>
-            <tr><td >Sevk Adresi</td><td colspan="11"> {{order.sevk_adres.adres}} {{order.sevk_adres.ilce}}{{order.sevk_adres.il}} </td></tr>
+            <tr><td>Sipariş Veren:</td><td colspan="11"> METE GURSU </td></tr>
+            <tr><td >Sevk Adresi</td><td colspan="11"> 
+              {% for s in sevk_adres %}  
+                {{s.adres}} {{s.ilce}}{{s.il}}
+              {% endfor %}
+            </td></tr>
+            <tr><td >Fatura Adresi</td><td colspan="11"> 
+              {% for f in fatura_adres %}  
+                {{f.adres}} {{f.ilce}}{{f.il}}
+              {% endfor %}
+            </td></tr>
 
             <tr><TD colspan="4">TESLİM ŞEKLİ</TD><td colspan="6">PLANLAMA ŞEKLİ</td><td colspan="2">TAHMİNİ TARİH ARALIĞI</td></tr>
             <tr><TD colspan="4">
@@ -161,8 +170,8 @@
               {% if order.order_type == "M" %} Montaj {% endif %}
               {% if order.order_type == "D" %} Depo teslim {% endif %}
               
-            </TD><td colspan="6"> {{order.planlama_sekli}} </td><td>EN ERKEN</td><TD>{{order.tahmini_tarih_min}}</TD></tr>
-            <TR><TD colspan="10"></TD><td>EN geç</td><TD>{{order.tahmini_tarih_max}}</TD></TR>
+            </TD><td colspan="6"> {{order.planlama_sekli}} </td><td>EN ERKEN</td><TD>{{order.tahmini_tarih_min|date:'d-m-Y'}}</TD></tr>
+            <TR><TD colspan="10"></TD><td>EN geç</td><TD>{{order.tahmini_tarih_max|date:'d-m-Y'}}</TD></TR>
           </table>
       </main>
 

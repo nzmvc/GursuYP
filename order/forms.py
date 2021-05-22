@@ -25,6 +25,12 @@ class OrderForm(forms.ModelForm):
         self.fields['content'].widget.attrs['class'] = 'content_css'
         self.fields['content'].widget.attrs['rows'] = 5
 
+class OrderDosya(forms.ModelForm):
+    class Meta:
+        model=Order
+        fields = ['order_image']
+
+
 class OrderProductsForm(forms.ModelForm):
     class Meta:
         model = OrderProducts
@@ -44,14 +50,8 @@ class OrderProductsForm2(forms.ModelForm):
     class Meta:
         model = OrderProducts
         fields = ['product','amount','colour']
-"""
-    def __init__(self, *args, **kwargs):
-        super(OrderProductsForm, self).__init__(*args, **kwargs)
-        self.fields['urun_grubu'] =  ModelChoiceField(queryset=UrunGrubu.objects.all(),empty_label="Ürün Grubunu sec",
-                                    widget=forms.Select(attrs={"onChange":'myFunction(this.value,this.id)'}))
-        self.fields['marka'] =  ModelChoiceField(queryset=Marka.objects.all(),empty_label="Marka sec")
-        #self.fields['product'].queryset = Product.objects.none()
-"""
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
