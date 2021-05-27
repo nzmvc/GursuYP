@@ -3,6 +3,105 @@
 
 {% block body %}
 
+<!-------------------------------------------->
+<!--------------- rapor grafik---------------->
+<!-------------------------------------------->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<script>
+
+  var config = {
+    type: 'pie',
+    data: {
+      datasets: [{
+        data: {{ data|safe }},
+        backgroundColor: [
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 205, 86)',
+          '#D3D3D3'
+        ],
+        label: 'Satış Adetleri'
+      }],
+      labels: {{ labels|safe }}
+    },
+    options: {
+      responsive: true,
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Şube satış payı'
+      }
+    }
+  };
+
+  window.onload = function() {
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+    window.myPie = new Chart(ctx, config);
+  };
+
+
+  $(function () {
+
+    var $aylikSatisChart = $("#data_aylik_satis");
+    $.ajax({
+      url: $aylikSatisChart.data("url"),
+      success: function (data) {
+
+        var ctx = $aylikSatisChart[0].getContext("2d");
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Adet',
+              backgroundColor: 'blue',
+              data: data.data
+            }]          
+          },
+          options: {
+            responsive: true,
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Aylık satış adetleri'
+            }
+          }
+        });
+
+        // With an explicit size:
+        //Chart.resize(500, 300);
+
+      }
+    });
+
+  });
+
+</script>
+<!-------------------------------------------->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<div class="row" >
+  <div class="col-md-2 mb-0" id="container" style="width: 50%;">
+    <canvas id="pie-chart"></canvas>
+  </div>
+
+  <div class="col-md-2 mb-0" id="container" style="width: 50%;">
+    <canvas id="data_aylik_satis" data-url="{% url 'order:data_aylik_satis' %}"></canvas>
+  </div>
+</div>
+
+
+
+<br><br>
+
 <div class="row mb-1">
   <div class="col-md-3 ">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
@@ -51,7 +150,7 @@
   <div class="col-md-4">
     <div class="card-header bg-light " style="height: 200px; overflow-y: scroll;">
       <p> Planlanmış işler <span class="badge bg-danger">{{res_today.count}}</span> / <span class="badge bg-warning">{{res_tomorrow.count}}</span></p>
-      <table class="table">
+      <table class="table table-sm">
         <thead class="thead-dark"><tr> <th scope="col">Gun</th><th scope="col">Müşteri</th><th scope="col">UrunGrb</th></tr></thead>
         <tbody>
         {% for res in res_today%}

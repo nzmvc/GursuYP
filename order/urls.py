@@ -22,6 +22,7 @@ urlpatterns = [
     path('orderSiparisFisi/<int:id>', views.orderSiparisFisi, name='orderSiparisFisi'),
     path('dosyaEkle/<int:order_id>/<int:workflow_id>', views.dosyaEkle, name='dosyaEkle'),
     path('rapor', views.rapor, name='rapor'),
+    path('data_aylik_satis',views.data_aylik_satis,name='data_aylik_satis'),
     
     path('customerAdd/',views.customerAdd,name='customerAdd'),
     path('customerAddressAdd/<int:id>',views.customerAddressAdd,name='customerAddressAdd'),

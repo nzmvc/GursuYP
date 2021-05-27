@@ -32,6 +32,9 @@ def days_until(date):
 @login_required(login_url='/user/login/')
 def dashboard(request,departman="ope",list_filter="all"):
     
+    labels = ["Fethiye","Muğla","Marmaris","Bodrum"]
+    data = [150,65,110,90]
+
     order = Order.objects.all().exclude(statu_id=22)
     customer = Customer.objects.all()
     product = Product.objects.all()
@@ -109,7 +112,9 @@ def dashboard(request,departman="ope",list_filter="all"):
         'workflow':workflow,
         'problems':problems,
         "res_today":res_today,              ####
-        "res_tomorrow":res_tomorrow         ####
+        "res_tomorrow":res_tomorrow,         ####
+        'labels': labels,
+        'data': data,
         }
     return  render(request,'dashboard.html',content)
 
@@ -265,7 +270,7 @@ def findProduct(request, qs=None):
 def productDropList(request):
     ug = request.GET.get('urun_grubu')
     marka = request.GET.get('marka')
-    print("dddd",ug,marka)
+    #print("dddd",ug,marka)
     #products = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=ug).order_by('product_name')
     products = Product.objects.all().filter(urun_grubu=ug).filter(marka=marka).order_by('product_name')
     return render(request, 'productDropList.html', {'products': products})
@@ -277,7 +282,7 @@ def orderDropList(request):
     şeklinde liste test edilebilir.
     """
     customer = request.GET.get('customer')
-    print("dddd",customer)
+    #print("dddd",customer)
     orders = Order.objects.all().filter(customer_id=customer).order_by('create_date')
     return render(request, 'orderDropList.html', {'orders': orders})
 
@@ -1205,5 +1210,37 @@ def problemView(request,id):
 @login_required(login_url='/user/login')
 def rapor(request):
     
+    labels = ["Fethiye","Muğla","Marmaris","Bodrum"]
+    data = [150,65,110,90]
 
-    return render(request,"rapor.html")
+
+    # datalar elle oluşturuldu bunlar veri tabanından alınacak
+
+    '''
+    queryset = City.objects.order_by('-population')[:5]
+    for city in queryset:
+        labels.append(city.name)
+        data.append(city.population)
+    '''
+    return render(request, 'rapor.html', {
+        'labels': labels,
+        'data': data,
+    })
+
+@login_required(login_url='/user/login')
+def data_aylik_satis(request):
+    labels=[]
+    data=[]
+    
+    labels = ["Ocak","Şubat","Mart","Nisan","Mayıs"]
+    data = [45,65,110,90,159]
+    
+    # datalar elle oluşturuldu bunlar veri tabanından alınacak
+    '''
+    queryset = City.objects.values('country__name').annotate(country_population=Sum('population')).order_by('-country_population')
+    for entry in queryset:
+        labels.append(entry['country__name'])
+        data.append(entry['country_population'])
+    '''
+    # veriler json olarak gonderiliyor html içinden
+    return JsonResponse(data={'labels':labels,'data':data})

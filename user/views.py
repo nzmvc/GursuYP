@@ -16,22 +16,23 @@ def yetkiYok(request):
     return  render(request,'yetkiYok.html')
 
 def loginPage(request):
-    form = LoginForm(request.POST or None)
-    context = {'form':form}
 
-    if form.is_valid():
-        username = form.cleaned_data.get("username")
-        password = form.cleaned_data.get("password")
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    
+
+    if username :
+        
         user = authenticate(request, password=password, username=username,is_active=1)
         if user is None:
             messages.info(request,"Kullanıcı adı veya parola hatalı")
-            return render(request,"login.html",context)
+            return render(request,"login.html")
         messages.success(request,"başarıyla giriş yaptınız")
         login(request, user)
         return redirect("/order/dashboard/ope/all")
 
 
-    return  render(request,'login.html',context)
+    return  render(request,'login.html')
 
 def logoutPage(request):
     logout(request)
