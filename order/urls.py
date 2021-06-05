@@ -21,6 +21,9 @@ urlpatterns = [
     path('orderAdresSecim/<str:fs>/<str:es>/<int:order_id>/<int:address_id>', views.orderAdresSecim, name='orderAdresSecim'),
     path('orderSiparisFisi/<int:id>', views.orderSiparisFisi, name='orderSiparisFisi'),
     path('dosyaEkle/<int:order_id>/<int:workflow_id>', views.dosyaEkle, name='dosyaEkle'),
+    path('siparisPaketi/<int:order_id>/<int:workflow_id>', views.siparisPaketi, name='siparisPaketi'),
+    path('orderPacketDelete/<int:order_product_id>', views.orderPacketDelete, name='orderPacketDelete'),
+    path('orderPaketOnayla/<int:order_id>/<int:workflow_id>', views.orderPaketOnayla, name='orderPaketOnayla'),
     path('rapor', views.rapor, name='rapor'),
     path('data_aylik_satis',views.data_aylik_satis,name='data_aylik_satis'),
     

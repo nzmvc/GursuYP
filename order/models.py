@@ -48,6 +48,7 @@ class Order (models.Model):
     satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı")
     planlama_sekli = models.CharField(max_length=20,choices = planlamaSecenek,verbose_name="Planlama Şekli",default="En Hızlı")
     sube = models.ForeignKey(Sube,on_delete=models.PROTECT, verbose_name="Şube")
+    siparis_paketi = models.BooleanField(verbose_name="siparis paketi",default=False)
     #
     # fatura_adres = models.ManyToManyField("Address",verbose_name="Fatura Adresi")
 
@@ -84,6 +85,19 @@ class Address (models.Model):
     def __str__(self):  # listelerken gözükmesini istediğimiz isim
         return self.aciklama
 
+class OrderPackets(models.Model):
+    
+    orderTypeChoise = (
+            ("U","Uretim"),
+            ("S","Sevk"),
+            ("M","Montaj"),
+            ("D","Depo Teslim"),
+        )
+
+    order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
+    status = models.BooleanField(default=False)
+    order_id = models.IntegerField(null=True,blank=True)
+
 class Workflow(models.Model):
     departments = (
         
@@ -98,13 +112,13 @@ class Workflow(models.Model):
         ("44000","Montaj"),
         
     )
+    """
     workflow_status = (
             ("10","Beklemede"),
             ("20","Çalışılıyor"),
             ("30","İptal edildi"),
-            ("40","Tamamlandı"),
-            
-    )
+            ("40","Tamamlandı"),)
+    """
     
     order = models.ForeignKey(Order, on_delete=models.CASCADE,default=1)
     department = models.CharField(max_length=10,choices = departments,verbose_name="Departman")
@@ -119,6 +133,7 @@ class Workflow(models.Model):
     completed_date =models.DateTimeField(blank=True, null=True)
     started_date =models.DateTimeField(blank=True, null=True)
     fisNo = models.IntegerField(verbose_name="Fiş NO",default=1,null=True)
+    siparis_paketi = models.ForeignKey(OrderPackets,on_delete=models.PROTECT,blank=True, null=True)
 
 class ProductCategory(models.Model):
     title = models.CharField(max_length=150, unique=True)
@@ -179,7 +194,8 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     #def __str__(self):    
     #    return self.product_category.title +"-"+ self.product_name
-    
+
+
 
 class OrderProducts(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
@@ -188,9 +204,13 @@ class OrderProducts(models.Model):
     amount  = models.IntegerField(default=0)
     birim_fiyat = models.IntegerField(default=0)
     toplam_tutar = models.IntegerField(default=0)
+    orderpackets = models.ForeignKey(OrderPackets,on_delete=models.PROTECT,blank=True,null=True)
     # renk marka vs eklenebilir
     def __str__(self):
         return self.product.product_name
+
+
+
 
 class RootCause(models.Model):
     title = models.CharField(max_length=30,verbose_name="Durum")

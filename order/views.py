@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
 from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm,ProblemAddForm,OrderDosya
 from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle,ProductCategory
-from .models import Reservation,ReservationPerson,ReservationVehicle
+from .models import Reservation,ReservationPerson,ReservationVehicle,OrderPackets
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
@@ -357,6 +357,7 @@ def orderAdd3(request):
     return  render(request,'orderAdd3.html',{'form':form,'product_formset':product_formset})
 
 
+
 @login_required(login_url='/user/login/')
 @permission_required('user.siparis_listele',login_url='/user/yetkiYok/')
 def orderList(request,list_filter):
@@ -419,6 +420,107 @@ def dosyaEkle(request,order_id,workflow_id):
 
         return redirect("/order/dashboard/ope/active")
     return  render(request,'dosyaEkle.html',{'form':form})
+
+
+@login_required(login_url='/user/login/')
+def siparisPaketi(request,order_id,workflow_id):
+    order = get_object_or_404(Order,id=order_id)
+    products = OrderProducts.objects.filter(order_id = order_id).filter( orderpackets_id = 0)
+    products_selected = OrderProducts.objects.filter(order_id = order_id).exclude( orderpackets_id = 0)
+
+    if request.method == "POST":
+        # orderpacket e kayıt girilir.
+        opack = OrderPackets(order_type= request.POST.getlist('order_type')[0], status = 0)
+        opack.save()  
+        """  many to many için 
+        # yeni kayda bağlanacak productlar  for ile eklenir
+        for i in request.POST.getlist('to'):
+            print ("---", i , request.POST.getlist('order_type')[0] )
+            oproduct = OrderProducts.objects.get(id =i)
+            opack.order_product.add( oproduct )         #!!!! manyto many relation da bu şekilde kayıt yapıyoruz.
+        """
+        for i in request.POST.getlist('to'):
+            #print ("---", i , request.POST.getlist('order_type')[0] )
+            oproduct = OrderProducts.objects.get(id =i)
+            oproduct.orderpackets_id = opack.id         # oluşturulan paket id si orderproducts içindeki ilgili satıra eklenir.
+            oproduct.order_id = order_id
+            oproduct.save()
+        
+
+    return render(request,'siparisPaketi.html',{'products':products,'products_selected':products_selected,'order':order,'workflow_id':workflow_id})
+
+
+@login_required(login_url='/user/login/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
+def orderPacketDelete(request,order_product_id):
+    #product = OrderProducts.objects.filter(id = order_product_id)
+    product= get_object_or_404(OrderProducts,id=order_product_id)
+    print(product.orderpackets)
+    product.orderpackets_id = 0
+    product.save()
+
+    return redirect(request.META['HTTP_REFERER'])
+
+
+
+@login_required(login_url='/user/login/')
+@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
+def orderPaketOnayla(request,order_id,workflow_id):
+    # siperiş kaydı onaylandı anlamına gelen  sipariş_paketi = True yapılır.
+    # bu onaylama sonrasında sip paketleri silinemez yada yeniden paket oluşturulamaz. paketleme sayfasında sil ve paketle butonları gözükmez
+    new_order = get_object_or_404(Order,id=order_id)
+    new_order.siparis_paketi = True
+    new_order.save()
+
+    # planlama ekibine sipariş paketlemesi için açılan akış tamamlandı statusune alınır.
+    wf = get_object_or_404(Workflow,id=workflow_id)
+    wf.status_id = 27
+    wf.save()
+
+    # urungrubu 1 celikkapı , 2 ic kapı, 3 zemin    #####
+    # eğer ic kapı ise (urungrubu 2) planlama ekibine is akışı oluşturulur.
+    orderProductType = OrderProducts.objects.filter(product__urun_grubu=2).filter(order_id =order_id)
+    if not new_order.order_image and orderProductType.count() > 0 :
+        workflow_planlama_olcumDosyasi = Workflow(department="41000",status_id=24,order=new_order,comment="Ölçüm dosyası işlemi")
+        workflow_planlama_olcumDosyasi.save()
+    ##################################################
+
+    # order id bilgisine göre sipariş paket id ve tipi bilgisi alınır.
+    oPacks = OrderPackets.objects.filter(id__in= OrderProducts.objects.filter(order_id=order_id).values_list('orderpackets', flat=True) )
+
+    for sip_pack in oPacks :
+        # order a ait tüm sipariş paketleri için  order type a göre iş akışları üretilir.
+        # 4 ürün vardır ama 2 paket olarak tanımlanmış olabilir. bu durumda 1 order ın 4 ürünü için tanımlanmış 2 paket için, 2 workflow oluşur.
+        print(sip_pack.id , " sipariş paketi içn ilem yapılıyor. sip tipi", sip_pack.order_type)
+        
+        if sip_pack.order_type == "U":
+            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order,comment="Üretim yapılacak")
+            workflow_uretim.save()
+            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10",siparis_paketi_id=sip_pack.id)
+        
+        if sip_pack.order_type == "D":
+            workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order,comment="Depo teslimi",siparis_paketi_id=sip_pack.id)
+            workflow_depoTeslim.save()
+            Logla(request.user,"depo teslim işi oluşturuldu",log_type="workflow_depoTeslim",type_id=workflow_depoTeslim.pk,status="50")
+
+        if sip_pack.order_type == "S":
+            workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama",siparis_paketi_id=sip_pack.id)
+            workflow_planlama_sevk.save()
+            Logla(request.user,"yeni sevk işlermi oluşturuldu",log_type="workflow_deposevk",type_id=workflow_planlama_sevk.pk,status="20")
+
+        if sip_pack.order_type == "M":
+            
+            workflow_planlama_montaj = Workflow(department="41000",status_id=11,order=new_order,comment="Montaj Planlama",siparis_paketi_id=sip_pack.id)
+            workflow_montaj = Workflow(department="44000",status_id=15,order=new_order,comment="Montaj işlemi",siparis_paketi_id=sip_pack.id)
+            
+            workflow_planlama_montaj.save()
+            workflow_montaj.save()
+            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_montaj",type_id=workflow_planlama_montaj.pk,status="30")
+            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_montaj",type_id=workflow_montaj.pk,status="40")
+    
+
+    return redirect("/order/dashboard/ope/active")
+
 
 @login_required(login_url='/user/login/')
 @permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
@@ -501,7 +603,7 @@ def orderAddProduct(request,id):
             birim_fiyat = product.birim_fiyat
             toplam_tutar = birim_fiyat * amount
             
-            new_orderProduct = OrderProducts(order=order,product=product,amount= amount,colour=colour,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar)
+            new_orderProduct = OrderProducts(order=order,product=product,amount= amount,colour=colour,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar,orderpackets_id = 0)
             new_orderProduct.save()
             #form.save()
             return redirect('/order/orderView/'+ str(id) )
@@ -551,7 +653,13 @@ def orderApproved(request,id):
     if new_order.sevk_adres and new_order.fatura_adres:
         stok = new_order.stok
         order_type = new_order.order_type
+        
+        # sureç değişikliği. sipariş paketleri oluşturulacak
+        # TODO tek ürün olması durumunda sip paketi oluşturulmayabilir. yada otomatik oluşturulabilir.
+        workflow_planlama_sipPaketi = Workflow(department="41000",status_id=26,order=new_order,comment="Sipariş paketlerini oluştur")
+        workflow_planlama_sipPaketi.save()
 
+        """  
         #urungrubu 1 celikkapı , 2 ic kpaı, 3 zemin
         #eğer ic kapı ise planlama ekibine is akışı oluşturulur.
         orderProductType = OrderProducts.objects.filter(product__urun_grubu=2).filter(order_id =id)
@@ -586,7 +694,7 @@ def orderApproved(request,id):
             #Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_sevk",type_id=workflow_planlama_sevk.pk,status="20")
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_montaj",type_id=workflow_planlama_montaj.pk,status="30")
             Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_montaj",type_id=workflow_montaj.pk,status="40")
-
+        """
         # orderstatusunu değiştir.
         new_order.statu_id = 1
         new_order.save() 

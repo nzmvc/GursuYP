@@ -331,6 +331,10 @@
                   {% if job.status_id == 24 %}
                      
                       <a href="/order/dosyaEkle/{{job.order_id}}/{{job.id}}"><button class="btn btn-primary btn-sm">Dosya Ekle</button></a>
+                  {% elif job.status_id == 26 %}
+                      
+                      <a href="/order/siparisPaketi/{{job.order_id}}/{{job.id}}"><button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Alt Sipariş Paketleri oluşturur">Alt Paket</button></a>
+
                   {% else %}
                       <a href="/order/workflowPlanla/{{job.id}}"><button class="btn btn-primary btn-sm">Planla</button></a>
                       <a href="/order/workflowStatuUpdate/{{job.id}}/13"><button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Müşteriden haber bekleniyor">MHB</button></a>
