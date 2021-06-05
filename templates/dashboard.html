@@ -229,13 +229,13 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th class="border-0" scope="col">#</th>
-            <th class="border-0" scope="col">Durum</th>
-            <th class="border-0" scope="col">Tarih</th>
-            <th class="border-0" scope="col">Order ID</th>
-            <th class="border-0" scope="col">Açıklama</th>
-            <th class="border-0" scope="col">Müşteri</th>
-            <th class="border-0" scope="col"></th>
+            <th style="width: 5%">#</th>
+            <th >Durum</th>
+            <th style="width: 10%" >Tarih</th>
+            <th >Sipariş</th>
+            <th >Açıklama</th>
+            <th >Müşteri</th>
+            <th style="width: 8%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -245,8 +245,8 @@
                 <td>{{job.status}}</td>
                 <td>{{job.created_date|date:'d-m-Y'}}</td>
                 <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
-                <td>{{job.order.content|safe}}</td>
-                <td>{{job.order.customer.customer_name}}</td>
+                <td>{{job.order.content|safe|truncatechars:30}}</td>
+                <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                 
                 <td>
                   <div class="dropdown">
@@ -315,13 +315,13 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th class="border-0" scope="col">#</th>
-            <th class="border-0" scope="col">Durum</th>
-            <th class="border-0" scope="col">Tarih</th>
-            <th class="border-0" scope="col">Order ID</th>
-            <th class="border-0" scope="col">Açıklama</th>
-            <th class="border-0" scope="col">Müşteri</th>
-            <th class="border-0" scope="col"></th>
+            <th style="width: 5%">#</th>
+            <th >Durum</th>
+            <th style="width: 10%" >Tarih</th>
+            <th >Sipariş</th>
+            <th >Açıklama</th>
+            <th >Müşteri</th>
+            <th style="width: 8%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -331,8 +331,8 @@
                 <td>{{job.status}}</td>
                 <td>{{job.created_date|date:'d-m-Y'}}</td>
                 <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
-                <td>{{job.order.content|safe}}</td>
-                <td>{{job.order.customer.customer_name}}</td>
+                <td>{{job.order.content|safe|truncatechars:30}}</td>
+                <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                 
                 <td>
                   {% if job.status_id == 24 %}
@@ -418,13 +418,13 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th class="border-0" scope="col">#</th>
-            <th class="border-0" scope="col">Durum</th>
-            <th class="border-0" scope="col">Tarih</th>
-            <th class="border-0" scope="col">Order ID</th>
-            <th class="border-0" scope="col">Açıklama</th>
-            <th class="border-0" scope="col">Müşteri</th>
-            <th class="border-0" scope="col"></th>
+            <th style="width: 5%">#</th>
+            <th >Durum</th>
+            <th style="width: 10%" >Tarih</th>
+            <th >Sipariş</th>
+            <th >Açıklama</th>
+            <th >Müşteri</th>
+            <th style="width: 8%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -434,10 +434,10 @@
                 <td>{{job.status}}</td>
                 <td>{{job.created_date|date:'d-m-Y'}}</td>
                 <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
-                <td>{{job.order.content|safe}}</td>
-                <td>{{job.order.customer.customer_name}}</td>
+                <td>{{job.order.content|safe|truncatechars:30}}</td>
+                <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                 
-                <td>
+                <td >
                   <a href="/order/workflowCompleted/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
@@ -491,13 +491,13 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th >#</th>
-            <th class="col-xs-1" scope="col">Durum</th>
-            <th class="col-xs-1" scope="col">Tarih</th>
-            <th class="col-xs-1" scope="col">Order ID</th>
-            <th class="col-xs-1" scope="col">Açıklama</th>
-            <th class="col-xs-1" scope="col">Müşteri</th>
-            <th class="col-xs-1" scope="col"></th>
+            <th style="width: 5%">#</th>
+            <th >Durum</th>
+            <th style="width: 10%" >Tarih</th>
+            <th >Sipariş</th>
+            <th >Açıklama</th>
+            <th >Müşteri</th>
+            <th style="width: 8%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -508,8 +508,8 @@
                     <td>{{job.status}}</td>
                     <td>{{job.created_date|date:'d-m-Y'}}</td>
                     <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
-                    <td>{{job.order.content|safe}}</td>
-                    <td>{{job.order.customer.customer_name}}</td>
+                    <td>{{job.order.content|safe|truncatechars:30}}</td>
+                    <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                     
                     <td><a href="/order/workflowCompleted/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
