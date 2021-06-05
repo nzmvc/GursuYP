@@ -344,7 +344,7 @@ def orderAdd3(request):
                         birim_fiyat = product.birim_fiyat
                         toplam_tutar = birim_fiyat * amount
 
-                        new_product = OrderProducts(order=new_order,product=product,amount=amount,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar)
+                        new_product = OrderProducts(order=new_order,product=product,amount=amount,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar,orderpackets_id = 0)
                         new_product.save()
              
                 return  redirect('/order/orderView/'+str(new_order.pk))
