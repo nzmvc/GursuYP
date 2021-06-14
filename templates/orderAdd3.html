@@ -75,9 +75,8 @@
     </script>
     <br>
     
- 
 
-    <form method="post" enctype="multipart/form-data" id="orderProductForm" data-product-url="{% url 'order:ajax_productDropList' %}">
+    <form method="post" enctype="multipart/form-data" id="orderProductForm" data-product-url="{% url 'order:ajax_productDropList' %}" data-product-url2="{% url 'order:ajax_colorList' %}"   data-product-url3="{% url 'order:ajax_categoryDropList' %}">
         {% csrf_token %}
         {{ product_formset.management_form}}
         {{ form.media }}
@@ -160,16 +159,16 @@
                 {{ pro_form.urun_grubu|as_crispy_field }}
             </div>
             <div  class="col-md-2 mb-0">
-                {{ pro_form.marka|as_crispy_field }}
+                {{ pro_form.product_category|as_crispy_field }}
             </div>
             <div  class="col-md-2 mb-0">
                 {{ pro_form.product|as_crispy_field }}
             </div>
             <div  class="col-md-2 mb-0">
-                {{ pro_form.amount|as_crispy_field }}
+                {{ pro_form.colour|as_crispy_field }}
             </div>
             <div  class="col-md-2 mb-0">
-                {{ pro_form.colour|as_crispy_field }}
+                {{ pro_form.amount|as_crispy_field }}
             </div>
         </div>  
         {% endfor %}
@@ -196,9 +195,32 @@
 </div>
 
 <script>
+
+    function showCategoryFunction(val,t) { //   t = objenin idsi
+        //alert("The input value has changed. The new value is: " + val + t[8]);
+        //document.getElementById("id_form-"+t[8]+"-colour").value = val;
+
+        var url = $("#orderProductForm").attr("data-product-url3");  // get the url of the `load_cities` view
+        var urun_grubu = document.getElementById("id_form-"+t[8]+"-urun_grubu").value;
+        
+
+        $.ajax({                       //  AJAX request oluşturuluyor.  view içinde productDropList çalıştırılır
+            url: url,                    // url formdan alınıyor
+            data: {
+            'urun_grubu': urun_grubu       // urun grubuna bağlı olan ürünlerin kategorilerini getirir.
+
+            },
+            success: function (data) {   // data allınır
+        
+            $("#id_form-"+t[8]+"-product_category").html(data);  // alınan data listeye eklenir
+            }
+        });
+
+      }
+
+
     function myFunction(val,t) { //   t = objenin idsi
         //alert("The input value has changed. The new value is: " + val + t[8]);
-    
         //document.getElementById("id_form-"+t[8]+"-colour").value = val;
 
         var url = $("#orderProductForm").attr("data-product-url");  // get the url of the `load_cities` view
@@ -206,26 +228,76 @@
         
         if ( t[10] == "u" ){    //urun grubu change olmuş
             var urun_grubu = val;  // urun grubu değeri alınır
-            var marka = document.getElementById("id_form-"+t[8]+"-marka").value;
+            //var marka = document.getElementById("id_form-"+t[8]+"-marka").value;
+            var kategori = document.getElementById("id_form-"+t[8]+"-product_category").value;
             
-        }else {                 //marka change olmuş
+        }else {                 //kategori change olmuş
             var urun_grubu = document.getElementById("id_form-"+t[8]+"-urun_grubu").value;
-            var marka = val ;
+            //var marka = val ;
+            var kategori = val;
 
         }
         
 
-        $.ajax({                       // initialize an AJAX request
-            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        $.ajax({                       //  AJAX request oluşturuluyor.  view içinde productDropList çalıştırılır
+            url: url,                    // url formdan alınıyor
             data: {
             'urun_grubu': urun_grubu ,      // add the country id to the GET parameters
-            'marka': marka 
+            //'marka': marka 
+            'kategori':kategori
             },
             success: function (data) {   // `data` is the return of the `load_cities` view function
             //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
             $("#id_form-"+t[8]+"-product").html(data);  // replace the contents of the city input with the data that came from the server
             }
         });
+
+      }
+      //    kategori için burası güncellenecek
+      //    view içinde categoryDropList çalıştırılıyor
+      function colorFunction(val,t) { //   t = objenin idsi
+        var url = $("#orderProductForm").attr("data-product-url3");  // formdan url alınıyor
+        
+        var product_id = document.getElementById("id_form-"+t[8]+"-product").value;
+        
+        $.ajax({                       // ajax request oluşturulur
+            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+            'product_id': product_id       // add the country id to the GET parameters
+            
+            },
+
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+            //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
+            $("#id_form-"+t[8]+"-colour").html(data);  // replace the contents of the city input with the data that came from the server
+            }
+        });
+        alert(data);
+
+      }
+
+
+
+      //    renk için burası güncellenecek
+      //    view içinde colorList çalıştırılıyor
+      function colorFunction(val,t) { //   t = objenin idsi
+        var url = $("#orderProductForm").attr("data-product-url2");  // formdan url alınıyor
+        
+        var product_id = document.getElementById("id_form-"+t[8]+"-product").value;
+        
+        $.ajax({                       // ajax request oluşturulur
+            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+            'product_id': product_id       // add the country id to the GET parameters
+            
+            },
+
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+            //$("#id_product").html(data);  // replace the contents of the city input with the data that came from the server
+            $("#id_form-"+t[8]+"-colour").html(data);  // replace the contents of the city input with the data that came from the server
+            }
+        });
+        alert(data);
 
       }
 </script>

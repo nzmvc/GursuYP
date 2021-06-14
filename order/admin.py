@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle,RootCause,ProblemStatu,OrderStatu,Reservation
+from .models import Vehicle,RootCause,ProblemStatu,OrderStatu,Reservation,ProductColor
 from .models import OrderStatu,Order,Customer,Address,Workflow,ProductCategory,UrunGrubu,ProductType,Marka,Product,OrderProducts,RootCause,ProblemStatu,Problems,Vehicle,Reservation,ReservationPerson,ReservationVehicle
 # Register your models here.
 
@@ -22,3 +22,4 @@ admin.site.register(ProblemStatu)
 admin.site.register(Problems)
 admin.site.register(ReservationPerson)
 admin.site.register(ReservationVehicle)
+admin.site.register(ProductColor)

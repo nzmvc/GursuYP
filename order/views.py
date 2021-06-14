@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
 from .forms import CustomerForm,OrderForm,ProductForm,AddressForm,CustomerAddressForm,OrderProductsForm,OrderProductsForm2,ProblemForm,ProblemSolutionForm,ProblemAddForm,OrderDosya
 from .models import Customer,Order,Workflow,Product,Address,OrderProducts,Problems,OrderStatu,Vehicle,ProductCategory
-from .models import Reservation,ReservationPerson,ReservationVehicle,OrderPackets
+from .models import Reservation,ReservationPerson,ReservationVehicle,OrderPackets,ProductColor
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.contrib.auth.models import User
@@ -242,7 +242,7 @@ def orderAdd2(request):
 
     return  render(request,'orderAdd2.html',{'form':form})
 
-
+"""
 def findProduct(request, qs=None):
     if qs is None:
         qs = Product.objects.values_list('product_name', flat=True).all()
@@ -265,16 +265,34 @@ def findProduct(request, qs=None):
         results.append(_("ürün bulunamadı")) 
     # return JSON object
     return HttpResponse(simplejson.dumps(results))
+"""
 
+def categoryDropList(request):
+    ug = request.GET.get('urun_grubu')
+    kategoriler = ProductCategory.objects.filter(id__in = Product.objects.values_list('product_category_id',flat=True).filter(urun_grubu=ug).distinct() )
+
+    http_data ="<option value="">---------</option>"
+    for kt in kategoriler:
+        http_data = http_data + "<option value="+  str(kt.id) +" title ="+kt.title +">"+kt.title+"</option>"
+
+    print(http_data)
+    return HttpResponse(http_data)
 
 def productDropList(request):
     ug = request.GET.get('urun_grubu')
-    marka = request.GET.get('marka')
-    #print("dddd",ug,marka)
-    #products = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=ug).order_by('product_name')
-    products = Product.objects.all().filter(urun_grubu=ug).filter(marka=marka).order_by('product_name')
+    kategori = request.GET.get('kategori')
+    products = Product.objects.all().filter(urun_grubu=ug).filter(product_category=kategori).order_by('product_name')
     return render(request, 'productDropList.html', {'products': products})
-    
+
+
+def colorList(request):
+    product_id = request.GET.get('product_id')
+    """
+    http://localhost:8000/order/ajax/colorList/?product_id=1
+    şeklinde liste test edilebilir.
+    """
+    colors = ProductColor.objects.filter(product_category_id__in= Product.objects.values_list('product_category_id',flat=True).filter(id=product_id) )
+    return render(request, 'colorList.html', {'colors': colors}) 
 
 def orderDropList(request):
     """
@@ -285,6 +303,8 @@ def orderDropList(request):
     #print("dddd",customer)
     orders = Order.objects.all().filter(customer_id=customer).order_by('create_date')
     return render(request, 'orderDropList.html', {'orders': orders})
+
+
 
 @login_required(login_url='/user/login/')
 def test(request):
@@ -337,14 +357,13 @@ def orderAdd3(request):
                     if pro_form.cleaned_data.get("amount"):
                         print(pro_form.cleaned_data.get("amount") )
                         amount = pro_form.cleaned_data.get("amount")
-                        urun_grubu = pro_form.cleaned_data.get("urun_grubu")
-                        marka = pro_form.cleaned_data.get("marka")
-                        product = pro_form.cleaned_data.get("product")
                         colour = pro_form.cleaned_data.get("colour")
+                                                
+                        product = Product.objects.get( id = pro_form.cleaned_data.get("product"))
                         birim_fiyat = product.birim_fiyat
                         toplam_tutar = birim_fiyat * amount
-
-                        new_product = OrderProducts(order=new_order,product=product,amount=amount,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar,orderpackets_id = 0)
+                        
+                        new_product = OrderProducts(order=new_order,product=product,amount=amount,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar,colour=colour,orderpackets_id = 0)
                         new_product.save()
              
                 return  redirect('/order/orderView/'+str(new_order.pk))
@@ -597,11 +616,18 @@ def orderAddProduct(request,id):
         form = OrderProductsForm(request.POST)
         if form.is_valid():
 
-            product = form.cleaned_data.get("product")
+            
+            product = Product.objects.get( id = form.cleaned_data.get("product"))
             amount = form.cleaned_data.get("amount")
             colour = form.cleaned_data.get("colour")
             birim_fiyat = product.birim_fiyat
             toplam_tutar = birim_fiyat * amount
+            
+            # ilk order da orderpaket boş ise ilk kayıt oluşturulur.
+            opid = OrderPackets.objects.get(id=0)
+            if opid is None :
+                new_opid = OrderPackets(id=0)
+                new_opid.save()
             
             new_orderProduct = OrderProducts(order=order,product=product,amount= amount,colour=colour,birim_fiyat=birim_fiyat,toplam_tutar=toplam_tutar,orderpackets_id = 0)
             new_orderProduct.save()
@@ -866,7 +892,6 @@ def productAdd(request):
         form.save()
         #TODO hata kontrolü try except
         messages.info(request," Ürün tanımlandı") 
-        #TODO product_id cekilecek
         product_id = Product.objects.filter(product_name=form.cleaned_data.get("product_name")).values('id')[0]['id']
         
         Logla(request.user,"Ürün eklendi","productAdd",product_id,10)
@@ -1200,41 +1225,26 @@ def events_data(request):
     
     
     for d in res:
-        #print(d.order.customer.customer_name)
-        
         start_date = datetime.datetime.strftime(d.start_date, '%Y-%m-%d %H:%M')
         end_date = datetime.datetime.strftime(d.end_date, '%Y-%m-%d %H:%M')
-        events_arr.append( { 'id':d.order_id,'title': d.order.customer.customer_name , 'start': start_date,'end': end_date })
-    
-    print(events_arr)
+        ustalar_id = ReservationPerson.objects.filter(reservation = d)
+        ustalar=""
+        for usta in ustalar_id:
+            ustalar  = ustalar + "\nUsta: " + usta.employee.user.username 
+            print(ustalar)
+        events_arr.append( { 'id':d.order_id,'title': d.order.customer.customer_name + ustalar , 'start': start_date,'end': end_date })
 
-    #events_arr = [ {'title': 'All Day Event','start': '2020-09-01'},{'title': 'kurulum','start': '2020-09-01 10:00:00','end':'2020-09-01 12:00:00'}, {'title': 'Long Event','start': '2020-09-07','end': '2020-09-10'} ]
-    
-    #y = json.dumps(events_arr ,indent=4)    # array i json formatına donusturduk
     y = json.dumps(events_arr ,sort_keys=True,  indent=1,  default=default)    # array i json formatına donusturduk
 
     serialized= json.dumps(events_arr, sort_keys=True, indent=3)   # array i json formatına donusturduk
 
-
-    """
-    json to array
-    jsonStr = '[{"a":1, "b":2}, {"c":3, "d":4}]'
-    aList = json.loads(jsonStr)
-    print(aList[0]['b'])
-
-    """
     return HttpResponse(serialized)
-    #return HttpResponse(events_arr)
-
 
 @login_required(login_url='/user/login')
 def reservationList(request):
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-   
-    print("today",today)
-    print("tomorrow",tomorrow)
-    #res_today = Reservation.objects.filter(start_date__startswith=datetime.date.today())
+
     res_today = Reservation.objects.filter(start_date__year=today.year, start_date__month=today.month, start_date__day=today.day)
     print(res_today)
     res_tomorrow = Reservation.objects.filter(start_date__year=tomorrow.year, start_date__month=tomorrow.month, start_date__day=tomorrow.day)

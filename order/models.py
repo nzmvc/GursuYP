@@ -176,40 +176,37 @@ class Product(models.Model):
             ("M3","M3"),
             ("KG","KG"),
        )
-    
     urun_kodu = models.CharField(max_length=100,verbose_name="Ürün Kodu",blank=True, null=True)
     product_name = models.CharField(max_length=200,verbose_name="Ürün adı")
     marka = models.ForeignKey(Marka,on_delete=models.CASCADE,verbose_name="Urun Grubu",default=1)
     unit = models.CharField(max_length=10,choices=unit_type,verbose_name="Birim",default="AD")
     urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE,verbose_name="Urun Grubu",default=1)
-    product_type =models.ForeignKey(ProductType,on_delete=models.CASCADE,verbose_name="Product Type",default=1)
+    #product_type =models.ForeignKey(ProductType,on_delete=models.CASCADE,verbose_name="Product Type",default=1)
     montaj_sabiti = models.IntegerField(verbose_name="Montaj Sabiti",default=0)
     birim_fiyat = models.IntegerField(verbose_name="Birim Fiyat" ,default=0)
     product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
-    
-    #title = models.CharField(max_length=150, unique=True,verbose_name="Kısa ad(kod)")
-    #category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
-    
     created_date = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
     #def __str__(self):    
     #    return self.product_category.title +"-"+ self.product_name
 
-
+class ProductColor(models.Model):
+    renk_kodu = models.CharField(max_length=20,verbose_name="Renk",blank=True)
+    product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
+    def __str__(self):    
+        return self.product_category.title +"---"+ self.renk_kodu
 
 class OrderProducts(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
-    product = models.ForeignKey(Product,on_delete=models.PROTECT)
-    colour = models.CharField(max_length=20,verbose_name="Renk",blank=True)
-    amount  = models.IntegerField(default=0)
+    product = models.ForeignKey(Product,on_delete=models.PROTECT,verbose_name="Ürün")
+    colour = models.ForeignKey(ProductColor,on_delete=models.PROTECT,verbose_name="Renk")
+    amount  = models.IntegerField(default=0,verbose_name="Miktar")
     birim_fiyat = models.IntegerField(default=0)
     toplam_tutar = models.IntegerField(default=0)
     orderpackets = models.ForeignKey(OrderPackets,on_delete=models.PROTECT,blank=True,null=True)
     # renk marka vs eklenebilir
     def __str__(self):
         return self.product.product_name
-
-
 
 
 class RootCause(models.Model):

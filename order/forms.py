@@ -1,3 +1,4 @@
+from re import VERBOSE
 from django import forms
 from .models import Customer,Order,Product,Workflow,Address,OrderProducts,Problems,ProductCategory,UrunGrubu,Marka
 from crispy_forms.layout import Layout, Fieldset,Field
@@ -34,31 +35,29 @@ class OrderDosya(forms.ModelForm):
 class OrderProductsForm(forms.ModelForm):
     class Meta:
         model = OrderProducts
-        fields = ['product','amount','colour']
+        fields = ['amount','colour']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # fieldlar change olduğunda çalışacak fonksiyon ve gonderilecek parametreler belirleniyor
         super(OrderProductsForm, self).__init__(*args, **kwargs)
         self.fields['urun_grubu'] =  ModelChoiceField(queryset=UrunGrubu.objects.all(),empty_label="Ürün Grubunu sec",
+                                    widget=forms.Select(attrs={"onChange":'showCategoryFunction(this.value,this.id)'}))
+        """self.fields['marka'] =  ModelChoiceField(queryset=Marka.objects.all(),empty_label="Marka sec",
                                     widget=forms.Select(attrs={"onChange":'myFunction(this.value,this.id)'}))
-        self.fields['marka'] =  ModelChoiceField(queryset=Marka.objects.all(),empty_label="Marka sec",
+        """
+        self.fields['product_category'] = ModelChoiceField(queryset=ProductCategory.objects.all(),empty_label="Ürün Grubunu sec",
                                     widget=forms.Select(attrs={"onChange":'myFunction(this.value,this.id)'}))
+        self.fields['product'] = forms.CharField(widget=forms.Select(attrs={"onChange":'colorFunction(this.value,this.id)'}))
         
-        #TODO aşağıdaki satırı aktif edince form girişinde hata veriyor. Çözmek gerekiyor. 
-        #self.fields['product'].queryset = Product.objects.none()
 
 class OrderProductsForm2(forms.ModelForm):
     class Meta:
         model = OrderProducts
         fields = ['product','amount','colour']
 
-
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        #fields = ['product_name','product_category','title','montaj_sabiti','marka','product_type','unit','birim_fiyat']
-        fields = ['urun_kodu','product_name','urun_grubu','marka','montaj_sabiti','unit','product_type','birim_fiyat']
-
-
+        fields = ['urun_kodu','product_name','urun_grubu','marka','montaj_sabiti','unit','birim_fiyat']
 
 class AddressForm(forms.ModelForm):
     class  Meta:

@@ -42,11 +42,11 @@ urlpatterns = [
     path('productUpdate/<int:id>',views.productUpdate,name='productUpdate'),
     path('productDeactive/<int:id>',views.productDeactive,name='productDeactive'),
     path('productActive/<int:id>',views.productActive,name='productActive'),
-    #path('findProduct/<int:qs>',views.findProduct,name='findProduct'),
-    #path('findProduct/', views.findProduct, name='findProduct'),
-    #path('productDropList/', views.productDropList, name='productDropList'),
     path('ajax/productDropList/', views.productDropList, name='ajax_productDropList'),
     path('ajax/orderDropList/', views.orderDropList, name='ajax_orderDropList'),
+    path('ajax/colorList/', views.colorList, name='ajax_colorList'),
+    path('ajax/categoryDropList/', views.categoryDropList, name='ajax_categoryDropList'),
+    
     path('planlama/<str:list_filter>',views.planlama,name='planlama'),
     
 
