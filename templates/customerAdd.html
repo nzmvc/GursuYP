@@ -3,14 +3,10 @@
 {% block body %}
 {% load crispy_forms_tags %}
 <div class="row">
-  
     <h3> 
-            Müşteri Tanımlama
-            
+        Müşteri Tanımlama
     </h3>   
-  
     <hr>
-    
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}

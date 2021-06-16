@@ -86,14 +86,12 @@ class Address (models.Model):
         return self.aciklama
 
 class OrderPackets(models.Model):
-    
     orderTypeChoise = (
             ("U","Uretim"),
             ("S","Sevk"),
             ("M","Montaj"),
             ("D","Depo Teslim"),
         )
-
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
     status = models.BooleanField(default=False)
     order_id = models.IntegerField(null=True,blank=True)

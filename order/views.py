@@ -71,12 +71,13 @@ def dashboard(request,departman="ope",list_filter="all"):
         if list_filter == "all":
             planlama_jobs = Workflow.objects.filter(department=41000)
         elif list_filter == "tamamlandi":
-            planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id=22)
+            planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in=(22,25,27) )  # statusu tamamladı olanların workflow ID leri 
         else: 
-            planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22).exclude(status_id=25)
+            planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27))        
     else:
-        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22).exclude(status_id=25)
+        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22).exclude(status_id=25).exclude(status_id=27)
 
+    
     if departman =="uretim":
         if list_filter == "all":
             uretim_jobs = Workflow.objects.filter(department=42000)
@@ -112,7 +113,7 @@ def dashboard(request,departman="ope",list_filter="all"):
         'workflow':workflow,
         'problems':problems,
         "res_today":res_today,              ####
-        "res_tomorrow":res_tomorrow,         ####
+        "res_tomorrow":res_tomorrow,        ####
         'labels': labels,
         'data': data,
         }
@@ -122,7 +123,7 @@ def dashboard(request,departman="ope",list_filter="all"):
 @login_required(login_url='/user/login/')
 def planlama(request,departman="ope",list_filter="all"):   
 
-    workflow = Workflow.objects.exclude(status_id=22)
+    workflow = Workflow.objects.all().exclude(status_id=22)
     order = Order.objects.all().exclude(statu_id=22)
     problems = Problems.objects.exclude(statu_id=4).exclude(statu_id=5)
 
@@ -144,9 +145,10 @@ def planlama(request,departman="ope",list_filter="all"):
     if list_filter == "all":
         planlama_jobs = Workflow.objects.filter(department=41000)
     elif list_filter == "tamamlandi":
-        planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id=22)
+        planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in=(22,25,27) )  # statusu tamamladı olanların workflow ID leri 
     else: 
-        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id=22)
+        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27))
+        
 
     content = {
         'planlama_jobs':planlama_jobs,      ####
@@ -434,8 +436,11 @@ def dosyaEkle(request,order_id,workflow_id):
         Logla(request.user,"sipariş güncellendi","dosyaEkle",order.id,10)
 
         wf = Workflow.objects.get(id=workflow_id)
-        wf.status_id = 25
+        wf.status_id = 25       ## workflow güncellenerek işlem tamamlandı statusune çekilir.
         wf.save()
+
+        workflow_uretim = Workflow(department="42000",status_id=2,order=order_id,comment="Üretim yapılacak")
+        workflow_uretim.save()
 
         return redirect("/order/dashboard/ope/active")
     return  render(request,'dosyaEkle.html',{'form':form})
@@ -561,13 +566,14 @@ def orderView(request,id):
     order   = get_object_or_404(Order,id=id)
     
     workflows = Workflow.objects.filter(order_id=id)
-    orderProducts = OrderProducts.objects.filter(order =order)
+    orderProducts = OrderProducts.objects.filter(order =order).order_by('orderpackets_id')
     problems    = Problems.objects.filter(order = order)
     adresler =  Address.objects.filter(customer = order.customer) 
     fatura_adres = Address.objects.filter(id = order.fatura_adres)
     sevk_adres = Address.objects.filter(id = order.sevk_adres) 
     price_sum = sum(orderProducts.values_list('toplam_tutar', flat=True))
     t_tutar = price_sum * ((100 - order.iskonto)/100)
+    
     
     #logs    = Logging.objects.filter(log_type="order",type_id=id)
     logs={}
@@ -1073,7 +1079,9 @@ def workflowPlanla(request,id):
     order = Order.objects.get(id = wf.order_id)
     ustalar = request.POST.getlist('ustalar')       # ilk ve ikinci girişte  boş döner. 
     arabalar = request.POST.getlist('arabalar')
-    
+    orderproducts = OrderProducts.objects.filter(orderpackets_id = wf.siparis_paketi_id)
+    print(orderproducts)
+
     if ustalar or arabalar:
         tarih = request.POST["tarih"]
         tarih_end = request.POST["tarih_end"]
@@ -1172,13 +1180,14 @@ def workflowPlanla(request,id):
                 'stime':stime,
                 'etime':etime,
                 'wf':wf,
+                'orderproducts':orderproducts,
             }
             return  render(request,'montaj_plan_adim2.html',content)
             
             
         else:   # ilk girişte çalışır
             if wf :
-                return  render(request,'workflow.html',{'wf':wf,'order':order})
+                return  render(request,'workflow.html',{'wf':wf,'order':order,'orderproducts':orderproducts})
             
             else:
                 messages.warning(request,"Görev bulunamadı")
