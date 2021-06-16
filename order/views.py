@@ -439,7 +439,7 @@ def dosyaEkle(request,order_id,workflow_id):
         wf.status_id = 25       ## workflow güncellenerek işlem tamamlandı statusune çekilir.
         wf.save()
 
-        workflow_uretim = Workflow(department="42000",status_id=2,order=order_id,comment="Üretim yapılacak")
+        workflow_uretim = Workflow(department="42000",status_id=2,order_id=order_id,comment="Üretim yapılacak")
         workflow_uretim.save()
 
         return redirect("/order/dashboard/ope/active")
