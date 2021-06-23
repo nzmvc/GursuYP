@@ -94,7 +94,8 @@ class OrderPackets(models.Model):
         )
     order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
     status = models.BooleanField(default=False)
-    order_id = models.IntegerField(null=True,blank=True)
+    #order_id = models.IntegerField(null=True,blank=True)
+    uretim = models.BooleanField(default=False,verbose_name="Üretim var/yok")
 
 class Workflow(models.Model):
     departments = (

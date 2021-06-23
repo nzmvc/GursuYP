@@ -91,6 +91,7 @@ class Yetkilendirme(models.Model):
                         ("workflow_planlama","Workflow Planlama  "),
                         ("workflow_depo","Workflow Depo "),
                         ("workflow_uretim","Workflow Uretim "),
+                        ("workflow_islem","Workflow üzerinde işlem yapabilme yetkisi "),
                         ("test","test yetkisi"),
                        
                       )

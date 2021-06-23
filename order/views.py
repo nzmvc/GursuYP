@@ -454,7 +454,7 @@ def siparisPaketi(request,order_id,workflow_id):
 
     if request.method == "POST":
         # orderpacket e kayıt girilir.
-        opack = OrderPackets(order_type= request.POST.getlist('order_type')[0], status = 0)
+        opack = OrderPackets(order_type= request.POST.getlist('order_type')[0], status = 0,uretim=request.POST.get('uretim'))
         opack.save()  
         """  many to many için 
         # yeni kayda bağlanacak productlar  for ile eklenir
@@ -517,10 +517,10 @@ def orderPaketOnayla(request,order_id,workflow_id):
         # 4 ürün vardır ama 2 paket olarak tanımlanmış olabilir. bu durumda 1 order ın 4 ürünü için tanımlanmış 2 paket için, 2 workflow oluşur.
         print(sip_pack.id , " sipariş paketi içn ilem yapılıyor. sip tipi", sip_pack.order_type)
         
-        if sip_pack.order_type == "U":
-            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order,comment="Üretim yapılacak")
+        if sip_pack.order_type == "U" or sip_pack.uretim == True:  # Uretim ekibine iş akışı gider 
+            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order,comment="Üretim yapılacak",siparis_paketi_id=sip_pack.id)
             workflow_uretim.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10",siparis_paketi_id=sip_pack.id)
+            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10")  #,siparis_paketi_id=sip_pack.id
         
         if sip_pack.order_type == "D":
             workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order,comment="Depo teslimi",siparis_paketi_id=sip_pack.id)
@@ -756,9 +756,7 @@ def customerAdd(request):
         customer = Customer.objects.get(customer_name=form.cleaned_data.get("customer_name"))
         
         ################################################### ADRES KAYDI
-        #????????????????????????  formu kaydederken birinci formun çıktısı ikincinin girdisi nasıl olur?
-        # müşteriyi kaydettikten sonra 
-
+ 
         ulke = form_adress.cleaned_data.get("ulke")
         il = form_adress.cleaned_data.get("il")
         ilce = form_adress.cleaned_data.get("ilce")
@@ -817,7 +815,7 @@ def customerList(request):
     return  render(request,'customerList.html',{'customers':customers}) 
 
 @login_required(login_url='/user/login')
-@permission_required('user.musteri_yonetimi',login_url='/user/yetkiYok/')
+@permission_required('user.musteri_listele',login_url='/user/yetkiYok/')
 def customerView(request,id):
     
     customer = Customer.objects.get(id=id)
@@ -954,7 +952,7 @@ def productActive(request,id):
 #######################  WORKFLOW          #################################
 ############################################################################
 @login_required(login_url='/user/login')
-@permission_required('user.urun_yonetim',login_url='/user/yetkiYok/')
+#@permission_required('user.workflow_islem',login_url='/user/yetkiYok/')
 def workflowCompleted(request,id):
     #print("referer-----",request.META['HTTP_REFERER'])
     wf = Workflow.objects.get(id=id)

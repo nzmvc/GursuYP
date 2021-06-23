@@ -88,6 +88,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
+
+
+{% if perms.user.rapor_listele %}
 <div class="row" >
   <div class="col-md-2 mb-0" id="container" style="width: 50%;">
     <canvas id="pie-chart"></canvas>
@@ -197,6 +200,8 @@
     </div>
   </div>
 </div>
+{%endif%}
+
 <br><br>
 {% if perms.user.workflow_operasyon %}
 <div class="col-md-12">
@@ -327,7 +332,8 @@
         <tbody>
             {% for job in planlama_jobs %}
               <tr>
-                <td><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
+                <!-- <td><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>   -->
+                <td>{{job.id}}</td>
                 <td>{{job.status}}</td>
                 <td>{{job.created_date|date:'d-m-Y'}}</td>
                 <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>

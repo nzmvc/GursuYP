@@ -40,7 +40,20 @@
             <option value="M">Montaj</option>
             <option value="D">Depo Teslim</option>
           </select>
+          <br>
+          Üretim
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="uretim" id="inlineRadio1" value="1">
+            <label class="form-check-label" for="inlineRadio1">Var</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="uretim" id="inlineRadio2" value="0">
+            <label class="form-check-label" for="inlineRadio2">Yok</label>
+          </div>
+
       </div>
+
+
       
       <div  class="d-grid gap-2 col-2 mx-auto">
             {% if order.siparis_paketi == False %}
@@ -64,6 +77,7 @@
           <th class="border-0" scope="col">Ürün</th>
           <th class="border-0" scope="col">Paket ID</th>
           <th class="border-0" scope="col">Sipariş Tipi</th>
+          <th class="border-0" scope="col">Üretim</th>
           <th class="border-0" scope="col"></th>
           
         </tr>
@@ -75,6 +89,14 @@
               <td>{{packet.product.product_name}}</td>
               <td>{{packet.orderpackets.id}}</td>
               <td>{{packet.orderpackets.order_type}}</td>
+              <td>
+                {% if packet.orderpackets.uretim %}
+                  Var
+                {%else%}
+                  Yok
+                {%endif%}
+                
+              </td>
               <td>
                 <div class="dropdown">
                     {% if order.siparis_paketi == False %}
