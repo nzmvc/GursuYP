@@ -26,7 +26,8 @@ urlpatterns = [
     path('orderPaketOnayla/<int:order_id>/<int:workflow_id>', views.orderPaketOnayla, name='orderPaketOnayla'),
     path('rapor', views.rapor, name='rapor'),
     path('data_aylik_satis',views.data_aylik_satis,name='data_aylik_satis'),
-    
+    path('uretim_depo', views.uretim_depo, name='uretim_depo'),
+
     path('customerAdd/',views.customerAdd,name='customerAdd'),
     path('customerAddressAdd/<int:id>',views.customerAddressAdd,name='customerAddressAdd'),
     path('customerAddressUpdate/<int:id>',views.customerAddressUpdate,name='customerAddressUpdate'),
@@ -55,7 +56,7 @@ urlpatterns = [
     path('events/',views.events,name='events'),
     path('events_data/',views.events_data,name='events_data'),
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
-    path('reservationDelete/<int:id>',views.reservationDelete,name='reservationDelete'),
+    path('reservationDelete/<int:reservation_id>',views.reservationDelete,name='reservationDelete'),
 
     path('workflowCompleted/<int:id>',views.workflowCompleted,name='workflowCompleted'),
     path('workflowView/<int:id>',views.workflowView,name='workflowView'),

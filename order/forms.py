@@ -72,7 +72,8 @@ class CustomerAddressForm(forms.ModelForm):
 class ProblemForm(forms.ModelForm):
     class Meta:
         model = Problems
-        fields = ['order','description','statu','created_user','urun_grubu']
+        #fields = ['order','created_user','description','problem_file']
+        fields = ['description','problem_file']
 
 class ProblemSolutionForm(forms.ModelForm):
     class Meta:
@@ -82,7 +83,7 @@ class ProblemSolutionForm(forms.ModelForm):
 class ProblemAddForm(forms.ModelForm):
     class Meta:
         model = Problems
-        fields=['order','description','statu','created_user','urun_grubu']
+        fields=['order','description','statu','created_user']
     
     def __init__(self, *args, **kwargs):
         super(ProblemAddForm,self).__init__(*args, **kwargs)

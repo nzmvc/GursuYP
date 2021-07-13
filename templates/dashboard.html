@@ -200,9 +200,10 @@
     </div>
   </div>
 </div>
+<br><br>
 {%endif%}
 
-<br><br>
+
 {% if perms.user.workflow_operasyon %}
 <div class="col-md-12">
   <div class="card">
@@ -240,7 +241,7 @@
             <th >Sipariş</th>
             <th >Açıklama</th>
             <th >Müşteri</th>
-            <th style="width: 8%">Aksiyon</th>
+            <th style="width: 12%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -269,8 +270,13 @@
                       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                       <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                     </svg></a>
-
                     
+                    <a href="/order/problemAdd/{{job.order.id}}" data-toggle="tooltip" data-placement="left" title="Problem Gir">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
+                        <path d="M9.972 2.508a.5.5 0 0 0-.16-.556l-.178-.129a5.009 5.009 0 0 0-2.076-.783C6.215.862 4.504 1.229 2.84 3.133H1.786a.5.5 0 0 0-.354.147L.146 4.567a.5.5 0 0 0 0 .706l2.571 2.579a.5.5 0 0 0 .708 0l1.286-1.29a.5.5 0 0 0 .146-.353V5.57l8.387 8.873A.5.5 0 0 0 14 14.5l1.5-1.5a.5.5 0 0 0 .017-.689l-9.129-8.63c.747-.456 1.772-.839 3.112-.839a.5.5 0 0 0 .472-.334z"/>
+                      </svg>  
+                    </a>
+                   
                     </ul>
                   </div>
                   
@@ -288,8 +294,9 @@
   </div>
   </div>
 </div>
-{% endif%}
 <br><br>
+{% endif%}
+
 
 {% if perms.user.workflow_planlama %}
 <div class="col-md-12">
@@ -390,8 +397,9 @@
   </div>
   </div>
 </div>
-{%endif%}
 <br><br>
+{%endif%}
+
 
 {% if perms.user.workflow_uretim %}
 <div class="col-md-12">
@@ -464,8 +472,9 @@
   </div>
   </div>
 </div>
-{%endif%}
 <br><br>
+{%endif%}
+
 
 {% if perms.user.workflow_depo %}
 <div class="col-md-12">
@@ -538,7 +547,78 @@
   </div>
 </div>
 </div>
+<br><br>
 {%endif%}
 
+
+<!-- ------------------------------------------------------------------------------------------- -->
+<!--      usta işleri -->
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+      
+      <div class="row">
+        <div class="col-sm-8">
+          <h4 class="card-title">İşlerim  
+            <button type="button" class="btn btn-primary btn-sm">
+              iş adedi: <span class="badge badge-light">{{islerim.count }}</span>
+            </button>
+          </h4>
+        </div>
+       
+      </div>
+  </div>
+  <div class="table-full-width table-responsive px-0 card-body">
+
+
+      {% if islerim %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th style="width: 5%">#</th>
+            <th >Siparis</th>
+            <th style="width: 10%" >Workflow</th>
+            <th >Baş. tar.</th>
+            <th >Bitis Tar.</th>
+            <th >Urun Grubu</th>
+            <th style="width: 8%">Aksiyon</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for job in islerim %}
+              <tr>
+                <!-- <td><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>   -->
+                <td>{{job.id}}</td>
+                <td><a href="/order/orderView/{{job.order.id}}" >{{job.order.id}}</a></td>
+                <td><a href="/order/workflowView/{{job.workflow_id}}">{{job.workflow_id}}</a></td>
+                <td>{{job.start_date|date:'d-m-Y'}}</td>
+                <td>{{job.end_date|date:'d-m-Y'}}</td>
+                <td>{{job.urun_grubu_id|safe|truncatechars:30}}</td>
+               <!--  <td>{{job.order.customer.customer_name|truncatechars:30}}</td> -->
+                
+                <td>
+                 
+                 </td>
+                
+              </tr>
+            {% endfor %}
+          
+      
+        </tbody>
+      </table>
+    {%else%}
+      <div class="alert alert-danger">
+          Bekleyen iş yok
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</div>
+
 <br><br>
+
+
+
+
 {% endblock body %}

@@ -9,8 +9,8 @@
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
             <strong class="d-inline-block mb-2 text-primary">
-                Şikayet ID: {{problem.id}} 
-                
+                Şikayet ID: {{problem.id}} -- {{problem.statu}}
+    
               </strong>
             
             <h3 class="mb-0">{{problem.order.customer.customer_name}}</h3>
@@ -35,7 +35,13 @@
   <div class="col-md-3">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
-            <center><h1>DURUM <br> {{problem.statu}}</h1></center>
+            
+            {% if problem.problem_file.url is not Null %}
+                <a href="{{problem_file.url}}" target="popup" 
+                    onclick="window.open('{{problem_file.url}}','popup','width=600,height=600'); return false;">
+                    <img width="100" height="180"  class="img-fluid rounded" src="{{problem_file.url}}" alt="">  
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -61,6 +67,7 @@
 
         <div class="jumbotron border rounded overflow-hidden ">
             <form method="post">
+                {{ form.media }}
                 {% csrf_token %}
                 {{solution_form|crispy }}
                 <br>

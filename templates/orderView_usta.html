@@ -231,8 +231,6 @@
                             <th scope="col">Ürün</th>
                             <th scope="col">Renk</th>
                             <th scope="col">Adet</th>
-                            <th scope="col">Birim Fiyat</th>
-                            <th scope="col">Toplam</th>
                             <th scope="col">Paket</th>
                             <th scope="col">Tipi</th>
                             <td></td>
@@ -245,8 +243,6 @@
                     <td>{{orderProduct.product.product_name}}</td>
                     <td>{{orderProduct.colour}}</td>
                     <td>{{orderProduct.amount}}</td>
-                    <td>{{orderProduct.birim_fiyat}}</td>
-                    <td>{{orderProduct.toplam_tutar}}</td>
                     <td>{% if orderProduct.orderpackets_id == 0 %}
                           Yok
                         {%else%}
@@ -255,10 +251,7 @@
                     </td>
                     <td>{{orderProduct.orderpackets.order_type}}</td>
                     <td>
-                      {% if order.statu_id == 23 %}
-                        <a href="/order/orderDeleteProduct/{{orderProduct.id}}">
-                        <button class="btn btn-danger btn-sm">Sil</button></a>
-                      {% endif%}
+                     
                     </td>
                     
                     </tr>
@@ -267,56 +260,7 @@
 
                 </table>
 
-                <! ------------------------------------------------>
-
-                <div class="row mb-1">
-                  <div class="col-md-4">
-                    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                      <div class="col p-4 d-flex flex-column position-static" style="height:150px;">
-                        <h5 class="mb-0">Notlar : </h5> 
-                        <p class="card-text mb-auto">{{order.content|safe}}</p>
-                        <a href="/order/orderUpdate/{{order.id}}" class="stretched-link">Güncelle</a>
-                      </div>
-                      
-                    </div>
-                  </div>
-                
-                  <div class="col-md-4">
-                      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                          <div class="col p-4 d-flex flex-column position-static"  style="height:150px;" >
-                              <h5 class="mb-0">Tahmini Tarih Aralığı</h5><br>
-                              <div >En Erken: : {{order.tahmini_tarih_min}}</div> 
-                              <div >En Geç: : {{order.tahmini_tarih_max}}</div> 
-                          </div>
-                      </div>
-                  </div>
-              
-                  <div class="col-md-4">
-                    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                        <div class="col p-4 d-flex flex-column position-static"  style="height:150px;">
-                          <br>
-                            <table border=0>
-                                <tr><td>Tutar :</td><td>{{price_sum}}</td></tr>
-                                <tr><td>İskonto :</td><td>{{order.iskonto}}%</td></tr>
-                                <tr><td>Toplam :</td><td>{{t_tutar}}</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-              
-              </div>
-
-
-
-
-                <! ------------------------------------------------>
-
-
-                {% if order.statu_id == 23 %}
-                <a href="/order/orderApproved/{{order.id}}">
-                    <button class="btn btn-warning btn-sm">Siparişi onayla</button>
-                </a>
-                {%endif%}
+               
             {% endif%}
 
       </div>        
@@ -379,171 +323,8 @@
   </div>
 </div>
 
-<br><br>
 
-<div class="col-md-12">
-  <div class="card">
-    <div class="card-header bg-light ">
-      <h4 class="card-title">Rezervasyonlar
-        <button type="button" class="btn btn-primary btn-sm">
-          Plan: <span class="badge badge-light">{{reservations.count }}</span>
-        </button>
 
-      </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
-    </div>
-    <div class="table-full-width table-responsive px-0 card-body">
-     {% if reservations %}
-      <table class="table-hover table-striped table">
-        <thead>
-          <tr>
-            <th class="border-0" scope="col">ID</th>
-            <th class="border-0" scope="col">Başlangıç</th>
-            <th class="border-0" scope="col">Bitiş</th>
-            <th class="border-0" scope="col">Açıklama</th>
-            <th class="border-0" scope="col">Alt paket</th>
-            <th class="border-0" scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for reservation in reservations %}
-              <tr>
-                <td scope="row">{{reservation.id}}</td>
-                <td>{{reservation.start_date|date:'d-m-Y h:s'}}</td>
-                <td>{{reservation.end_date|date:'d-m-Y h:s'}}</td>
-                <td>{{reservation.description}}</td>
-                <td>{{reservation.order_packet_id}}</td>
-                <td><a href="/order/reservationDelete/{{reservation.id}}"><button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Alt Sipariş Paketleri oluşturur">Rezervasyon sil</button></a></td>
-                  
-              </tr>
-            {% endfor %}
-          
-      
-        </tbody>
-      </table>
-     {%else%}
-      <div class="alert alert-success">
-          Sipariş Paketi oluşturulmamış
-      </div>
-     {% endif %}
-    </div>
-  </div>
-</div>
-
-<br><br>
-
-<div class="col-md-12">
-    <div class="card">
-      <div class="card-header bg-light ">
-        <h4 class="card-title">Müşteri Şikayetleri  
-          <button type="button" class="btn btn-primary btn-sm">
-            Şikayet adedi: <span class="badge badge-light">{{problems.count }}</span>
-          </button>
-
-          <a href="/order/problemAdd/{{order.id}}">
-            <button class="btn btn-danger btn-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
-                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
-              </svg> Problem Giriş
-            </button>
-          </a>
-        </h4>
-        <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
-      </div>
-      <div class="table-full-width table-responsive px-0 card-body">
-  
-  
-        {% if problems %}
-          <table class="table-hover table-striped table">
-            <thead>
-              <tr>
-                <th class="border-0" scope="col">ID</th>
-                <th class="border-0" scope="col">Oluşturulma Tarihi</th>
-                <th class="border-0" scope="col">Kullanıcı</th>
-                <th class="border-0" scope="col">Order ID</th>
-                <th class="border-0" scope="col">Açıklama</th>
-                <th class="border-0" scope="col">Durum</th>
-                <th class="border-0" scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for problem in problems %}
-                  <tr>
-                    <td scope="row"><a href="/order/problemView/{{problem.id}}">{{problem.id}}</a></td>
-                    <td>{{problem.created_date}}</td>
-                    <td>{{problem.created_user}}</td>
-                    <td><a href="/order/orderView/{{problem.order.id}}">{{problem.order}}</a></td>
-                    <td>{{problem.description|safe}}</td>
-                    <td>{{problem.statu}}</td>
-                    
-                    <td>
-                      <div class="dropdown">
-                        <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                          Aksiyon
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          <li><a class="dropdown-item" href="/order/problemView/{{problem.id}}">Göster</a></li>
-                          <li><a class="dropdown-item" href="#">B aksiyonu</a></li>
-                          <li><a class="dropdown-item" href="#">c Aksiyonu</a></li>
-                        </ul>
-                      </div>
-                      
-                  </tr>
-                {% endfor %}
-              
-          
-            </tbody>
-          </table>
-        {%else%}
-          <div class="alert alert-success">
-              Problem kaydı yok
-          </div>
-        {% endif %}
-      </div>
-    </div>
-</div>
-    
-<br><br>
-<div class="col-md-12">
-    <div class="card">
-      <div class="card-header bg-light ">
-        <h4 class="card-title">İşlemler      </h4>
-        <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
-      </div>
-      <div class="table-full-width table-responsive px-0 card-body">
-  
-        {% if workflows %}
-          <table class="table table-striped table-hover">
-              <thead>
-                  <tr>
-                      <th scope="col"></th>
-                      <th scope="col">Departman</th>
-                      <th scope="col">Açıklama</th>
-                      <th scope="col">Durum</th>
-                      <th scope="col">Oluşturulma tarihi</th>
-                      <th scope="col">Tamamlanma tarihi</th>
-                      
-                  </tr>
-              </thead>
-          {% for wf in workflows%}
-              <tr>
-              <!-- wf tıklandığında ne yapılması isteniyor ???-->
-              <th scope="row"><a href="#">{{wf.id}}</a></th>                    
-              <td>{{wf.department}}</td>
-              <td>{{wf.comment}}</td>
-              <td>{{wf.status}}</td>
-              <td>{{wf.created_date}}</td>
-              <td>{{wf.completed_date}}</td>
-              </tr>
-          {% endfor%}
-          </table>
-        {% endif%}
-      
-    </div>
-</div>
-
-<br><br>
 
     {%else%}
     <div class="alert alert-danger">

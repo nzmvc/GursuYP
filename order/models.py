@@ -57,7 +57,6 @@ class Order (models.Model):
         title= self.customer.customer_name+"_"+str(self.create_date)[:10]
         return title
 
-
 class Customer(models.Model):
     # customer type vergi yada tc no için gerekli
     customer_type=(("Şahıs","Şahıs"),("Kurumsal","Kurumsal")    )
@@ -199,7 +198,7 @@ class OrderProducts(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
     product = models.ForeignKey(Product,on_delete=models.PROTECT,verbose_name="Ürün")
     colour = models.ForeignKey(ProductColor,on_delete=models.PROTECT,verbose_name="Renk")
-    amount  = models.IntegerField(default=0,verbose_name="Miktar")
+    amount  = models.FloatField(default=0,verbose_name="Miktar")
     birim_fiyat = models.IntegerField(default=0)
     toplam_tutar = models.IntegerField(default=0)
     orderpackets = models.ForeignKey(OrderPackets,on_delete=models.PROTECT,blank=True,null=True)
@@ -220,14 +219,14 @@ class ProblemStatu(models.Model):
         
 class Problems(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
-    urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now=True)
     statu = models.ForeignKey(ProblemStatu,on_delete=models.CASCADE,default=1)
     closed_date = models.DateTimeField(blank=True,null=True)
     root_cause = models.ForeignKey(RootCause,on_delete=models.CASCADE,blank=True,null=True)
     description = RichTextField(null=True)
     solution = RichTextField(null=True)
-    created_user = models.ForeignKey(Employee,on_delete=models.CASCADE)
+    problem_file = models.FileField(blank =True,null=True,verbose_name="Problem dosya/resim")
+    created_user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 class Vehicle(models.Model):
     vehicle_type = (
@@ -244,6 +243,8 @@ class Vehicle(models.Model):
     
 class Reservation(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    order_packet = models.ForeignKey(OrderPackets,on_delete=models.CASCADE)
+    workflow = models.ForeignKey(Workflow,on_delete=models.CASCADE)
     urun_grubu = models.ForeignKey(UrunGrubu,on_delete=models.CASCADE,default=1)
     start_date = models.DateTimeField(verbose_name="Başlangıç Zamanı")
     end_date = models.DateTimeField(verbose_name="Bitiş Zamanı")

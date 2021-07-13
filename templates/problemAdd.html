@@ -8,6 +8,7 @@
         <hr>
 
         <form method="post">
+            {{ form.media }}
             {% csrf_token %}
             {{form|crispy }}
             <br>
