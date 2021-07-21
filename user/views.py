@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
-from .forms import RegisterForm,LoginForm,UserUpdateForm,ChangePassword
+from .forms import RegisterForm,LoginForm,UserUpdateForm,ChangePassword,EmployeeUpdateForm
 from django.contrib.auth import login,logout,authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Permission
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required,permission_required   
 from .models import  Logging
@@ -124,16 +125,20 @@ def userUpdate(request,id):
     # güncelleme için farklı bir form tanımlayarak kısıtlı verilerle güncelleme yapılıyor
     # password güncellemesi için  ayrı bir buton koyalım
     user = get_object_or_404(User,id=id)
+    employee = get_object_or_404(Employee,user=user)
     print( user)
-    form = RegisterForm(request.POST or None, request.FILES or None,instance=user)
-    #form = UserUpdateForm(request.POST or None, request.FILES or None,instance=user)
-    
-    if form.is_valid() :
+    #form = RegisterForm(request.POST or None, request.FILES or None,instance=user)
+
+    form = UserUpdateForm(request.POST or None, request.FILES or None,instance=user)
+    emp_form = EmployeeUpdateForm(request.POST or None, request.FILES or None,instance=employee)
+
+    if form.is_valid() and emp_form.is_valid() :
         form.save()
+        emp_form.save()
         messages.success(request,"kullanıcı güncellendi")
         return redirect("/user/userList")
     
-    return  render(request,'userUpdate.html',{'form':form})
+    return  render(request,'userUpdate_v2.html',{'form':form,'emp_form':emp_form})
 
 @login_required(login_url='/user/login/')
 @permission_required('user.kullanici_yonetim',login_url='/user/yetkiYok/')
@@ -163,6 +168,34 @@ def userDelete(request,id):
     else:
         messages.success(request,"Kullanıcı bulunamadı!!!!!!")
     return  redirect("/user/userList")
+
+@login_required(login_url='/user/login')
+@permission_required('user.kullanici_yonetim',login_url='/user/yetkiYok/')
+def userYetki(request,id,islem,perm):
+    if islem == 'listele':
+        user = get_object_or_404(User,id=id)
+        p_list = Permission.objects.filter(content_type_id=29)
+        user_p_list = Permission.objects.filter(Q(user=user))
+        
+        if user :
+
+            return  render(request,'userPermissionList.html',{'p_list':p_list,'user_p_list':user_p_list,'userid':id,'user':user})
+            
+        else:
+            messages.success(request,"Kullanıcı bulunamadı!!!!!!")
+        return  redirect("/user/userList")
+    elif islem == "add":
+        permission = Permission.objects.get(codename=perm)
+        user = User.objects.get(id=id)
+        user.user_permissions.add(permission)
+        return redirect(request.META['HTTP_REFERER'])
+        
+    elif islem == "remove":
+        permission = Permission.objects.get(codename=perm)
+        user = User.objects.get(id=id)
+        user.user_permissions.remove(permission)
+        return redirect(request.META['HTTP_REFERER'])
+
 
 
 @login_required(login_url='/user/login/')

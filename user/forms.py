@@ -59,9 +59,14 @@ class RegisterForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username','password','email','first_name','last_name']
+        fields = ['username','email','first_name','last_name']
         #fields = ['username','email','first_name','last_name','telephone','sube','department','yetenek']
 
+
+class EmployeeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['sube','department','telephone']
 
 class ChangePassword(forms.ModelForm):
 
