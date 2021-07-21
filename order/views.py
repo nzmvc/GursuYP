@@ -169,104 +169,6 @@ def about(request):
 #######################  ORDER             #################################
 ############################################################################
 
-@login_required(login_url='/user/login/')
-@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
-def orderAdd(request):
-    form = OrderForm(request.POST or None,request.FILES or None)
-
-    if form.is_valid():
-            
-            #form.save()
-            # fields = ['customer','content','order_image','order_type' ]
-            customer = form.cleaned_data.get("customer")
-            order_type = form.cleaned_data.get("order_type")
-            order_image = form.cleaned_data.get("order_image")
-            order_content = form.cleaned_data.get("content")
-            stok = form.cleaned_data.get("stok")
-            iskonto = form.cleaned_data.get("iskonto")
-            tahmini_tarih_min = form.cleaned_data.get("tahmini_tarih_min")
-            tahmini_tarih_max =form.cleaned_data.get("tahmini_tarih_max")
-            
-            new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto)
-            new_order.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
-            """
-            # sipariş girişi ile beraber  departmanlara tasklar gonderilir
-            #TODO test için hepsine gönderiliyor. fakat ürün ve hizmet seçimine göre task oluşmalı
-            #TODO statuler değiştirilebilir yapıldı. buna bağlı olarak workflow unda parametrik yapılması gerekir. status 10 silinirse program bozulur!!!!!!
-  
-            """
-
-            messages.warning(request," Sipariş girildi. Lütfen Ürünleri ekleyiniz!!!!")   
-            return  redirect('/order/orderView/'+str(new_order.pk))
-
-
-
-    return  render(request,'orderAdd.html',{'form':form})
-
-@login_required(login_url='/user/login/')
-@permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
-def orderAdd2(request):
-    form = OrderForm(request.POST or None,request.FILES or None)
-    
-    if form.is_valid():
-            
-            #form.save()
-            # fields = ['customer','content','order_image','order_type' ]
-            customer = form.cleaned_data.get("customer")
-            order_type = form.cleaned_data.get("order_type")
-            order_image = form.cleaned_data.get("order_image")
-            order_content = form.cleaned_data.get("content")
-            stok = form.cleaned_data.get("stok")
-            iskonto = form.cleaned_data.get("iskonto")
-            tahmini_tarih_min = form.cleaned_data.get("tahmini_tarih_min")
-            tahmini_tarih_max = form.cleaned_data.get("tahmini_tarih_max")
-            satis_kanali = form.cleaned_data.get("satis_kanali")
-            print(form)
-            print(tahmini_tarih_min)
-            new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali)
-            new_order.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
-            """
-            # sipariş girişi ile beraber  departmanlara tasklar gonderilir
-            #TODO test için hepsine gönderiliyor. fakat ürün ve hizmet seçimine göre task oluşmalı
-            #TODO statuler değiştirilebilir yapıldı. buna bağlı olarak workflow unda parametrik yapılması gerekir. status 10 silinirse program bozulur!!!!!!
-  
-            """
-
-            messages.warning(request," Sipariş girildi. Lütfen Ürünleri ekleyiniz!!!!")   
-            return  redirect('/order/orderView/'+str(new_order.pk))
-
-    else:
-        print("form valid değil")
-
-    return  render(request,'orderAdd2.html',{'form':form})
-
-"""
-def findProduct(request, qs=None):
-    if qs is None:
-        qs = Product.objects.values_list('product_name', flat=True).all()
-    if request.GET.get('urun_grubu'):
-        urun_grubu=request.GET.get('urun_grubu')
-        marka=request.GET.get('marka')
-        print("!!!!!!!",urun_grubu)
-        qs = Product.objects.values_list('product_name', flat=True).filter(urun_grubu=urun_grubu).filter(marka = marka).order_by('product_name')
-    else:
-        print("urun grubu bilgisi yok")
-    # create an empty list to hold the results
-    results = []
-    
-    # iterate over each city and append to results list 
-    for product_name in qs:
-        results.append(product_name)
-    # if no results found then append a relevant message to results list
-    if not results:
-        # if no results then dispay empty message
-        results.append(_("ürün bulunamadı")) 
-    # return JSON object
-    return HttpResponse(simplejson.dumps(results))
-"""
-
 def categoryDropList(request):
     ug = request.GET.get('urun_grubu')
     kategoriler = ProductCategory.objects.filter(id__in = Product.objects.values_list('product_category_id',flat=True).filter(urun_grubu=ug).distinct() )
@@ -337,20 +239,17 @@ def orderAdd3(request):
         if form.is_valid() and formset.is_valid():
 
                 customer = form.cleaned_data.get("customer")
-                order_type = form.cleaned_data.get("order_type")
                 order_image = form.cleaned_data.get("order_image")
                 order_content = form.cleaned_data.get("content")
-                stok = form.cleaned_data.get("stok")
                 iskonto = form.cleaned_data.get("iskonto")
                 tahmini_tarih_min = form.cleaned_data.get("tahmini_tarih_min")
                 tahmini_tarih_max = form.cleaned_data.get("tahmini_tarih_max")
-                satis_kanali = form.cleaned_data.get("satis_kanali")
                 planlama_sekli = form.cleaned_data.get("planlama_sekli")
     
-                new_order = Order(customer=customer,order_type=order_type,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,satis_kanali=satis_kanali,planlama_sekli=planlama_sekli,sube=user.employee.sube)
+                new_order = Order(customer=customer,order_image=order_image,content=order_content,statu_id=23,tahmini_tarih_min=tahmini_tarih_min,tahmini_tarih_max=tahmini_tarih_max,iskonto=iskonto,planlama_sekli=planlama_sekli,sube=user.employee.sube)
                 new_order.save()
                 
-                Logla(request.user,"yeni satış işlemi girildi",log_type="order",type_id=new_order.pk,status="5")
+                Logla(request.user,"order","yeni satış işlemi girildi",new_order.pk,"start")
 
                 for pro_form in formset:
                     
@@ -424,28 +323,33 @@ def orderUpdate(request,id):
     return  render(request,'orderUpdate.html',{'form':form})
 
 @login_required(login_url='/user/login/')
-def dosyaEkle(request,order_id,workflow_id):
+def dosyaEkle(request,order_id,workflow_id):  #olcumDosyası girilir
     order = get_object_or_404(Order,id=order_id)
     form = OrderDosya(request.POST or None, request.FILES or None,instance=order)
     if form.is_valid() :
         
         form.save()
         messages.success(request,"Dosya Eklendi")
-        Logla(request.user,"sipariş güncellendi","dosyaEkle",order.id,10)
-
+    
+        
         wf = Workflow.objects.get(id=workflow_id)
         wf.status_id = 25       ## workflow güncellenerek işlem tamamlandı statusune çekilir.
         wf.save()
+        Logla(request.user,"workflow","ölcüm dosyası eklendi",wf.id,"end")
+
+        order.save()
 
         workflow_uretim = Workflow(department="42000",status_id=2,order_id=order_id,comment="Üretim yapılacak")
         workflow_uretim.save()
+        
+        order.save()
 
         return redirect("/order/dashboard/ope/active")
     return  render(request,'dosyaEkle.html',{'form':form})
 
 
 @login_required(login_url='/user/login/')
-def siparisPaketi(request,order_id,workflow_id):
+def siparisPaketi(request,order_id,workflow_id): #alt paket altpaket ilk sayfa
     order = get_object_or_404(Order,id=order_id)
     products = OrderProducts.objects.filter(order_id = order_id).filter( orderpackets_id = 0)
     products_selected = OrderProducts.objects.filter(order_id = order_id).exclude( orderpackets_id = 0)
@@ -487,16 +391,17 @@ def orderPacketDelete(request,order_product_id):
 
 @login_required(login_url='/user/login/')
 @permission_required('user.siparis_yonetimi',login_url='/user/yetkiYok/')
-def orderPaketOnayla(request,order_id,workflow_id):
+def orderPaketOnayla(request,order_id,workflow_id): #alt paket altpaket onay buton
     # siperiş kaydı onaylandı anlamına gelen  sipariş_paketi = True yapılır.
     # bu onaylama sonrasında sip paketleri silinemez yada yeniden paket oluşturulamaz. paketleme sayfasında sil ve paketle butonları gözükmez
     new_order = get_object_or_404(Order,id=order_id)
     new_order.siparis_paketi = True
-    new_order.save()
+    
 
     # planlama ekibine sipariş paketlemesi için açılan akış tamamlandı statusune alınır.
     wf = get_object_or_404(Workflow,id=workflow_id)
     wf.status_id = 27
+    wf.completed_date = datetime.datetime.now()
     wf.save()
 
     # urungrubu 1 celikkapı , 2 ic kapı, 3 zemin    #####
@@ -505,6 +410,7 @@ def orderPaketOnayla(request,order_id,workflow_id):
     if not new_order.order_image and orderProductType.count() > 0 :
         workflow_planlama_olcumDosyasi = Workflow(department="41000",status_id=24,order=new_order,comment="Ölçüm dosyası işlemi")
         workflow_planlama_olcumDosyasi.save()
+        
     ##################################################
 
     # order id bilgisine göre sipariş paket id ve tipi bilgisi alınır.
@@ -516,19 +422,23 @@ def orderPaketOnayla(request,order_id,workflow_id):
         print(sip_pack.id , " sipariş paketi içn ilem yapılıyor. sip tipi", sip_pack.order_type)
         
         if sip_pack.order_type == "U" or sip_pack.uretim == True:  # Uretim ekibine iş akışı gider 
-            workflow_uretim = Workflow(department="42000",status_id=2,order=new_order,comment="Üretim yapılacak",siparis_paketi_id=sip_pack.id)
+            #TODO su an uretim planlandı olarak akış başlatılıyor.
+            # daha sonra üretim planlama modulu çalışılacak
+            workflow_uretim = Workflow(department="42000",status_id=3,order=new_order,comment="Üretim yapılacak",siparis_paketi_id=sip_pack.id)
             workflow_uretim.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_uretim",type_id=workflow_uretim.pk,status="10")  #,siparis_paketi_id=sip_pack.id
-        
+            
+            Logla(request.user,"workflow","workflow_uretim olusturuldu",workflow_uretim.id,"start")
         if sip_pack.order_type == "D":
             workflow_depoTeslim = Workflow(department="43000",status_id=19,order=new_order,comment="Depo teslimi",siparis_paketi_id=sip_pack.id)
             workflow_depoTeslim.save()
-            Logla(request.user,"depo teslim işi oluşturuldu",log_type="workflow_depoTeslim",type_id=workflow_depoTeslim.pk,status="50")
+            
+            Logla(request.user,"workflow","workflow_depoteslim olusturuldu",workflow_depoTeslim.id,"start")
 
         if sip_pack.order_type == "S":
             workflow_planlama_sevk = Workflow(department="41000",status_id=6,order=new_order,comment="Sevk Planlama",siparis_paketi_id=sip_pack.id)
             workflow_planlama_sevk.save()
-            Logla(request.user,"yeni sevk işlermi oluşturuldu",log_type="workflow_deposevk",type_id=workflow_planlama_sevk.pk,status="20")
+            
+            Logla(request.user,"workflow","workflow_planlama_sevk olusturuldu",workflow_planlama_sevk.id,"start")
 
         if sip_pack.order_type == "M":
             
@@ -537,10 +447,12 @@ def orderPaketOnayla(request,order_id,workflow_id):
             
             workflow_planlama_montaj.save()
             workflow_montaj.save()
-            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_planlama_montaj",type_id=workflow_planlama_montaj.pk,status="30")
-            Logla(request.user,"yeni satış işlemi girildi",log_type="workflow_montaj",type_id=workflow_montaj.pk,status="40")
-    
-
+            
+            
+            Logla(request.user,"workflow","workflow_planlama_montaj olusturuldu",workflow_planlama_montaj.id,"start")
+            Logla(request.user,"workflow","workflow_montaj olusturuldu",workflow_montaj.id,"start")
+        
+        new_order.save()
     return redirect("/order/dashboard/ope/active")
 
 
@@ -550,7 +462,7 @@ def orderDelete(request,id):
     order = get_object_or_404(Order,id=id)
     if order :
         order.delete()
-        Logla(request.user,"sipariş silindi","orderDelete",id,10)
+        Logla(request.user,"order","orderDelete",id,"end")
         
         messages.success(request,"Sipariş silindi")
     else:
@@ -574,10 +486,14 @@ def orderView(request,id):
     price_sum = sum(orderProducts.values_list('toplam_tutar', flat=True))
     t_tutar = price_sum * ((100 - order.iskonto)/100)
     reservations = Reservation.objects.filter(order = order)
-
+    wf_closed = Workflow.objects.filter(order=order).filter(completed_date__isnull=False)
+    if ( workflows.count() > 0 ):
+        tamamlanma_oranı = int ( wf_closed.count() / workflows.count() * 100 )
+    else:
+        tamamlanma_oranı = 0
     logs={}
     
-    content ={'form':form, 'order':order,'workflows':workflows,'reservations':reservations,
+    content ={'form':form, 'order':order,'workflows':workflows,'tamamlanma_oranı':tamamlanma_oranı,'reservations':reservations,
                 'logs':logs,'orderProducts':orderProducts,'problems':problems,
                 'price_sum':price_sum,'t_tutar':t_tutar,'fatura_adres':fatura_adres,'sevk_adres':sevk_adres,'adresler':adresler}
     
@@ -692,10 +608,14 @@ def orderApproved(request,id):
         # TODO tek ürün olması durumunda sip paketi oluşturulmayabilir. yada otomatik oluşturulabilir.
         workflow_planlama_sipPaketi = Workflow(department="41000",status_id=26,order=new_order,comment="Sipariş paketlerini oluştur")
         workflow_planlama_sipPaketi.save()
-
+        
+        Logla(request.user,"workflow","workflow_planlama_sipPaketi olusturuldu",workflow_planlama_sipPaketi.id,"start")
+        
         # orderstatusunu değiştir.
         new_order.statu_id = 1
         new_order.save() 
+        Logla(request.user,"order","sipariş onaylandı",id,"approved")  #,siparis_paketi_id=sip_pack.id
+           
     else:
         messages.warning(request," Adres seçimi yapılmamış") 
     return redirect("/order/orderView/"+str(id))
@@ -719,7 +639,7 @@ def customerAdd(request):
         messages.info(request," Müşteri tanımlandı") 
         
         #customer_id = Customer.objects.filter(customer_name=form.cleaned_data.get("customer_name")).values('id')[0]['id']
-        customer = Customer.objects.get(customer_name=form.cleaned_data.get("customer_name"))
+        #customer = Customer.objects.get(customer_name=form.cleaned_data.get("customer_name"))
         
         ################################################### ADRES KAYDI
  
@@ -729,11 +649,12 @@ def customerAdd(request):
         adres = form_adress.cleaned_data.get("adres")
         mahalle = form_adress.cleaned_data.get("mahalle")
         map_link = form_adress.cleaned_data.get("map_link")
-        customer_adres = Address(customer=customer,ulke=ulke,il=il,ilce=ilce,adres=adres,map_link=map_link,mahalle=mahalle)
+        #customer_adres = Address(customer=customer,ulke=ulke,il=il,ilce=ilce,adres=adres,map_link=map_link,mahalle=mahalle)
+        customer_adres = Address(customer=new_customer,ulke=ulke,il=il,ilce=ilce,adres=adres,map_link=map_link,mahalle=mahalle)
         customer_adres.save()
         #form_adress.save()
         ###################################################
-        Logla(request.user,"Müşteri Eklendi","customerAdd",customer.pk,10)
+        Logla(request.user,"Müşteri Eklendi","customerAdd",new_customer.pk,10)
         return redirect(request.META['HTTP_REFERER'])
         
 
@@ -845,12 +766,12 @@ def productAdd(request):
     form = ProductForm(request.POST or None,request.FILES or None)
 
     if form.is_valid():
-        form.save()
+        product = form.save()
         #TODO hata kontrolü try except
         messages.info(request," Ürün tanımlandı") 
-        product_id = Product.objects.filter(product_name=form.cleaned_data.get("product_name")).values('id')[0]['id']
+        #product_id = Product.objects.filter(product_name=form.cleaned_data.get("product_name")).values('id')[0]['id']
         
-        Logla(request.user,"Ürün eklendi","productAdd",product_id,10)
+        Logla(request.user,"Ürün eklendi","productAdd",product.pk,10)
         return redirect("/order/productList")
 
     return  render(request,'productAdd.html',{'form':form})
@@ -912,7 +833,7 @@ def workflowCompleted(request,id):
     user_id = User.objects.get(username=request.user).id
     if wf :
         print(wf.department)
-        if wf.department == "40000":   #operasyon
+        if wf.department == "40000":        #operasyon
             wf.status_id = 18
         elif wf.department == "41000":     #planlama
             wf.status_id = 22
@@ -927,10 +848,26 @@ def workflowCompleted(request,id):
         wf.completed_date = datetime.datetime.now()
         wf.save()
         messages.success(request,"Görev tamamlandı")
-        #TODO loglama eklenecek
+
+        Logla(request.user,"workflow","workflow tamamlandı",wf.id,"end")
+        orderCompleteControl(request,wf.order)
+
 
     # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
     return redirect(request.META['HTTP_REFERER'])
+
+@login_required(login_url='/user/login')
+def orderCompleteControl(request,order):
+    #TODO sorgu çalıştırılacak. order a bağlı wf lardan end date girilmemiş  var mı?
+    blank_end_date = Workflow.objects.filter(order=order).filter(completed_date__isnull=True)
+    print(" tamamlanmamış wf sayısı" +  str( blank_end_date.count()) )
+    if blank_end_date.count() == 0:  # tum akışlar tamamlanmış anlamına gelir. 
+        order.status_id = 22   # tamamlandı statusu güncellendi
+        order.completed_date = datetime.datetime.now() # order ın tamamlanma tarihi girildi.
+        order.save()
+        Logla(request.user,"order","order tamamlandı",order.id,"end")
+        messages.success(request,"Order tamamlandı.")
+        #TODO müşteri geri arama taskı oluşturulabilir.
 
 @login_required(login_url='/user/login')
 def workflowStatuUpdate(request,id,statu):
@@ -946,6 +883,7 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"statu  üretime başlandı olarak güncellendi")
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" uretim başladı",wf.id,statu)
 
         if statu == 5 : # üretim tamamlandı
             wf.status_id = 5
@@ -955,6 +893,8 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"statu  üretim tamamlandı olarak güncellendi")
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" uretim tamamlandı",wf.id,"end")
+            orderCompleteControl(request,order)
 
         if statu == 13 : # Montaj için müşteriden haber bekleniyor
             wf.status_id = 13
@@ -962,6 +902,7 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"statu  müşteriden haber bekleniyor olarak güncellendi")
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" Montaj için müşteriden haber bekleniyor",wf.id,statu)
 
         if statu == 14 : # Montaj planlandı
             wf.status_id = 14
@@ -971,13 +912,16 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"Sipariş Montaj planlandı olarak güncellendi")
-        
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" montaj planlandı",wf.id,"end")
+            orderCompleteControl(request,order)
+
         if statu == 16 : # Montaj başladı
             wf.status_id = 16
             order.statu_id = 16   
             order.save()
             wf.save()
             messages.success(request,"Montaj başladı")
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" montaj basladı",wf.id,statu)
 
         if statu == 17 : # Montaj durdu
             wf.status_id = 17
@@ -985,6 +929,7 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"montaj durdu")
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" montaj durdu",wf.id,statu)
 
         if statu == 18 : # Montaj tamamlandı
             wf.status_id = 18
@@ -994,9 +939,12 @@ def workflowStatuUpdate(request,id,statu):
             order.save()
             wf.save()
             messages.success(request,"Sipariş Montaj planlandı olarak güncellendi")
-        
+            Logla(request.user,"workflow","wf id:"+str (wf.id)+" montaj tamamlandı",wf.id,"end")
+            orderCompleteControl(request,order)
+
         #########  tüm değişiklik statuleri loglanır. bir il veya order ile iligli işlemlerin hepsi görüntülenebilir.
-        Logla(request.user,"wf statu güncelleme","wf güncelleme",wf.id,statu);
+        
+        
 
     # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
     return redirect(request.META['HTTP_REFERER'])
@@ -1077,19 +1025,23 @@ def workflowPlanla(request,id):
         # WORKFLOW STATUSU PLANLNADI OLMALI.
         # workflow  statusuna göre tipi belirlenerek güncelleme yapılır
         # 2 üretim , 6 sevk , 11 montaj 
-        if wf.status_id == 11:
+        if wf.status_id == 11 or wf.status_id == 13:
             wf.status_id = 14
             order.statu_id = 14
+            Logla(request.user,"workflow","wf montaj id:"+str(wf.id)+" planlandı",wf.id,"end")
         elif wf.status_id == 6:
             wf.status_id = 7
             order.statu_id = 7
+            Logla(request.user,"workflow","wf sevk id:"+str(wf.id)+" planlandı",wf.id,"end")
         elif wf.status_id == 2:
             wf.status_id = 3
             order.statu_id = 3
-
+            Logla(request.user,"workflow","wf uretim id:"+str(wf.id)+" planlandı",wf.id,"end")
+        
+        wf.completed_date = datetime.datetime.now()
         wf.save()
         order.save()
-
+        
         return redirect("/order/dashboard/ope/all")
 
     else:   ########   ilk girişte burası çalışır
@@ -1118,7 +1070,7 @@ def workflowPlanla(request,id):
             )
             
             ustalar = Employee.objects.filter(department__department_number__startswith='31').exclude(
-
+                # ustanın rezervasyon aralıgı , planlanan tarih aralıgına dokunursa listelenmez.
                 Q(reservationperson__reservation__start_date__range=[requested_start_date, requested_end_date]) | 
                 Q(reservationperson__reservation__end_date__range=[requested_start_date, requested_end_date]) |
                 Q(Q(reservationperson__reservation__end_date__gt=requested_end_date),Q(reservationperson__reservation__start_date__lt=requested_start_date) )
@@ -1176,25 +1128,20 @@ def default(o):
 
 @login_required(login_url='/user/login')
 def events_data(request):
-    
     events_arr =[]
     res = Reservation.objects.all()
-    
-    
     for d in res:
         start_date = datetime.datetime.strftime(d.start_date, '%Y-%m-%d %H:%M')
         end_date = datetime.datetime.strftime(d.end_date, '%Y-%m-%d %H:%M')
         ustalar_id = ReservationPerson.objects.filter(reservation = d)
         ustalar=""
+        description = d.order.customer.customer_name +"__"+d.order.content+"__"+d.order.planlama_sekli
         for usta in ustalar_id:
             ustalar  = ustalar + "\nUsta: " + usta.employee.user.username 
-            print(ustalar)
-        events_arr.append( { 'id':d.order_id,'title': d.order.customer.customer_name + ustalar , 'start': start_date,'end': end_date })
-
-    y = json.dumps(events_arr ,sort_keys=True,  indent=1,  default=default)    # array i json formatına donusturduk
-
+        events_arr.append( { 'id':d.order_id,'title': d.order.customer.customer_name + ustalar , 'start': start_date,'end': end_date,'description':description })
+    
+    #y = json.dumps(events_arr ,sort_keys=True,  indent=1,  default=default)    # array i json formatına donusturduk
     serialized= json.dumps(events_arr, sort_keys=True, indent=3)   # array i json formatına donusturduk
-
     return HttpResponse(serialized)
 
 @login_required(login_url='/user/login')
@@ -1203,7 +1150,7 @@ def reservationList(request):
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
     res_today = Reservation.objects.filter(start_date__year=today.year, start_date__month=today.month, start_date__day=today.day)
-    print(res_today)
+    #print(res_today)
     res_tomorrow = Reservation.objects.filter(start_date__year=tomorrow.year, start_date__month=tomorrow.month, start_date__day=tomorrow.day)
     #res_nextweek = 
     return render(request,'reservationList.html',{"res_today":res_today,"res_tomorrow":res_tomorrow})
@@ -1343,7 +1290,7 @@ def data_aylik_satis(request):
 @login_required(login_url='/user/login')
 def uretim_depo (request):
 
-    uretim_planlandi = Workflow.objects.filter(status_id = 3)
+    uretim_planlandi = Workflow.objects.filter(status_id__in = (2,3))
     uretimde= Workflow.objects.filter(status_id = 4 )
     diger = Workflow.objects.filter(status_id__in = (7,8,19))
 

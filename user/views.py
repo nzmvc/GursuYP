@@ -8,7 +8,7 @@ from .models import  Logging
 # Create your views here.
 from user.models import Employee,Logging,Departments
 
-def Logla(user,message,log_type,type_id,status):
+def Logla(user,log_type,message,type_id,status):
     entry = Logging(user=user,aciklama=message,log_type=log_type,type_id=type_id,status=status)
     entry.save()
 
@@ -129,9 +129,7 @@ def userUpdate(request,id):
     #form = UserUpdateForm(request.POST or None, request.FILES or None,instance=user)
     
     if form.is_valid() :
-        #user = form.save(commit= False)
         form.save()
-        #user.save()
         messages.success(request,"kullanıcı güncellendi")
         return redirect("/user/userList")
     

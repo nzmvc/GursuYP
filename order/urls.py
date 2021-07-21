@@ -8,8 +8,6 @@ urlpatterns = [
     path('dashboard/<str:departman>/<str:list_filter>', views.dashboard, name='dashboard'),
  #   path('dashboard2/', views.dashboard2, name='dashboard2'),
     
-    path('orderAdd/', views.orderAdd, name='orderAdd'),
-    path('orderAdd2/', views.orderAdd2, name='orderAdd2'),
     path('orderAdd3/', views.orderAdd3, name='orderAdd3'),
     path('orderList/<str:list_filter>', views.orderList, name='orderList'),
     path('orderView/<int:id>', views.orderView, name='orderView'),

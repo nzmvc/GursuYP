@@ -9,14 +9,14 @@ class CustomerForm(forms.ModelForm):
     class Meta:
 
         model = Customer
-        fields = ['customer_name','telephone','email','customer_type','vergi_no','vergi_dairesi']
-
+        fields = ['customer_name','telephone','email','customer_type','vergi_no','vergi_dairesi','satis_kanali']
+        
 class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
         #stok = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('1', 'Var'), ('0', 'Yok')])
-        fields = ['customer','content','planlama_sekli','order_image','order_type','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max','satis_kanali' ]
+        fields = ['customer','content','planlama_sekli','order_image','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max', ]
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
 
@@ -83,9 +83,10 @@ class ProblemSolutionForm(forms.ModelForm):
 class ProblemAddForm(forms.ModelForm):
     class Meta:
         model = Problems
-        fields=['order','description','statu','created_user']
-    
+        fields=['order','description','statu','created_user','problem_file']
+    '''
     def __init__(self, *args, **kwargs):
         super(ProblemAddForm,self).__init__(*args, **kwargs)
         self.fields['customer'] = ModelChoiceField(queryset=Customer.objects.all(),empty_label="Müşteri sec",
                                     widget=forms.Select(attrs={"onChange":'myProblemFunction(this.value,this.id)'}))
+    '''

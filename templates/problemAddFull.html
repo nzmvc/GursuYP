@@ -49,23 +49,16 @@
 
             <div class="row">
                 <div  class="col-md-2 mb-0">
-                    {{form.customer| as_crispy_field }}
-                    <!--
-
-                         Müşteri : 
-                    <select >
-                        {% for customer in customers %}
-                            <option value="{{customer.id}}">{{customer.customer_name}}</option>
-                        {% endfor %}
-                    </select>
-                    -->
-                   
-                </div>
-                <div  class="col-md-2 mb-0">
                     {{form.order| as_crispy_field }}
                 </div>
                 <div  class="col-md-2 mb-0">
-                    {{form.urun_grubu| as_crispy_field }}
+                    
+                    
+                    {{form.problem_file| as_crispy_field }}
+                </div>
+               
+                <div  class="col-md-2 mb-0">
+                    
                 </div>
             </div>
 

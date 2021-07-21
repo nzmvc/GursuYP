@@ -12,6 +12,7 @@ class OrderStatu(models.Model):
         return self.title
 
 class Order (models.Model):
+    """
     orderTypeChoise = (
         ("U","Uretim"),
         ("S","Sevk"),
@@ -23,6 +24,7 @@ class Order (models.Model):
         ("Toptan","Toptan"),
         ("Proje","Proje")
     )
+    """
     planlamaSecenek = (
         ("En Hızlı","En Hızlı"),
         ("Müş.den Haber Bekle","Müş.den Haber Bekle"),
@@ -31,35 +33,33 @@ class Order (models.Model):
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri")
     #TODO user bilgisi eklenecek
     create_date = models.DateTimeField(auto_now=True)
-    content = RichTextField(verbose_name="Açıklama")
+    content = RichTextField(verbose_name="Açıklama",blank =True,null=True)
     order_image = models.FileField(blank =True,null=True,verbose_name="Ölçü/Üretim Dökümanı")
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
-    order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
+    #order_type = models.CharField(max_length=1,choices = orderTypeChoise,verbose_name="Sipariş Tipi")
     #statu = models.CharField(max_length=2,choices = status,verbose_name="Sipariş Durumu",default="0")
     statu = models.ForeignKey(OrderStatu,on_delete=models.PROTECT,default=23)
     iskonto = models.IntegerField(default=0,verbose_name="İskonto Oranı(%)")
     tahmini_tarih_min = models.DateField(null=True,verbose_name="En erken teslim (yyyy-mm-dd)")
     tahmini_tarih_max = models.DateField(null=True,verbose_name="En geç teslim (yyyy-mm-dd)")
-    
-    #TODO foreign key yerine başka bir parametre kullanılabilir 
+    completed_date = models.DateTimeField(blank =True,null=True)
+        
     sevk_adres = models.IntegerField(verbose_name="Sevk Adresi",null=True)
     fatura_adres = models.IntegerField(verbose_name="Fatura Adresi",null=True)
     
-    satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı")
     planlama_sekli = models.CharField(max_length=20,choices = planlamaSecenek,verbose_name="Planlama Şekli",default="En Hızlı")
     sube = models.ForeignKey(Sube,on_delete=models.PROTECT, verbose_name="Şube")
-    siparis_paketi = models.BooleanField(verbose_name="siparis paketi",default=False)
-    #
-    # fatura_adres = models.ManyToManyField("Address",verbose_name="Fatura Adresi")
-
+    siparis_paketi = models.BooleanField(verbose_name="siparis paketi statu",default=False)
+    
     def __str__(self):
         #return self.customer.customer_name
         title= self.customer.customer_name+"_"+str(self.create_date)[:10]
         return title
 
 class Customer(models.Model):
-    # customer type vergi yada tc no için gerekli
+    satisKanalSecenek = (("Perakende","Perakende"),("Toptan","Toptan"),("Proje","Proje"))
     customer_type=(("Şahıs","Şahıs"),("Kurumsal","Kurumsal")    )
+
     customer_name = models.CharField(max_length=50,verbose_name="MÜŞTERİ ADI")
     telephone = models.CharField(max_length=50,verbose_name="TELEFON")
     email = models.CharField( max_length=254,verbose_name="EMAIL")
@@ -68,8 +68,17 @@ class Customer(models.Model):
     vergi_no = models.IntegerField(verbose_name="Vergi/TC no",default=0,null=True)
     customer_type = models.CharField(max_length=10,choices = customer_type,verbose_name="Şahıs/Kurumsal",default=customer_type[0][1])
     vergi_dairesi = models.CharField(max_length=70,verbose_name="Vergi Dairesi",default="Fethiye VD.")
+    satis_kanali = models.CharField(max_length=10,choices = satisKanalSecenek,verbose_name="Satış Kanalı",default="Perakende")
+
     def __str__(self):  # müşterileri listelerken gözükmesini istediğimiz isim
         return self.customer_name
+
+    ########################################
+    ### kayıt sırasında buyuk harfe cevirerek kayıt tamamlanır
+    def save(self, force_insert=False, force_update=False): 
+        self.customer_name = self.customer_name.upper() 
+        super(Customer, self).save(force_insert, force_update)
+
 
 class Address (models.Model):
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri ID")
@@ -83,6 +92,15 @@ class Address (models.Model):
     active = models.BooleanField(default=True)
     def __str__(self):  # listelerken gözükmesini istediğimiz isim
         return self.aciklama
+    ########################################
+    ### kayıt sırasında buyuk harfe cevirerek kayıt tamamlanır
+    def save(self, force_insert=False, force_update=False): 
+        self.ulke = self.ulke.upper() 
+        self.il = self.il.upper() 
+        self.ilce = self.ilce.upper() 
+        self.mahalle = self.mahalle.upper() 
+        self.adres = self.adres.upper() 
+        super(Address, self).save(force_insert, force_update)
 
 class OrderPackets(models.Model):
     orderTypeChoise = (
@@ -187,6 +205,11 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
     #def __str__(self):    
     #    return self.product_category.title +"-"+ self.product_name
+    ########################################
+    ### kayıt sırasında buyuk harfe cevirerek kayıt tamamlanır
+    def save(self, force_insert=False, force_update=False): 
+        self.product_name = self.product_name.upper() 
+        super(Product, self).save(force_insert, force_update)
 
 class ProductColor(models.Model):
     renk_kodu = models.CharField(max_length=20,verbose_name="Renk",blank=True)

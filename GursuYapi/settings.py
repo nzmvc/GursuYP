@@ -25,7 +25,7 @@ SECRET_KEY = '%wr5fxxdthjj!5l%2sdasta%b#$*o=qptw3@j#%g6=ahjxw#b_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nazimavci.pythonanywhere.com','localhost']
+ALLOWED_HOSTS = ['gursuyp.pythonanywhere.com','nazimavci.pythonanywhere.com','localhost']
 
 
 # Application definition
