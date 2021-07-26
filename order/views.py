@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from user.views import Logla
 from user.models import Logging,Employee,Departments
-from django.db.models import Q
+from django.db.models import Q,Sum,Count
 import datetime
 from django.http import JsonResponse
 import json
@@ -1271,21 +1271,64 @@ def data_aylik_satis(request):
     labels=[]
     data=[]
     
-    labels = ["Ocak","Şubat","Mart","Nisan","Mayıs"]
-    data = [45,65,110,90,159]
+    aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
+    #data = [45,65,110,90,159]
     
-    # datalar elle oluşturuldu bunlar veri tabanından alınacak
-    '''
-    queryset = City.objects.values('country__name').annotate(country_population=Sum('population')).order_by('-country_population')
-    for entry in queryset:
-        labels.append(entry['country__name'])
-        data.append(entry['country_population'])
-    '''
+    # bu yıl içinde geldiğimiz aya kadar olan satışları gösterir
+    for ay in range(0,datetime.datetime.now().month ):
+        labels.append( aylar[ay] )
+        data.append(Order.objects.filter(create_date__year=datetime.datetime.now().year).filter(create_date__month=ay+1).count())
+
+
     # veriler json olarak gonderiliyor html içinden
     return JsonResponse(data={'labels':labels,'data':data})
 
+@login_required(login_url='/user/login')
+def data_aylik_satis_tutar(request):
+    labels=[]
+    data=[]
+    labels_urun=[]
+    data_urun=[]
+
+    aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
+    #data = [45,65,110,90,159]
+    
+    # bu yıl içinde geldiğimiz aya kadar olan satışları gösterir
+    for ay in range(0,datetime.datetime.now().month ):
+        labels.append( aylar[ay] )
+        value=OrderProducts.objects.filter(order__create_date__year=datetime.datetime.now().year).filter(order__create_date__month=ay+1).aggregate(Sum('toplam_tutar'))
+        #### sorgu çalıştığında dönen değer     {'toplam_tutar__sum': 319771}
+        #### şeklinde  bir dictionary olduğu için  bu şekilde array e attım
+        data.append(value['toplam_tutar__sum'])
+    
+    for ay in range(0,datetime.datetime.now().month ):
+        labels_urun.append( aylar[ay] )
+        data_urun.append(OrderProducts.objects.filter(order__create_date__year=datetime.datetime.now().year).filter(order__create_date__month=ay+1).count())
+
+    """
+    In [192]: OrderProducts.objects.values('product_id').annotate(dcount=Count('product_id'),toplam=Sum('amount')).order_by('-amount')[0:5]
+    Out[192]: <QuerySet [{'product_id': 202, 'dcount': 1, 'toplam': 130.0}, {'product_id': 208, 'dcount': 1, 'toplam': 130.0}, {'product_id': 218, 'dcount': 1, 'toplam': 130.0}, {'product_id': 209, 'dcount': 1, 'toplam': 129.0}, {'product_id': 200, 'dcount': 2, 'toplam': 162.0}]>
+    """
+    #en cok satılan urun model ilk 5
+    #OrderProducts.objects.values('product_id').annotate(dcount=Count('product_id'),toplam=Sum('amount')).order_by('-dcount')[0:5]
+    
+    #en yüksek cirolu ürünler
+    top5_tutar_urun = OrderProducts.objects.values('product_id').annotate(dcount=Count('product_id'),toplam=Sum('toplam_tutar')).order_by().order_by('-toplam')[0:5]
+    urun_adlar=[]
+    urun_ciro=[]
+    for urun in top5_tutar_urun:
+        urun_sorgu = Product.objects.filter(id = urun['product_id']).values('product_name')
+        urun_adlar.append(urun_sorgu[0]['product_name'] )
+        urun_ciro.append(urun['toplam'])
+
+    print(urun_adlar)
+    print(urun_ciro)
+
+    # veriler json olarak gonderiliyor html içinden
+    return JsonResponse(data={'labels':labels,'data':data,'labels_urun':labels_urun,'data_urun':data_urun,'urun_adlar':urun_adlar,'urun_ciro':urun_ciro})
+
 ############################################################################
-#######################             #################################
+#######################                    #################################
 ############################################################################
 @login_required(login_url='/user/login')
 def uretim_depo (request):

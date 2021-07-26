@@ -22,8 +22,6 @@ urlpatterns = [
     path('siparisPaketi/<int:order_id>/<int:workflow_id>', views.siparisPaketi, name='siparisPaketi'),
     path('orderPacketDelete/<int:order_product_id>', views.orderPacketDelete, name='orderPacketDelete'),
     path('orderPaketOnayla/<int:order_id>/<int:workflow_id>', views.orderPaketOnayla, name='orderPaketOnayla'),
-    path('rapor', views.rapor, name='rapor'),
-    path('data_aylik_satis',views.data_aylik_satis,name='data_aylik_satis'),
     path('uretim_depo', views.uretim_depo, name='uretim_depo'),
 
     path('customerAdd/',views.customerAdd,name='customerAdd'),
@@ -65,6 +63,10 @@ urlpatterns = [
     path('problemAddFull/',views.problemAddFull,name='problemAddFull'),
     path('problemList/',views.problemList,name='problemList'),
     path('problemView/<int:id>',views.problemView,name='problemView'),
+
+    path('rapor', views.rapor, name='rapor'),
+    path('data_aylik_satis',views.data_aylik_satis,name='data_aylik_satis'),
+    path('data_aylik_satis_tutar',views.data_aylik_satis_tutar,name='data_aylik_satis_tutar'),
 
     path('test/',views.test,name='test'),
 ]

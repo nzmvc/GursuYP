@@ -11,6 +11,23 @@
       <canvas id="data_aylik_satis" data-url="{% url 'order:data_aylik_satis' %}"></canvas>
     </div>
   </div>
+  <div><hr></div>
+
+  <div class="row">
+    <div class="col-md-2 mb-0" id="container" style="width: 50%;">
+      <canvas id="data_aylik_satis_tutar" data-url="{% url 'order:data_aylik_satis_tutar' %}"></canvas>
+    </div>
+    <div class="col-md-2 mb-0" id="container" style="width: 50%;">
+      <canvas id="data_aylik_satis_urun" data-url="{% url 'order:data_aylik_satis_tutar' %}"></canvas>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 mb-0" id="container" style="width: 50%;">
+      <canvas id="top5_urun_ciro" data-url="{% url 'order:data_aylik_satis_tutar' %}"></canvas>
+    </div>
+    
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -75,7 +92,7 @@
               },
               title: {
                 display: true,
-                text: 'Aylık satış adetleri'
+                text: 'Aylık Sipariş Sayısı'
               }
             }
           });
@@ -86,6 +103,99 @@
         }
       });
 
+      var $aylikSatisChart_tutar = $("#data_aylik_satis_tutar");
+      $.ajax({
+        url: $aylikSatisChart_tutar.data("url"),
+        success: function (data) {
+
+          var ctx = $aylikSatisChart_tutar[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'TL',
+                backgroundColor: 'blue',
+                data: data.data
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Aylık Ciro'
+              }
+            }
+          });
+        }
+      });
+
+      var $aylikSatisChart_urun = $("#data_aylik_satis_urun");
+      $.ajax({
+        url: $aylikSatisChart_urun.data("url"),
+        success: function (data) {
+
+          var ctx = $aylikSatisChart_urun[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels_urun,
+              datasets: [{
+                label: 'Adet',
+                backgroundColor: 'red',
+                data: data.data_urun
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Aylık Satılan Urun'
+              }
+            }
+          });
+        }
+      });
+
+      //top5_urun_ciro
+      var $top5_urun_ciro = $("#top5_urun_ciro");
+      $.ajax({
+        url: $top5_urun_ciro.data("url"),
+        success: function (data) {
+
+          var ctx = $top5_urun_ciro[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.urun_adlar,
+              datasets: [{
+                label: 'TL',
+                backgroundColor: 'red',
+                data: data.urun_ciro
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'TOP5 Ürün'
+              }
+            }
+          });
+        }
+      });
     });
 
   </script>
