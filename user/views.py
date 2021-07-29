@@ -28,7 +28,11 @@ def loginPage(request):
         if user is None:
             messages.info(request,"Kullanıcı adı veya parola hatalı")
             return render(request,"login.html")
+            #TODO loga eklenmeli ip ile birlikte
+
         messages.success(request,"başarıyla giriş yaptınız")
+        #TODO loga eklenmeli ip ile birlikte
+        
         login(request, user)
         return redirect("/order/dashboard/ope/all")
 

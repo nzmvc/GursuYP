@@ -335,7 +335,7 @@
         </button>
 
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+      <p class="card-category"> </p>
     </div>
     <div class="table-full-width table-responsive px-0 card-body">
      {% if orderProducts %}
@@ -354,7 +354,7 @@
         <tbody>
             {% for orderProduct in orderProducts %}
               <tr>
-                <td scope="row"><a href="/order/orderProductView/{{orderProduct.id}}">{{orderProduct.id}}</a></td>
+                <td scope="row">{{orderProduct.id}}</td>
                 <td>{{orderProduct.product.product_name}}</td>
                 <td>{{orderProduct.orderpackets_id}}</td>
                 <td>{{orderProduct.orderpackets.order_type}}</td>
@@ -390,7 +390,7 @@
         </button>
 
       </h4>
-      <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+      <p class="card-category"> </p>
     </div>
     <div class="table-full-width table-responsive px-0 card-body">
      {% if reservations %}
@@ -449,7 +449,7 @@
             </button>
           </a>
         </h4>
-        <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        <p class="card-category"> </p>
       </div>
       <div class="table-full-width table-responsive px-0 card-body">
   
@@ -509,7 +509,7 @@
     <div class="card">
       <div class="card-header bg-light ">
         <h4 class="card-title">İşlemler      </h4>
-        <p class="card-category">Buraya bilgilendirme mesajları veya sayısal veriler eklenebilir.Filtreler butonlar</p>
+        <p class="card-category"> </p>
       </div>
       <div class="table-full-width table-responsive px-0 card-body">
   
@@ -523,18 +523,26 @@
                       <th scope="col">Durum</th>
                       <th scope="col">Oluşturulma tarihi</th>
                       <th scope="col">Tamamlanma tarihi</th>
+                      <th></th>
                       
                   </tr>
               </thead>
           {% for wf in workflows%}
               <tr>
               <!-- wf tıklandığında ne yapılması isteniyor ???-->
-              <th scope="row"><a href="#">{{wf.id}}</a></th>                    
+              <th scope="row"><a href="/order/workflowView/{{wf.id}}">{{wf.id}}</a></th>                    
               <td>{{wf.department}}</td>
               <td>{{wf.comment}}</td>
               <td>{{wf.status}}</td>
               <td>{{wf.created_date}}</td>
               <td>{{wf.completed_date}}</td>
+              <td>
+                <a href="/order/workflowStatuUpdate/{{wf.id}}/22" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                </svg></a>
+
+              </td>
               </tr>
           {% endfor%}
           </table>
@@ -542,6 +550,64 @@
       
     </div>
 </div>
+
+
+<br><br>
+<div class="col-md-12">
+    <div class="card">
+      <div class="card-header bg-light ">
+        <h4 class="card-title">Loglar      </h4>
+        <p class="card-category"> </p>
+      </div>
+      <div class="table-full-width table-responsive px-0 card-body">
+  
+        {% if loglar_order or loglar_wf %}
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Tarih</th>
+                          <th scope="col">Log Tipi</th>
+                          <th scope="col">Açıklama</th>
+                          <th scope="col">Kullanıcı</th>
+                          <th scope="col">Durum</th>
+                          <th scope="col">Type ID</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          {% for log in loglar_order %}
+                            <tr>
+                              <th scope="row">{{log.id}}</th>
+                              <td scope="row">{{log.date}}</a></td>
+                              <td scope="row">{{log.log_type}}</td>
+                              <td scope="row">{{log.aciklama}}</td>
+                              <td scope="row">{{log.user.username}}</td>
+                              <td scope="row">{{log.status.title}}</td>
+                              <td scope="row">{{log.type_id}}</td>
+                            </tr>
+                          {% endfor %}
+                        
+                          {% for log in loglar_wf %}
+                          <tr>
+                            <th scope="row">{{log.id}}</th>
+                            <td scope="row">{{log.date}}</a></td>
+                            <td scope="row">{{log.log_type}}</td>
+                            <td scope="row">{{log.aciklama}}</td>
+                            <td scope="row">{{log.user.username}}</td>
+                            <td scope="row">{{log.status.title}}</td>
+                            <td scope="row">{{log.type_id}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    
+                {% endif%}
+      
+    </div>
+</div>
+
+
+
 
 <br><br>
 

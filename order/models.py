@@ -1,6 +1,7 @@
 from django.db import migrations,models
 from user.models import User,Employee,Sube
 from ckeditor.fields import RichTextField
+from django.utils import timezone
 # Create your models here.
 
 
@@ -32,7 +33,7 @@ class Order (models.Model):
     )
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE,verbose_name="Müşteri")
     #TODO user bilgisi eklenecek
-    create_date = models.DateTimeField(auto_now=True)
+    create_date = models.DateTimeField()
     content = RichTextField(verbose_name="Açıklama",blank =True,null=True)
     order_image = models.FileField(blank =True,null=True,verbose_name="Ölçü/Üretim Dökümanı")
     stok = models.CharField(max_length=1,choices = [('1', 'Var'), ('0', 'Yok')],verbose_name="Stok Durumu",default="0")
@@ -63,7 +64,7 @@ class Customer(models.Model):
     customer_name = models.CharField(max_length=50,verbose_name="MÜŞTERİ ADI")
     telephone = models.CharField(max_length=50,verbose_name="TELEFON")
     email = models.CharField( max_length=254,verbose_name="EMAIL")
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
     active = models.CharField(max_length=1,default="1",verbose_name="Aktif")
     vergi_no = models.IntegerField(verbose_name="Vergi/TC no",default=0,null=True)
     customer_type = models.CharField(max_length=10,choices = customer_type,verbose_name="Şahıs/Kurumsal",default=customer_type[0][1])
@@ -144,7 +145,7 @@ class Workflow(models.Model):
     #status = models.CharField(max_length=10,choices = workflow_status,verbose_name="Durum",default="10")
     status = models.ForeignKey(OrderStatu,on_delete=models.PROTECT)
     comment = models.CharField(max_length=50,verbose_name="Açıklama",default="test")
-    created_date =models.DateTimeField(auto_now=True)
+    created_date =models.DateTimeField()
     planed_date =models.DateTimeField(blank=True, null=True)
     completed_date =models.DateTimeField(blank=True, null=True)
     started_date =models.DateTimeField(blank=True, null=True)
@@ -201,7 +202,7 @@ class Product(models.Model):
     montaj_sabiti = models.IntegerField(verbose_name="Montaj Sabiti",default=0)
     birim_fiyat = models.IntegerField(verbose_name="Birim Fiyat" ,default=0)
     product_category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,verbose_name="Kategori",default=1)
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
     active = models.BooleanField(default=True)
     #def __str__(self):    
     #    return self.product_category.title +"-"+ self.product_name
@@ -242,7 +243,7 @@ class ProblemStatu(models.Model):
         
 class Problems(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(default=timezone.now)
     statu = models.ForeignKey(ProblemStatu,on_delete=models.CASCADE,default=1)
     closed_date = models.DateTimeField(blank=True,null=True)
     root_cause = models.ForeignKey(RootCause,on_delete=models.CASCADE,blank=True,null=True)
