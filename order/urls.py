@@ -54,7 +54,7 @@ urlpatterns = [
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
     path('reservationDelete/<int:reservation_id>',views.reservationDelete,name='reservationDelete'),
 
-    path('workflowCompleted/<int:id>',views.workflowCompleted,name='workflowCompleted'),
+    #path('workflowCompleted/<int:id>',views.workflowCompleted,name='workflowCompleted'),
     path('workflowView/<int:id>',views.workflowView,name='workflowView'),
     path('workflowPlanla/<int:id>',views.workflowPlanla,name='workflowPlanla'),
     path('workflowStatuUpdate/<int:id>/<int:statu>',views.workflowStatuUpdate,name='workflowStatuUpdate'),

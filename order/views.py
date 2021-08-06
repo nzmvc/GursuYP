@@ -44,8 +44,8 @@ def dashboard(request,departman="ope",list_filter="all"):
     # 22 > tamamlandı. 25 >olcumdosyası girildi 14>montaj planlandı 16 uretim tamamlandı
     workflow = Workflow.objects.exclude(status_id__in= (22,25,27,14,16))
     problems = Problems.objects.exclude(statu_id=4).exclude(statu_id=5)
-    islerim = Reservation.objects.filter(id__in = ReservationPerson.objects.values_list('reservation_id',flat=True).filter(employee=user.employee))
-
+    #islerim = Reservation.objects.filter(id__in = ReservationPerson.objects.values_list('reservation_id',flat=True).filter(employee=user.employee))
+    islerim = Reservation.objects.filter(id__in = ReservationPerson.objects.values_list('reservation_id',flat=True).filter(employee_id=user.employee)).filter(workflow__completed_user_id__isnull=True)
     ##############################################
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
@@ -60,42 +60,51 @@ def dashboard(request,departman="ope",list_filter="all"):
         if list_filter == "all":
             operasyon_jobs = Workflow.objects.filter(department=44000)
         elif list_filter == "tamamlandi":
-            operasyon_jobs = Workflow.objects.filter(department=44000).filter(status_id=18)
+            #operasyon_jobs = Workflow.objects.filter(department=44000).filter(status_id=18)
+            operasyon_jobs = Workflow.objects.filter(department=44000).filter(completed_date__isnull=False)
         else: 
-            operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
+            #operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
+            operasyon_jobs = Workflow.objects.filter(department=44000).filter(completed_date__isnull=True)
     else:
-        operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
+        #operasyon_jobs = Workflow.objects.filter(department=44000).exclude(status_id=18)
+        operasyon_jobs = Workflow.objects.filter(department=44000).filter(completed_date__isnull=True)
 
     if departman =="plan":
         if list_filter == "all":
             planlama_jobs = Workflow.objects.filter(department=41000)
         elif list_filter == "tamamlandi":
-            planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in=(22,25,27,14,7) )  # statusu tamamladı olanların workflow ID leri 
+            #planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in=(22,25,27,14,7) ) 
+            planlama_jobs = Workflow.objects.filter(department=41000).filter(completed_date__isnull=False)  # statusu tamamladı olanların workflow ID leri 
         else: 
-            planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14,7))        
+            #planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14,7))        
+            planlama_jobs = Workflow.objects.filter(department=41000).filter(completed_date__isnull=True)       
     else:
-        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14,7))
+        #planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14,7)) 
+        planlama_jobs = Workflow.objects.filter(department=41000).filter(completed_date__isnull=True)
 
     
     if departman =="uretim":
         if list_filter == "all":
             uretim_jobs = Workflow.objects.filter(department=42000)
         elif list_filter == "tamamlandi":
-            uretim_jobs = Workflow.objects.filter(department=42000).filter(status_id=5)
+            #uretim_jobs = Workflow.objects.filter(department=42000).filter(status_id=5)
+            uretim_jobs = Workflow.objects.filter(department=42000).filter(completed_date__isnull=False )
         else: 
-            uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
+            #uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
+            uretim_jobs = Workflow.objects.filter(department=42000).filter(completed_date__isnull=True)
     else:
-        uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
+        #uretim_jobs = Workflow.objects.filter(department=42000).exclude(status_id=5)
+        uretim_jobs = Workflow.objects.filter(department=42000).filter(completed_date__isnull=True)
 
     if departman =="depo":
         if list_filter == "all":
             depo_jobs = Workflow.objects.filter(department=43000)
         elif list_filter == "tamamlandi":
-            depo_jobs = Workflow.objects.filter(department=43000).filter(status_id__in =(9,10,20))
+            depo_jobs = Workflow.objects.filter(department=43000).filter(completed_date__isnull=False)
         else: 
-            depo_jobs = Workflow.objects.filter(department=43000).exclude(status_id__in =(9,10,20))
+            depo_jobs = Workflow.objects.filter(department=43000).filter(completed_date__isnull=True)
     else:
-        depo_jobs = Workflow.objects.filter(department=43000).exclude(status_id__in =(9,10,20) )
+        depo_jobs = Workflow.objects.filter(department=43000).filter(completed_date__isnull=True)
 
 
     #uretim_jobs = Workflow.objects.filter(department=42000)
@@ -145,7 +154,8 @@ def planlama(request,departman="ope",list_filter="all"):
     elif list_filter == "tamamlandi":
         planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in=(22,25,27,14) )  # statusu tamamladı olanların workflow ID leri 
     else: # active durumunda bu çalışır
-        planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14))
+        #planlama_jobs = Workflow.objects.filter(department=41000).exclude(status_id__in= (22,25,27,14))
+        planlama_jobs = Workflow.objects.filter(department=41000).filter(status_id__in= (2,6,11,13,24))
         
 
     content = {
@@ -498,12 +508,12 @@ def orderView(request,id):
     loglar_order = Logging.objects.filter(log_type='order').filter(type_id=id)
 
     if ( workflows.count() > 0 ):
-        tamamlanma_oranı = int ( wf_closed.count() / workflows.count() * 100 )
+        tamamlanma_orani = int ( wf_closed.count() / workflows.count() * 100 )
     else:
-        tamamlanma_oranı = 0
+        tamamlanma_orani = 0
     logs={}
     
-    content ={'form':form, 'order':order,'workflows':workflows,'tamamlanma_oranı':tamamlanma_oranı,'reservations':reservations,
+    content ={'form':form, 'order':order,'workflows':workflows,'tamamlanma_orani':tamamlanma_orani,'reservations':reservations,
                 'logs':logs,'orderProducts':orderProducts,'problems':problems,
                 'price_sum':price_sum,'t_tutar':t_tutar,'fatura_adres':fatura_adres,'sevk_adres':sevk_adres,'adresler':adresler,
                 'loglar_wf':loglar_wf,'loglar_order':loglar_order}
@@ -839,6 +849,7 @@ def productActive(request,id):
 ############################################################################
 #######################  WORKFLOW          #################################
 ############################################################################
+"""
 @login_required(login_url='/user/login')
 #@permission_required('user.workflow_islem',login_url='/user/yetkiYok/')
 def workflowCompleted(request,id):
@@ -870,7 +881,7 @@ def workflowCompleted(request,id):
 
     # buraya nereden geldiyse aynı sayfaya yönlendiriyoruz
     return redirect(request.META['HTTP_REFERER'])
-
+"""
 @login_required(login_url='/user/login')
 def orderCompleteControl(request,order):
     #TODO sorgu çalıştırılacak. order a bağlı wf lardan end date girilmemiş  var mı?
@@ -1243,16 +1254,23 @@ def reservationDelete(request,reservation_id):
 
     res = Reservation.objects.get(id=reservation_id)
     
-    # workflow güncelleme yapılmalı
-    wf = res.workflow
+    wf_montaj = Workflow.objects.filter(order_id = res.order_id).filter(status_id=14)
+    wf_sevk = Workflow.objects.filter(order_id = res.order_id).filter(status_id=7)
 
-    if wf.status_id == 14:   # montaj planlandı statusunde ise 
+    if ( wf_montaj):
+        wf = wf_montaj[0] 
         wf.status_id = 11   # bunu montaj planla statusune çekiyoruz.
-    elif wf.status_id == 7:   # sevk planlandı statusunde ise 
-        wf.status_id = 6   # sevk  planla statusune çekiyoruz.
-    
+        wf.completed_date=None
+        wf.save()
+    if ( wf_sevk):
+        wf = wf_sevk[0] 
+        wf.status_id = 6   # bunu montaj planla statusune çekiyoruz.
+        wf.completed_date=None
+        wf.save()
+
+    Logla(request.user,"workflow","res id:"+str(res.id)+" silindi",res.id,"end")
     res.delete()    # rezervasyon silinir
-    wf.save()       # workflow güncellenir.
+ 
 
     return redirect(request.META['HTTP_REFERER'])
 

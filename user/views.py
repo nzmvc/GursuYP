@@ -34,7 +34,7 @@ def loginPage(request):
         #TODO loga eklenmeli ip ile birlikte
         
         login(request, user)
-        return redirect("/order/dashboard/ope/all")
+        return redirect("/order/dashboard/ope/active")
 
 
     return  render(request,'login.html')

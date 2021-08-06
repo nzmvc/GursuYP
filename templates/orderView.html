@@ -5,11 +5,14 @@
 
 {% if order %}
 <div class="row mb-1">
+  
   <div class="col-md-6">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
       <div class="col p-4 d-flex flex-column position-static" style="height:180px;">
+        
+        
         <strong class="d-inline-block mb-2 text-primary">
-            Sipariş ID: {{order.id}}    _____{{order.statu}}____  Tamamlanma Oranı : %{{ tamamlanma_oranı}}
+            Sipariş ID: {{order.id}}    {{order.statu}}  
             
           </strong>
         
@@ -19,6 +22,10 @@
         <a href="/order/customerView/{{order.customer.id}}" class="stretched-link">Müşteri Detay</a>
       </div>
       
+      <div class="progress">
+        
+        <div class="progress-bar" role="progressbar" style="width: {{ tamamlanma_orani}}%;" aria-valuenow="{{ tamamlanma_orani}}" aria-valuemin="0" aria-valuemax="100">{{ tamamlanma_orani}}%</div>
+      </div>
     </div>
   </div>
 
