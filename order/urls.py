@@ -49,6 +49,7 @@ urlpatterns = [
 
     path('reservationList/',views.reservationList,name='reservationList'),
     path('takvim/<int:day>',views.takvim,name='takvim'),
+    path('takvim_v2/',views.takvim_v2,name='takvim_v2'),
     path('events/',views.events,name='events'),
     path('events_data/',views.events_data,name='events_data'),
     path('reservationView/<int:id>',views.reservationView,name='reservationView'),
@@ -58,7 +59,8 @@ urlpatterns = [
     path('workflowView/<int:id>',views.workflowView,name='workflowView'),
     path('workflowPlanla/<int:id>',views.workflowPlanla,name='workflowPlanla'),
     path('workflowStatuUpdate/<int:id>/<int:statu>',views.workflowStatuUpdate,name='workflowStatuUpdate'),
-    
+    path('yeniWorkflow/<int:workflow_id>',views.yeniWorkflow,name='yeniWorkflow'),
+
     path('problemAdd/<int:id>',views.problemAdd,name='problemAdd'),
     path('problemAddFull/',views.problemAddFull,name='problemAddFull'),
     path('problemList/',views.problemList,name='problemList'),

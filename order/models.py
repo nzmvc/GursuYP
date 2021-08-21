@@ -246,9 +246,9 @@ class Problems(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     statu = models.ForeignKey(ProblemStatu,on_delete=models.CASCADE,default=1)
     closed_date = models.DateTimeField(blank=True,null=True)
-    root_cause = models.ForeignKey(RootCause,on_delete=models.CASCADE,blank=True,null=True)
+    root_cause = models.ForeignKey(RootCause,on_delete=models.CASCADE,blank=True,null=True,verbose_name="Kök sebep")
     description = RichTextField(null=True)
-    solution = RichTextField(null=True)
+    solution = RichTextField(null=True,verbose_name="Çözüm")
     problem_file = models.FileField(blank =True,null=True,verbose_name="Problem dosya/resim")
     created_user = models.ForeignKey(User,on_delete=models.CASCADE)
 

@@ -25,7 +25,7 @@ SECRET_KEY = '%wr5fxxdthjj!5l%2sdasta%b#$*o=qptw3@j#%g6=ahjxw#b_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gursuyp.pythonanywhere.com','nazimavci.pythonanywhere.com','localhost']
+ALLOWED_HOSTS = ['gursuyp.pythonanywhere.com','nazimavci.pythonanywhere.com','localhost','192.168.1.24']
 
 
 # Application definition
@@ -144,3 +144,10 @@ CKEDITOR_CONFIGS = {
 MEDIA_URL = '/media/'
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = str(os.path.join(BASE_DIR, 'media'))
+"""
+EMAIL_HOST = 'smtp-relay.gmail.com'
+EMAIL_HOST_USER = 'nzm.avci@gmail.com' # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+"""

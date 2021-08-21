@@ -17,9 +17,12 @@ class OrderForm(forms.ModelForm):
         model = Order
         #stok = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('1', 'Var'), ('0', 'Yok')])
         fields = ['customer','content','planlama_sekli','order_image','stok','iskonto','tahmini_tarih_min','tahmini_tarih_max', ]
+        #field_order=["customer"]
+        ordered_field_names = ['customer']
+
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
-
+        self.fields['customer'].queryset = self.fields['customer'].queryset.order_by('customer_name')
         #self.fields['dosyaVarYok'] = forms.ChoiceField(label='Ölçüm Dosyası',choices=[('VAR','VAR'),('YOK','YOK')], widget=forms.RadioSelect)
 
         self.fields['tahmini_tarih_min'].widget.attrs['class'] = 'datepicker'

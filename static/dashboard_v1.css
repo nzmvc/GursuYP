@@ -115,13 +115,28 @@ body {
     padding: 15px 30px;
     color: #fff;
   }
+  
   .bd-example-container-body {
     height: 8rem;
     margin-right: 4.5rem;
     background-color: #957bbe;
     border-radius: .25rem;
   }
-  h1,h2,h3,h4{
+  td { 
+    font-size: small; 
+  }
+  h1,h2{
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-style: inherit;
+    font-size: small;
+  }
+  h3,h4{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-style: inherit;
+    font-size: medium;
+  }
+  h5,h6{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-style: inherit;
+    font-size: large;
   }

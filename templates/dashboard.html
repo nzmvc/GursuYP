@@ -90,6 +90,7 @@
 
 
 
+
 {% if perms.user.rapor_listele %}
 <div class="row" >
   <div class="col-md-2 mb-0" id="container" style="width: 50%;">
@@ -100,6 +101,8 @@
     <canvas id="data_aylik_satis" data-url="{% url 'order:data_aylik_satis' %}"></canvas>
   </div>
 </div>
+
+
 
 
 
@@ -233,58 +236,113 @@
 
       {% if operasyon_jobs %}
       <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th style="width: 5%">#</th>
-            <th >Durum</th>
-            <th style="width: 10%" >Tarih</th>
-            <th >Sipariş</th>
-            <th >Açıklama</th>
-            <th >Müşteri</th>
-            <th style="width: 12%">Aksiyon</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for job in operasyon_jobs %}
-              <tr>
-                <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
-                <td>{{job.status}}</td>
-                <td>{{job.created_date|date:'d-m-Y'}}</td>
-                <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
-                <td>{{job.order.content|safe|truncatechars:30}}</td>
-                <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
-                
-                <td>
-                  <div class="dropdown">
-                   
-                    <a href="/order/workflowStatuUpdate/{{job.id}}/16" data-toggle="tooltip" data-placement="left" title="Çalışma Başladı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                      <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
-                    </svg></a>
-
-                    <a href="/order/workflowStatuUpdate/{{job.id}}/17" data-toggle="tooltip" data-placement="left" title="Çalışma Durdu"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stop-circle" viewBox="0 0 16 16">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                      <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"/>
-                    </svg></a>
-                    <a href="/order/workflowStatuUpdate/{{job.id}}/18" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-                    </svg></a>
-                    
-                    <a href="/order/problemAdd/{{job.order.id}}" data-toggle="tooltip" data-placement="left" title="Problem Gir">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
-                        <path d="M9.972 2.508a.5.5 0 0 0-.16-.556l-.178-.129a5.009 5.009 0 0 0-2.076-.783C6.215.862 4.504 1.229 2.84 3.133H1.786a.5.5 0 0 0-.354.147L.146 4.567a.5.5 0 0 0 0 .706l2.571 2.579a.5.5 0 0 0 .708 0l1.286-1.29a.5.5 0 0 0 .146-.353V5.57l8.387 8.873A.5.5 0 0 0 14 14.5l1.5-1.5a.5.5 0 0 0 .017-.689l-9.129-8.63c.747-.456 1.772-.839 3.112-.839a.5.5 0 0 0 .472-.334z"/>
-                      </svg>  
-                    </a>
-                   
-                    </ul>
-                  </div>
+        {% if is_mobile %} <!--  mobilden girildi!!! -->  
+              <thead>
+                <tr>
                   
-              </tr>
-            {% endfor %}
-          
-      
-        </tbody>
+                  <th >Sipariş</th>
+                  
+                  <th >Müşteri</th>
+                  <th style="width: 50%">Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for job in operasyon_jobs %}
+                    <tr>
+                      
+                      <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
+                      
+                      <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
+                      
+                      <td>
+                        {%if job.completed_date == NULL %}
+                            <div class="dropdown">
+                            
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/16" data-toggle="tooltip" data-placement="left" title="Çalışma Başladı"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                              </svg></a>
+
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/17" data-toggle="tooltip" data-placement="left" title="Çalışma Durdu"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-stop-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"/>
+                              </svg></a>
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/18" data-toggle="tooltip" data-placement="left" title="Tamamlandı" onclick="return confirm('Tamamlandığına  emin misiniz?')"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                              </svg></a>
+                              
+                              <a href="/order/problemAdd/{{job.order.id}}" data-toggle="tooltip" data-placement="left" title="Problem Gir">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
+                                  <path d="M9.972 2.508a.5.5 0 0 0-.16-.556l-.178-.129a5.009 5.009 0 0 0-2.076-.783C6.215.862 4.504 1.229 2.84 3.133H1.786a.5.5 0 0 0-.354.147L.146 4.567a.5.5 0 0 0 0 .706l2.571 2.579a.5.5 0 0 0 .708 0l1.286-1.29a.5.5 0 0 0 .146-.353V5.57l8.387 8.873A.5.5 0 0 0 14 14.5l1.5-1.5a.5.5 0 0 0 .017-.689l-9.129-8.63c.747-.456 1.772-.839 3.112-.839a.5.5 0 0 0 .472-.334z"/>
+                                </svg>  
+                              </a>
+                            
+                              </ul>
+                            </div>
+                        {%endif%}
+                      
+                    </tr>
+                  {% endfor %}
+                
+            
+              </tbody>
+        {%else%}
+              <thead>
+                <tr>
+                  <th style="width: 5%">#</th>
+                  <th >Durum</th>
+                  <th style="width: 10%" >Tarih</th>
+                  <th >Sipariş</th>
+                  <th >Açıklama</th>
+                  <th >Müşteri</th>
+                  <th style="width: 12%">Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for job in operasyon_jobs %}
+                    <tr>
+                      <td scope="row"><a href="/order/workflowView/{{job.id}}">{{job.id}}</a></td>
+                      <td>{{job.status}}</td>
+                      <td>{{job.created_date|date:'d-m-Y'}}</td>
+                      <td><a href="/order/orderView/{{job.order.id}}">{{job.order.id}}</td>
+                      <td>{{job.order.content|safe|truncatechars:30}}</td>
+                      <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
+                      
+                      <td>
+                        {%if job.completed_date == NULL %}
+                            <div class="dropdown">
+                            
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/16" data-toggle="tooltip" data-placement="left" title="Çalışma Başladı"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                              </svg></a>
+
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/17" data-toggle="tooltip" data-placement="left" title="Çalışma Durdu"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-stop-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"/>
+                              </svg></a>
+                              <a href="/order/workflowStatuUpdate/{{job.id}}/18" data-toggle="tooltip" data-placement="left" title="Tamamlandı" onclick="return confirm('Tamamlandığına  emin misiniz?')"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                              </svg></a>
+                              
+                              <a href="/order/problemAdd/{{job.order.id}}" data-toggle="tooltip" data-placement="left" title="Problem Gir">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
+                                  <path d="M9.972 2.508a.5.5 0 0 0-.16-.556l-.178-.129a5.009 5.009 0 0 0-2.076-.783C6.215.862 4.504 1.229 2.84 3.133H1.786a.5.5 0 0 0-.354.147L.146 4.567a.5.5 0 0 0 0 .706l2.571 2.579a.5.5 0 0 0 .708 0l1.286-1.29a.5.5 0 0 0 .146-.353V5.57l8.387 8.873A.5.5 0 0 0 14 14.5l1.5-1.5a.5.5 0 0 0 .017-.689l-9.129-8.63c.747-.456 1.772-.839 3.112-.839a.5.5 0 0 0 .472-.334z"/>
+                                </svg>  
+                              </a>
+                            
+                              </ul>
+                            </div>
+                        {%endif%}
+                      
+                    </tr>
+                  {% endfor %}
+                
+            
+              </tbody>
+        {%endif%}
       </table>
     {%else%}
       <div class="alert alert-danger">
@@ -333,7 +391,7 @@
             <th >Sipariş</th>
             <th >Açıklama</th>
             <th >Müşteri</th>
-            <th style="width: 8%">Aksiyon</th>
+            <th style="width: 12%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -348,28 +406,29 @@
                 <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                 
                 <td>
-                  {% if job.status_id == 24 %}
-                  
-
-                      <a href="/order/dosyaEkle/{{job.order_id}}/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Dosya yükle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-upload" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
-                        <path fill-rule="evenodd" d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                      </svg></a>
-                  {% elif job.status_id == 26 %}
+                  {%if job.completed_date == NULL %}
+                      {% if job.status_id == 24 %}
                       
-                      <a href="/order/siparisPaketi/{{job.order_id}}/{{job.id}}"><button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Alt Sipariş Paketleri oluşturur">Alt Paket</button></a>
 
-                  {% else %}
-                      <a href="/order/workflowPlanla/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Planla"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-check" viewBox="0 0 16 16">
-                        <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                      </svg></a>
-                      <a href="/order/workflowStatuUpdate/{{job.id}}/13" data-toggle="tooltip" data-placement="left" title="Müşteriden haber bekleniyor"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
-                        <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
-                      </svg></a>
-                      
-                  {% endif %}
+                          <a href="/order/dosyaEkle/{{job.order_id}}/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Dosya yükle"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-upload" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
+                            <path fill-rule="evenodd" d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                          </svg></a>
+                      {% elif job.status_id == 26 %}
+                          
+                          <a href="/order/siparisPaketi/{{job.order_id}}/{{job.id}}"><button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Alt Sipariş Paketleri oluşturur">Alt Paket</button></a>
 
+                      {% else %}
+                          <a href="/order/workflowPlanla/{{job.id}}" data-toggle="tooltip" data-placement="left" title="Planla"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-calendar-check" viewBox="0 0 16 16">
+                            <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                          </svg></a>
+                          <a href="/order/workflowStatuUpdate/{{job.id}}/13" data-toggle="tooltip" data-placement="left" title="Müşteriden haber bekleniyor"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                          </svg></a>
+                          
+                      {% endif %}
+                    {%endif%}
                  </td>
                 
               </tr>
@@ -427,7 +486,7 @@
             <th >Sipariş</th>
             <th >Açıklama</th>
             <th >Müşteri</th>
-            <th style="width: 8%">Aksiyon</th>
+            <th style="width: 12%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -441,10 +500,12 @@
                 <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                 
                 <td >
-                  <a href="/order/workflowStatuUpdate/{{job.id}}/5" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                  {%if job.completed_date == NULL %}
+                  <a href="/order/workflowStatuUpdate/{{job.id}}/5" data-toggle="tooltip" data-placement="left" title="Tamamlandı" onclick="return confirm('Tamamlandığına  emin misiniz?')"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                   </svg></a>
+                  {%endif%}
                   </td>
                 
               </tr>
@@ -501,7 +562,7 @@
             <th >Sipariş</th>
             <th >Açıklama</th>
             <th >Müşteri</th>
-            <th style="width: 8%">Aksiyon</th>
+            <th style="width: 12%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -515,10 +576,13 @@
                     <td>{{job.order.content|safe|truncatechars:30}}</td>
                     <td>{{job.order.customer.customer_name|truncatechars:30}}</td>
                     
-                    <td><a href="/order/workflowStatuUpdate/{{job.id}}/10" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-                    </svg></a>
+                    <td>
+                      {%if job.completed_date == NULL %}
+                        <a href="/order/workflowStatuUpdate/{{job.id}}/10" data-toggle="tooltip" data-placement="left" title="Tamamlandı" onclick="return confirm('Tamamlandığına  emin misiniz?')"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                      </svg></a>
+                      {%endif%}
                     </td>
                     
                   </tr>
@@ -565,14 +629,14 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th style="width: 5%">Rezerv ID</th>
+            <th  style="width: 5%">Rezerv ID</th>
             <th >Siparis</th>
             <th style="width: 10%" >Workflow</th>
             <th >Baş. tar.</th>
             <th >Bitis Tar.</th>
             <th >Müşteri</th>
             <th >Durum</th>
-            <th style="width: 8%">Aksiyon</th>
+            <th style="width: 12%">Aksiyon</th>
           </tr>
         </thead>
         <tbody>
@@ -589,22 +653,22 @@
                <!--  <td>{{job.order.customer.customer_name|truncatechars:30}}</td> -->
                 
                 <td>
-                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/16" data-toggle="tooltip" data-placement="left" title="Çalışma Başladı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
+                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/16" data-toggle="tooltip" data-placement="left" title="Çalışma Başladı"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
                   </svg></a>
 
-                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/17" data-toggle="tooltip" data-placement="left" title="Çalışma Durdu"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stop-circle" viewBox="0 0 16 16">
+                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/17" data-toggle="tooltip" data-placement="left" title="Çalışma Durdu"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-stop-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"/>
                   </svg></a>
-                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/18" data-toggle="tooltip" data-placement="left" title="Tamamlandı"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                  <a href="/order/workflowStatuUpdate/{{job.workflow_id}}/18" data-toggle="tooltip" data-placement="left" title="Tamamlandı" onclick="return confirm('Tamamlandığına  emin misiniz?')"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                   </svg></a>
                   
                   <a href="/order/problemAdd/{{job.order.id}}" data-toggle="tooltip" data-placement="left" title="Problem Gir">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-hammer" viewBox="0 0 16 16">
                       <path d="M9.972 2.508a.5.5 0 0 0-.16-.556l-.178-.129a5.009 5.009 0 0 0-2.076-.783C6.215.862 4.504 1.229 2.84 3.133H1.786a.5.5 0 0 0-.354.147L.146 4.567a.5.5 0 0 0 0 .706l2.571 2.579a.5.5 0 0 0 .708 0l1.286-1.29a.5.5 0 0 0 .146-.353V5.57l8.387 8.873A.5.5 0 0 0 14 14.5l1.5-1.5a.5.5 0 0 0 .017-.689l-9.129-8.63c.747-.456 1.772-.839 3.112-.839a.5.5 0 0 0 .472-.334z"/>
                     </svg>  
                   </a>

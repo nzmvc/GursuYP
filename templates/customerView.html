@@ -113,7 +113,7 @@
           </svg> Sipariş Ekle
         </button>
       </a>
-    </h3>
+      </h3>
     <br><br>
         {% if orders %}
         <table class="table table-striped table-hover">
@@ -146,16 +146,84 @@
     </div>        
   </div>
 </div>  
-  
-<div class="row mb-1">
 
-  <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-    <div class="col p-4 d-flex flex-column position-static">
-      <h3> Müşteri Şikayetleri  -  EKLENECEK HENÜZ AKTİF DEĞİL &nbsp;</h3>
+<div class="row">
 
-        
-    </div>        
+
+  <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-light ">
+          <h4 class="card-title">Müşteri Şikayetleri  
+            <button type="button" class="btn btn-primary btn-sm">
+              Şikayet adedi: <span class="badge badge-light">{{problems.count }}</span>
+            </button>
+
+            <a href="/order/problemAddFull">
+              <button class="btn btn-success btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                </svg>  Şikayet EKLE
+              </button>
+            </a>
+
+          </h4>
+          
+        </div>
+        <div class="table-full-width table-responsive px-0 card-body">
+    
+    
+          {% if problems %}
+          <table class="table-hover table-striped table">
+            <thead>
+              <tr>
+                <th class="border-0" scope="col">ID</th>
+                <th class="border-0" scope="col">Oluşturulma Tarihi</th>
+                <th class="border-0" scope="col">Kapatılma Tarihi</th>
+                <th class="border-0" scope="col">Kullanıcı</th>
+                <th class="border-0" scope="col">Order ID</th>
+                <th class="border-0" scope="col">Açıklama</th>
+                <th class="border-0" scope="col">Durum</th>
+                <th class="border-0" scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for problem in problems %}
+                  <tr>
+                    <td scope="row"><a href="/order/problemView/{{problem.id}}">{{problem.id}}</a></td>
+                    <td>{{problem.created_date}}</td>
+                    <td>{{problem.closed_date}}</td>
+                    <td>{{problem.created_user}}</td>
+                    <td><a href="/order/orderView/{{problem.order.id}}">{{problem.order}}</a></td>
+                    <td>{{problem.description|safe}}</td>
+                    <td>{{problem.statu}}</td>
+                    
+                    <td>
+                      <div class="dropdown">
+                        <a class="dropdown-item" href="/order/problemView/{{problem.id}}">
+                        
+                          <button class="btn btn-success" title="Göster"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                          </svg></button>
+                        </a>
+                        
+                      </div>
+                      
+                  </tr>
+                {% endfor %}
+              
+          
+            </tbody>
+          </table>
+        {%else%}
+          <div class="alert alert-danger">
+              Problem kaydı yok
+          </div>
+        {% endif %}
+      </div>
+      </div>
   </div>
-</div>  
-
+  
+</div>
 {% endblock body %}

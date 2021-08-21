@@ -16,6 +16,4 @@ urlpatterns = [
     path('userChangePassword/<int:id>', views.userChangePassword, name='userChangePassword'),
     path('logView/', views.logView, name='logView'),
     path('yetkiYok/', views.yetkiYok, name='yetkiYok'),
-    
-    
 ]
